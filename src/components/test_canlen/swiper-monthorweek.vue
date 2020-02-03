@@ -1,5 +1,5 @@
 <template>
-  <div class="calendarBox" ref="calendar" :class="{transition:transition}" :style="{height: calendarHeight == -100 ? 'calc(100% - 30px)':calendarHeight + 'px' }"
+  <div class="calendarBox" ref="calendar" :class="{transition:transition}" :style="{height: calendarHeight == -100 ? 500+'px':calendarHeight + 'px' }"
        @touchstart.stop="moveStart"
        @touchend.stop="moveEnd"
        @touchmove.stop="move"
