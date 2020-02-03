@@ -19,6 +19,13 @@
                 <span slot="title">测试</span>
               </el-menu-item>
             </router-link>
+             <!-- 单独的日历页面单独写，不经过权限加载 -->
+            <router-link to="/test_canlen/calendar" tag="div">
+              <el-menu-item index="/test_canlen/calendar">
+                <i class="el-icon-s-home"></i>
+                <span slot="title">日历</span>
+              </el-menu-item>
+            </router-link>
             <!-- 权限树加载 -->
             <menuTree
               v-for="item in menuTreeList"
