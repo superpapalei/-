@@ -5,7 +5,7 @@ export function tabsName(index) {
       return "主页";  
     case "test":
       return "测试";  
-      case "/test_canlen/calendar":
+      case "/canlen_com/calendar":
       return "日历";  
     default:
       return "xxx";

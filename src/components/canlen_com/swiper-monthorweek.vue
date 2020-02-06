@@ -1,5 +1,5 @@
 <template>
-  <div class="calendarBox" ref="calendar" :class="{transition:transition}" :style="{height: calendarHeight == -100 ? 500+'px':calendarHeight + 'px' }"
+  <div class="calendarBox" ref="calendar" :class="{transition:transition}" :style="{height: calendarHeight == -100 ? 500 + 'px':calendarHeight + 'px' }"
        @touchstart.stop="moveStart"
        @touchend.stop="moveEnd"
        @touchmove.stop="move"
@@ -216,7 +216,8 @@
 <style scoped>
   .calendarBox{
     height: calc( 100% - 30px );
-    background: #4188d8;
+    background: #b9cfe7;
+    /* background: #4188d8; */
   }
   .transition{
     transition: all .2s ease ;

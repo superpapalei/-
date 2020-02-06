@@ -1,13 +1,13 @@
 <template>
-  <div class="calendar-box">
+  <div class="calendar-box" >
     <ul class="calendar-head">
-      <li>一</li><li>二</li><li>三</li><li>四</li><li>五</li><li>六</li><li>日</li>
+      <li class="weekend">日</li><li>一</li><li>二</li><li>三</li><li>四</li><li>五</li><li class="weekend">六</li>
     </ul>
     <calendarContent ref="calendar_swiper" :checkDate="current_day" @on-change="changeIndex">
       <div v-for="(month,index) in monthList" :key="index" class="month swiper-item">
         <ul v-for="(week,weekindex) in month" :key="weekindex">
           <li v-for="(day,dayindex) in week" @click="chooseDay(day.year,day.month,day.day,day.othermonth,day.mode)">
-            <div class="week-day" :class="{ischecked:checkedDay==day.date,othermonth:day.othermonth,istoday:day.istoday}">
+            <div class="week-day" :class="{ischecked:checkedDay==day.date,othermonth:day.othermonth,istoday:day.istoday,is_weekend:day.is_weekend}">
               <span style="padding-top:2px;display:block;">
   				    	<i class="day">{{day.day}}</i>
   				    	<i>{{day.nongli.old_str}}</i>
@@ -23,8 +23,8 @@
   </div>
 </template>
 <script>
-  import calendarContent from '../test_canlen/swiper-monthorweek.vue'
-  import format from '../test_canlen/format'
+  import calendarContent from '../canlen_com/swiper-monthorweek.vue'
+  import format from '../canlen_com/format'
   export default{
     data(){
       return{
@@ -40,8 +40,15 @@
       this.get3month()
     },
     methods:{
+      is_weekend(year,month,day){
+        var thisDay=new Date(year,month,day)
+        if(thisDay.getDay()==0||thisDay.getDay()==6){
+           return true;
+        }
+        else return false
+      },
       chooseDay(year,month,day,othermonth,mode){
-//        为了PC端点击事件和移动冲突
+              //        为了PC端点击事件和移动冲突
         if(!this.can_click)return
         this.current_day = new Date(year,month,day)
         this.checkedDay = this.format(year,month,day)
@@ -68,7 +75,7 @@
         var weekArr = []
         var dt_first = new Date(year,month,day-((dt.getDay()+6) % 7))
         var week = []
-//        console.log(year,month,day)
+              //        console.log(year,month,day)
         for(var j=0;j<7;j++){
           var newdt = new Date(dt_first.getFullYear(),dt_first.getMonth(),dt_first.getDate()+j)
           var _year = newdt.getFullYear()
@@ -95,42 +102,46 @@
         var dt_last = new Date(year,month+1,0)   //每个月最后一天
         var monthLength = dt_last.getDate()-dt_first.getDate()+1
         var daylist =[];
-        var space = (dt_first.getDay() - 1 + 7) % 7   //月历前面空格
+        var space = (dt_first.getDay()  + 7) % 7   //月历前面空格
         //console.log(year,month)
         for(var i = -space;i<36;i+=7){
           var week = []
           for(var j=0;j<7;j++){
             var day = i+j+1
+            var is_weekend=this.is_weekend(year,month,day);
             if(day>0 && day<=monthLength){
               week.push({
-                mode:'month',
+                mode:'monthis_weekday=this.isweekDay();',
                 day:day,
+                is_weekend:is_weekend,
                 year:year,
                 month:month,
                 date:this.format(year,month,day),
-//                日历要显示的其他内容
-                thing:(day == 22 || day == 4) ? [{title:'生日',color:'red'},{title:'买蛋糕',color:'yellow'}]:[],
-                nongli:format.solar2lunar(year,month+1,day),
+                 //                日历要显示的其他内容
+                // thing:(day == 22 || day == 4) ? [{title:'阁力项目启动',color:'red'},{title:'动员会议',color:'yellow'}]:[],
+                nongli:format.solar2lunar(year,month+1,day),//农历
+
                 istoday:(this.today.getFullYear()==year && this.today.getMonth()==month && this.today.getDate() == day)?true:false,
                 ischecked:false
               })
             }else{
               //其它月份
               //week.push({})
-              var newdt = new Date(year,month,day)
+              var newdt = new Date(year,month,day)//不在该月的的范围也可自动计算所在日期，
               var _year = newdt.getFullYear()
               var _month = newdt.getMonth()
               var _day = newdt.getDate()
               week.push({
                 mode:'month',
                 day:_day,
+                is_weekend:false,
                 year:_year,
                 month:_month,
-                date:this.format(year,month,day),
-                nongli:format.solar2lunar(_year,_month+1,_day),
+                date:this.format(year,month,day),//不在该月的的范围也可自动计算所在日期，
+                nongli:format.solar2lunar(_year,_month+1,_day),//根据真实（该月范围内的）日期转化成农历
                 istoday:(this.today.getFullYear()==_year && this.today.getMonth()==_month && this.today.getDate() == _day)?true:false,
                 ischecked:false,
-                othermonth:day<=0?-1:1,
+                othermonth:day<=0?-1:1,//上月和下月
               })
             }
           }
@@ -164,7 +175,7 @@
             this.current_day = this.disp_date
             this.get3week()
           }else{
-//            console.log(this.disp_date.getMonth()+index)
+               //            console.log(this.disp_date.getMonth()+index)
             var _tmpdt = new Date(this.disp_date.getFullYear(),this.disp_date.getMonth()+index,0)
             var maxday = _tmpdt.getDate()
             var _day = maxday<this.disp_date.getDate()?maxday:this.disp_date.getDate()
@@ -175,7 +186,7 @@
               this.checkedDay = this.format(this.disp_date.getFullYear(),this.disp_date.getMonth(),this.disp_date.getDate())
               console.log(this.checkedDay)
             }
-//            console.log(this.format(this.disp_date.getFullYear(),this.disp_date.getMonth(),_day))
+                  //            console.log(this.format(this.disp_date.getFullYear(),this.disp_date.getMonth(),_day))
             this.get3month()
 
             console.log('move_change')
@@ -191,17 +202,20 @@
 </script>
 <style scoped>
   .calendar-box{
-    /*background: #4188d8;*/
-    color: #fff;
+    /* background: #4188d8; */
+    background: #b9cfe7;
+    color: #000;
     position: relative;
     height:100%;
+    width:50%;
     z-index:99;
   }
   .calendar-head{
-    background: #4188d8;
+
+    background: #b9cfe7;
     display: flex;
-    height:30px;
-    line-height: 30px;
+    height:40px;
+    line-height: 40px;
   }
   .calendar-head li{
     flex-grow: 1;
@@ -274,7 +288,14 @@
     color: #dcafaf;
   }
   .istoday{
-    background: #06c7f3!important;
+    background: #917620!important;
+  }
+  .is_weekend{
+    color:rgb(36,169,225);
+ 
+  }
+   .weekend{
+    background-color: rgb(36,169,225)!important;
   }
   .ischecked{
     background-color: #f17117!important;

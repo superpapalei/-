@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Main from '@/components/main'
 import Test from '@/components/test'
-import Calendar from '@/components/test_canlen/calendar'
+import Calendar from '@/components/canlen_com/calendar'
 Vue.use(Router)
 
 const router = new Router({
@@ -29,7 +29,7 @@ const router = new Router({
           }
         },
         {
-          path: '/test_canlen/calendar',
+          path: '/canlen_com/calendar',
           name: 'calendar',
           component: Calendar,
           meta: {
