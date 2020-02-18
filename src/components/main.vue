@@ -1,11 +1,6 @@
 <template>
   <div class="center">
-    <el-dialog
-      title="日历"
-      :visible.sync="calen_visible"
-      :close-on-click-modal="false"
-      width="30%"
-    >
+    <el-dialog title="日历" :visible.sync="calen_visible" :close-on-click-modal="false" width="30%">
       <div slot="title" class="header-title">
         <span class="el-icon-date"> 日历</span>
       </div>
@@ -20,12 +15,8 @@
             <div id="aside-logo"></div>
             <span>知匠项目管理</span>
           </div>
-          <el-menu
-            style="margin-bottom:10px;"
-            :default-active="url"
-            @select="addTab"
-          >
-          <!-- 单独的测试页面单独写，不经过权限加载 -->
+          <el-menu style="margin-bottom:10px;" :default-active="url" @select="addTab">
+            <!-- 单独的测试页面单独写，不经过权限加载 -->
             <router-link to="/test" tag="div">
               <el-menu-item index="test">
                 <i class="el-icon-s-home"></i>
@@ -39,21 +30,14 @@
               </el-menu-item>
             </router-link>
             <!-- 权限树加载 -->
-            <menuTree
-              v-for="item in menuTreeList"
-              :key="item.SystemMenuID"
-              :menuTreeItem="item"
-            />
+            <menuTree v-for="item in menuTreeList" :key="item.SystemMenuID" :menuTreeItem="item" />
           </el-menu>
         </el-scrollbar>
       </el-aside>
       <el-container style="width:85%; min-width:1050px;">
         <el-header height="45px">
           <ul class="l">
-            <li
-              :title="asideStatus == true ? '菜单展开' : '菜单收起'"
-              @click="changeAside"
-            >
+            <li :title="asideStatus == true ? '菜单展开' : '菜单收起'" @click="changeAside">
               <i id="asideControll" class="iconfont">&#xe61e;</i>
               <span class="ml10 mr10">{{
                 asideStatus == true ? "菜单展开" : "菜单收起"
@@ -76,22 +60,19 @@
                   个人中心
                   <i class="el-icon-arrow-down el-icon--right"></i>
                 </span>
-
                 <el-dropdown-menu slot="dropdown" style="min-width: 150px;">
-                  <el-dropdown-item divided @click.native="logout"
-                    >退出登录</el-dropdown-item
-                  >
+                  <el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
+            </li>
+            <li>
               <el-dropdown trigger="hover">
                 <span class="el-dropdown-link">
                   基础
                   <i class="el-icon-arrow-down el-icon--right"></i>
                 </span>
-
                 <el-dropdown-menu slot="dropdown" style="min-width: 150px;">
-                  <el-dropdown-item @click.native="openCalendar"
-                    >日历
+                  <el-dropdown-item @click.native="openCalendar">日历
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
@@ -102,20 +83,9 @@
           </ul>
         </el-header>
         <el-main style="margin:0;padding:0;background:#ECF5EF;" class="backTop">
-          <el-tabs
-            class="tabs"
-            v-model="activeTabName"
-            @tab-click="getTab"
-            @tab-remove="closeTab"
-            type="border-card"
-          >
-            <el-tab-pane
-              v-for="item in tabList"
-              :key="item.name"
-              :name="item.name"
-              :label="item.label"
-              :closable="item.closable"
-            ></el-tab-pane>
+          <el-tabs class="tabs" v-model="activeTabName" @tab-click="getTab" @tab-remove="closeTab" type="border-card">
+            <el-tab-pane v-for="item in tabList" :key="item.name" :name="item.name" :label="item.label"
+              :closable="item.closable"></el-tab-pane>
             <keep-alive>
               <router-view v-if="$route.meta.keepAlive === true" />
             </keep-alive>
@@ -124,14 +94,12 @@
         </el-main>
       </el-container>
     </el-container>
-    <el-backtop target=".backTop" :right="30" :visibility-height="20"
-      ><div
-        style="{height: 100%;width: 100%;background-color: #f2f5f6;box-shadow: 0 0 6px rgba(0,0,0, .12);
-                        text-align: center;line-height: 40px;color: #1989fa;}"
-      >
+    <el-backtop target=".backTop" :right="30" :visibility-height="20">
+      <div style="{height: 100%;width: 100%;background-color: #f2f5f6;box-shadow: 0 0 6px rgba(0,0,0, .12);
+                        text-align: center;line-height: 40px;color: #1989fa;}">
         TOP
-      </div></el-backtop
-    >
+      </div>
+    </el-backtop>
   </div>
 </template>
 
