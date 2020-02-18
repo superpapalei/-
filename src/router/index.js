@@ -30,6 +30,8 @@ const router = new Router({
             returnMain: true//该页面刷新回到主界面
           }
         },
+    
+   
         {
           path: '/ScheduleTest',
           name: 'ScheduleTest',

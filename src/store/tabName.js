@@ -4,7 +4,7 @@ export function tabsName(index) {
     case "main":
       return "主页";
     case "test":
-      return "测试";
+      return "测试";  
     case "ScheduleTest":
       return "计划测试";
     default:
