@@ -585,6 +585,8 @@ export default {
           lineConnect = lineConnect[0];
           var index = this.dragLineList.indexOf(lineConnect);
           this.onMouseOver(null, index, "lineOver");
+          var startBlock = this.barBlcokList.filter(item=>item.no == lineConnect.star)[0];
+          this.$refs.cellAreaContainer.scrollLeft = startBlock.left - 100;
         }
       }
     }
