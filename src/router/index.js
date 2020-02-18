@@ -4,6 +4,8 @@ import Main from '@/components/main'
 import Test from '@/components/test'
 import ScheduleTest from '@/components/ScheduleTest'
 import ScheduleControl from '@/components/control/ScheduleControl'
+import emp from '@/components/hr/emp'
+import dept from '@/components/hr/dept'
 
 Vue.use(Router)
 
@@ -28,6 +30,22 @@ const router = new Router({
           component: Test,
           meta: {
             returnMain: true//该页面刷新回到主界面
+          }
+        },
+        {
+          path: '/emp',
+          name: 'emp',
+          component: emp,
+          meta: {
+            returnMain: true
+          }
+        },
+        {
+          path: '/dept',
+          name: 'dept',
+          component: dept,
+          meta: {
+            returnMain: true
           }
         },
         {
