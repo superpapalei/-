@@ -1,5 +1,18 @@
 <template>
   <div class="center">
+    <el-dialog
+      title="日历"
+      :visible.sync="calen_visible"
+      :close-on-click-modal="false"
+      width="30%"
+    >
+      <div slot="title" class="header-title">
+        <span class="el-icon-date"> 日历</span>
+      </div>
+      <div>
+        <calenUse v-on:fun="closeCalendar"></calenUse>
+      </div>
+    </el-dialog>
     <el-container class="page">
       <el-aside :width="asideWidth" style="overflow:hidden;background:white;">
         <el-scrollbar style="height:100%;">
@@ -12,20 +25,16 @@
             :default-active="url"
             @select="addTab"
           >
-          <!-- 单独的测试页面单独写，不经过权限加载 -->
+            <!-- 单独的测试页面单独写，不经过权限加载 -->
             <router-link to="test" tag="div">
               <el-menu-item index="test">
                 <i class="el-icon-s-home"></i>
                 <span slot="title">测试</span>
               </el-menu-item>
             </router-link>
-             <!-- 单独的日历页面单独写，不经过权限加载 -->
-            <router-link to="/canlen_com/calendar" tag="div">
-              <el-menu-item index="/canlen_com/calendar">
-                <i class="el-icon-s-home"></i>
-                <span slot="title">日历</span>
-              </el-menu-item>
-            </router-link>
+            <!-- 单独的日历页面单独写，不经过权限加载 -->
+           
+
             <!-- 权限树加载 -->
             <menuTree
               v-for="item in menuTreeList"
@@ -69,6 +78,18 @@
                   <el-dropdown-item divided @click.native="logout"
                     >退出登录</el-dropdown-item
                   >
+                </el-dropdown-menu>
+              </el-dropdown>
+              <el-dropdown trigger="hover">
+                <span class="el-dropdown-link">
+                  基础
+                  <i class="el-icon-arrow-down el-icon--right"></i>
+                </span>
+
+                <el-dropdown-menu slot="dropdown" style="min-width: 150px;">
+                  <el-dropdown-item @click.native="openCalendar"
+                    >日历
+                  </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </li>
@@ -118,15 +139,19 @@ import Vue from "vue";
 import Cookies from "js-cookie";
 import screenfull from "screenfull";
 import { QueryWebMenuByUserId } from "@/api/webMenuASP";
+import calenUse from "./calen-use/menupage.vue";
 
 export default {
   name: "Main",
   components: {},
   data() {
     return {
-      defaultUrl:'',
+      defaultUrl: "",
       asideStatus: false, //false:菜单栏处于展开状态； true：菜单栏处于收起状态
       asideWidth: "200px",
+      calen_visible: false,
+      radio2: 3,
+      currentRow: null
     };
   },
   methods: {
@@ -144,6 +169,7 @@ export default {
       screenfull.toggle();
       this.isFullscreen = true;
     },
+
     //退出登录
     logout() {
       //清除数据
@@ -152,9 +178,17 @@ export default {
       this.$router.push({
         name: "login",
         params: {
-          autoSign: false//自动登录
+          autoSign: false //自动登录
         }
       });
+      //this.$router.go(0);//刷新页面
+    },
+    openCalendar() {
+      this.calen_visible = true;
+      //this.$router.go(0);//刷新页面
+    },
+    closeCalendar() {
+      this.calen_visible = false;
       //this.$router.go(0);//刷新页面
     },
     //点击标签页触发的事件
@@ -213,15 +247,13 @@ export default {
       );
     },
     //获取角标在获取权限之后
-    getIconAll() {
-
-    }
+    getIconAll() {}
   },
   computed: {
     ...mapState("navTabs", ["tabList", "menuTreeList", "menuTreeListFlatten"]),
     url() {
       let index = this.$store.state.navTabs.activeUrlName;
-      
+
       return index;
     },
     activeTabName: {
@@ -237,13 +269,15 @@ export default {
     }
   },
   mounted() {},
-  beforeCreate() {
-  },
+  beforeCreate() {},
   created() {
     //this.getMenuTree(); //获得菜单权限树,获取角标在后去权限之后
     this.getPath();
     this.addTab("main");
     this.addTab(this.defaultUrl); //刷新之后添加的
+  },
+  components: {
+    calenUse
   }
 };
 </script>
@@ -284,7 +318,7 @@ export default {
 }
 /*顶部导航样式*/
 .el-header {
-  background: #0D6BA8;
+  background: #0d6ba8;
   padding: 0;
 }
 .el-header li {
@@ -292,7 +326,7 @@ export default {
 }
 .el-header li:hover {
   cursor: pointer;
-  background: #0092C5;
+  background: #0092c5;
 }
 .el-header i {
   line-height: 50px;
@@ -398,5 +432,7 @@ export default {
 .el-form-item {
   margin-bottom: 10px;
 }
+.header-title {
+  font-size: 28px;
+}
 </style>
-

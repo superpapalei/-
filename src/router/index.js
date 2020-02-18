@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Main from '@/components/main'
 import Test from '@/components/test'
-import Calendar from '@/components/canlen_com/calendar'
+
 Vue.use(Router)
 
 const router = new Router({
@@ -28,14 +28,8 @@ const router = new Router({
             returnMain: true//该页面刷新回到主界面
           }
         },
-        {
-          path: '/canlen_com/calendar',
-          name: 'calendar',
-          component: Calendar,
-          meta: {
-            returnMain: true//该页面刷新回到主界面
-          }
-        }
+    
+   
       ]
     }
   ]

@@ -1,12 +1,5 @@
 <template>
-  <div class="calendarBox" ref="calendar" :class="{transition:transition}" :style="{height: calendarHeight == -100 ? 500 + 'px':calendarHeight + 'px' }"
-       @touchstart.stop="moveStart"
-       @touchend.stop="moveEnd"
-       @touchmove.stop="move"
-       @mousedown.stop="moveStart_pc"
-       @mousemove.stop="move_pc"
-       @mouseup.stop="moveEnd_pc"
-       @mouseleave.stop="moveEnd_pc_1"
+  <div class="calendarBox" ref="calendar" :class="{transition:transition}" :style="{height: calendarHeight == -100 ? 300 + 'px':calendarHeight + 'px' }"
        style="overflow:hidden;">
     <div style="height: 100%;white-space: nowrap" :class="{transition:transition}" :style="{transform: 'translate3d('+calendarMove.x+'px,'+calendarMove.y+'px,0px)'}" >
       <slot></slot>
@@ -216,7 +209,7 @@
 <style scoped>
   .calendarBox{
     height: calc( 100% - 30px );
-    background: #b9cfe7;
+    background: #F2F6FC;
     /* background: #4188d8; */
   }
   .transition{
