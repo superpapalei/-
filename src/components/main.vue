@@ -18,23 +18,26 @@
         <el-scrollbar style="height:100%;">
           <div id="aside-header">
             <div id="aside-logo"></div>
-            <span>系统</span>
+            <span>知匠项目管理</span>
           </div>
           <el-menu
             style="margin-bottom:10px;"
             :default-active="url"
             @select="addTab"
           >
-            <!-- 单独的测试页面单独写，不经过权限加载 -->
-            <router-link to="test" tag="div">
+          <!-- 单独的测试页面单独写，不经过权限加载 -->
+            <router-link to="/test" tag="div">
               <el-menu-item index="test">
                 <i class="el-icon-s-home"></i>
                 <span slot="title">测试</span>
               </el-menu-item>
             </router-link>
-            <!-- 单独的日历页面单独写，不经过权限加载 -->
-           
-
+            <router-link to="/ScheduleTest" tag="div">
+              <el-menu-item index="ScheduleTest">
+                <i class="el-icon-s-home"></i>
+                <span slot="title">计划测试</span>
+              </el-menu-item>
+            </router-link>
             <!-- 权限树加载 -->
             <menuTree
               v-for="item in menuTreeList"
