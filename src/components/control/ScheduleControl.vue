@@ -13,7 +13,8 @@
             height: initTableHeadCellHeight * initTableHeadRowNum + 'px'
           }" ref="headAreaContainer">
           <!-- 表头宽度需要加上滚动条宽度20px-->
-          <div class="table-head-area" :style="{ width: initCellWidth * 104 + 20 + 'px', height: '100%' }">
+          <div class="table-head-area"
+            :style="{ width: initCellWidth * (tableHeadData2.length ? tableHeadData2.length : 104) + 20 + 'px', height: '100%' }">
             <!-- 第一行表头 -->
             <div>
               <div v-for="(item, index) in tableHeadData1" :key="'year' + index" class="table-head-cell" :style="{
