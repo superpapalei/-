@@ -25,7 +25,7 @@
     //后台地址统一配置
     var urlArr = {
       local: {
-        baseUrl: 'http://localhost:/',
+        baseUrl: 'http://localhost:5000/',
       },
       test: {
         baseUrl: 'http://',
@@ -35,8 +35,8 @@
       }
     }
 
-    //var urlSetting = urlArr.local;//本地
-    var urlSetting = urlArr.test;//测试
+    var urlSetting = urlArr.local;//本地
+    //var urlSetting = urlArr.test;//测试
     //var urlSetting = urlArr.formal;//正式
 
     var baseUrl = urlSetting.baseUrl;

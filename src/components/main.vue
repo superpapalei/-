@@ -29,6 +29,18 @@
                 <span slot="title">计划测试</span>
               </el-menu-item>
             </router-link>
+            <router-link to="/dept" tag="div">
+              <el-menu-item index="dept">
+                <i class="el-icon-s-home"></i>
+                <span slot="title">部门</span>
+              </el-menu-item>
+            </router-link>
+            <router-link to="/emp" tag="div">
+              <el-menu-item index="emp">
+                <i class="el-icon-s-home"></i>
+                <span slot="title">人员</span>
+              </el-menu-item>
+            </router-link>
             <!-- 权限树加载 -->
             <menuTree v-for="item in menuTreeList" :key="item.SystemMenuID" :menuTreeItem="item" />
           </el-menu>
