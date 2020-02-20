@@ -9,47 +9,102 @@
       </div>
     </el-dialog>
     <el-container class="page">
-      <el-header style="height:50px;">
-        <div class="aside-header">
-          <div class="aside-logo"></div>
-          <span style="margin:0 10px;">知匠项目管控系统</span>
-          <i class="el-icon-s-home icon-color aside-home"></i>
-        </div>
-        <div class="menu-contain">
-          <el-menu mode="horizontal" :default-active="url" @select="addTab" style="height:50px;" router>
-            <!-- 单独的测试页面单独写，不经过权限加载 -->
-            <el-submenu index="1">
-              <template slot="title">测试</template>
-              <el-menu-item-group>
-                <el-menu-item index="test" route="/test">测试</el-menu-item>
-                <el-menu-item index="ScheduleTest" route="/ScheduleTest">计划测试</el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
-            <el-menu-item index="2" route="/22">22</el-menu-item>
-            <el-submenu index="3">
-              <template slot="title">基础数据</template>
-              <el-menu-item-group>
-                <el-menu-item @click.native="openCalendar">日历</el-menu-item>
-                <el-menu-item index="dept" route="/dept">部门</el-menu-item>
-                <el-menu-item index="emp" route="/emp">人员</el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
-            <!-- 权限树加载 -->
-            <!-- <menuTree :menuTreeItem="menuTreeList" /> -->
-          </el-menu>
-        </div>
-      </el-header>
-      <el-main style="margin:0;padding:0;background:#ECF5EF;" class="backTop">
-        <el-card>
-          <div slot="header">
-            <span>首页></span>
+      <el-aside :width="asideWidth" style="overflow:hidden;background:white;">
+        <el-scrollbar style="height:100%;">
+          <div id="aside-header">
+            <div id="aside-logo"></div>
+            <span>知匠项目管理</span>
           </div>
-          <keep-alive>
-            <router-view v-if="$route.meta.keepAlive === true" />
-          </keep-alive>
-          <router-view v-if="$route.meta.keepAlive !== true" />
-        </el-card>
-      </el-main>
+          <el-menu style="margin-bottom:10px;" :default-active="url" @select="addTab">
+            <!-- 单独的测试页面单独写，不经过权限加载 -->
+            <router-link to="/test" tag="div">
+              <el-menu-item index="test">
+                <i class="el-icon-s-home"></i>
+                <span slot="title">测试</span>
+              </el-menu-item>
+            </router-link>
+            <router-link to="/ScheduleTest" tag="div">
+              <el-menu-item index="ScheduleTest">
+                <i class="el-icon-s-home"></i>
+                <span slot="title">计划测试</span>
+              </el-menu-item>
+            </router-link>
+            <router-link to="/dept" tag="div">
+              <el-menu-item index="dept">
+                <i class="el-icon-s-home"></i>
+                <span slot="title">部门</span>
+              </el-menu-item>
+            </router-link>
+            <router-link to="/emp" tag="div">
+              <el-menu-item index="emp">
+                <i class="el-icon-s-home"></i>
+                <span slot="title">人员</span>
+              </el-menu-item>
+            </router-link>
+            <!-- 权限树加载 -->
+            <menuTree v-for="item in menuTreeList" :key="item.SystemMenuID" :menuTreeItem="item" />
+          </el-menu>
+        </el-scrollbar>
+      </el-aside>
+      <el-container style="width:85%; min-width:1050px;">
+        <el-header height="45px">
+          <ul class="l">
+            <li :title="asideStatus == true ? '菜单展开' : '菜单收起'" @click="changeAside">
+              <i id="asideControll" class="iconfont">&#xe61e;</i>
+              <span class="ml10 mr10">{{
+                asideStatus == true ? "菜单展开" : "菜单收起"
+              }}</span>
+            </li>
+            <!-- <li title="主页" @click="dialogFormVisible = true">
+              <i class="iconfont">&#xe65e;</i>
+            </li> -->
+            <!-- <router-link to="/notification/notificationMain" tag="li">
+              <li title="公告" @click="addTab('notification/notificationMain')">
+                <i class="el-icon-bell"></i>
+                <span class="ml10 mr10">公告</span>
+              </li>
+            </router-link> -->
+          </ul>
+          <ul class="r">
+            <li>
+              <el-dropdown trigger="hover">
+                <span class="el-dropdown-link">
+                  个人中心
+                  <i class="el-icon-arrow-down el-icon--right"></i>
+                </span>
+                <el-dropdown-menu slot="dropdown" style="min-width: 150px;">
+                  <el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </li>
+            <li>
+              <el-dropdown trigger="hover">
+                <span class="el-dropdown-link">
+                  基础
+                  <i class="el-icon-arrow-down el-icon--right"></i>
+                </span>
+                <el-dropdown-menu slot="dropdown" style="min-width: 150px;">
+                  <el-dropdown-item @click.native="openCalendar">日历
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </li>
+            <li style="margin-right:20px;" @click="screenfull">
+              <i class="iconfont ml10 mr10">&#xe663;</i>
+            </li>
+          </ul>
+        </el-header>
+        <el-main style="margin:0;padding:0;background:#ECF5EF;" class="backTop">
+          <el-tabs class="tabs" v-model="activeTabName" @tab-click="getTab" @tab-remove="closeTab" type="border-card">
+            <el-tab-pane v-for="item in tabList" :key="item.name" :name="item.name" :label="item.label"
+              :closable="item.closable"></el-tab-pane>
+            <keep-alive>
+              <router-view v-if="$route.meta.keepAlive === true" />
+            </keep-alive>
+            <router-view v-if="$route.meta.keepAlive !== true" />
+          </el-tabs>
+        </el-main>
+      </el-container>
     </el-container>
     <el-backtop target=".backTop" :right="30" :visibility-height="20">
       <div style="{height: 100%;width: 100%;background-color: #f2f5f6;box-shadow: 0 0 6px rgba(0,0,0, .12);
@@ -61,7 +116,6 @@
 </template>
 
 <script>
-import menuTree from "./menuTree";
 import { mapMutations, mapActions } from "vuex";
 import { mapState } from "vuex";
 import Vue from "vue";
@@ -72,10 +126,7 @@ import calenUse from "./calen-use/menupage.vue";
 
 export default {
   name: "Main",
-  components: {
-    menuTree,
-    calenUse
-  },
+  components: {},
   data() {
     return {
       defaultUrl: "",
@@ -207,6 +258,9 @@ export default {
     this.getPath();
     this.addTab("main");
     this.addTab(this.defaultUrl); //刷新之后添加的
+  },
+  components: {
+    calenUse
   }
 };
 </script>
@@ -220,90 +274,69 @@ export default {
   box-sizing: border-box;
   height: 100vh;
 }
-.page-contain {
-  display: inline-flex;
+/*侧边栏样式*/
+#aside-header {
+  width: 100%;
+  height: 60px;
+  display: flex;
   justify-content: center;
   align-items: center;
+  background: white;
+  color: #464c5b;
+  font-size: 20px;
+  font-weight: bold;
+}
+#aside-logo {
+  width: 35px;
+  height: 35px;
+  margin-right: 15px;
+  line-height: 60px;
+  display: inline-block;
+  background: url("../assets/img/headLogo.png") no-repeat;
+  background-size: cover;
 }
 /*顶部导航样式*/
 .el-header {
-  /* background: #0d6ba8; */
-  background: white;
+  background: #0d6ba8;
   padding: 0;
-  position: relative;
 }
-/*侧边图标样式*/
-.aside-header-contain {
-  display: inline-block;
-}
-.aside-header {
-  height: 100%;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 20px;
-  font-weight: bold;
-  margin-left: 20px;
-}
-.aside-logo {
-  width: 35px;
-  height: 35px;
-  line-height: 60px;
-  display: inline-block;
-  background: url("../assets/img/zjkj.jpg") no-repeat;
-  background-size: cover;
-}
-.aside-home {
-  font-size: 25px;
-}
-.aside-home:hover {
-  background: #cbced4;
-  cursor: pointer;
-}
-.menu-contain {
-  display: inline-block;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-/* .el-header li {
+.el-header li {
   float: left;
-} */
-/* .el-header li:hover {
+}
+.el-header li:hover {
   cursor: pointer;
   background: #0092c5;
-} */
-/* .el-header i {
+}
+.el-header i {
   line-height: 50px;
   color: white;
-} */
-/* .el-header ul {
+}
+.el-header ul {
   margin: 0 10px;
-} */
-/* .el-header ul:nth-child(1) i {
+}
+.el-header ul:nth-child(1) i {
   font-size: 20px;
   margin: 0 10px;
-} */
-/* .el-header ul:nth-child(1) li span {
+}
+.el-header ul:nth-child(1) li span {
   color: white;
   line-height: 50px;
   font-size: 14px;
   margin-right: 10px;
   margin-left: -10px;
-} */
-/* .el-header ul:nth-child(2) li span {
+}
+.el-header ul:nth-child(2) li span {
   color: white;
   line-height: 50px;
   font-size: 14px;
-} */
-/* .el-dropdown {
+}
+.el-dropdown {
   margin: 0 15px;
-} */
-/* .el-dropdown-menu__item:hover {
+}
+.el-dropdown-menu__item:hover {
   color: #606266;
   background: #eee;
-} */
+}
 .tabs {
   width: 100%;
   height: 40px;
@@ -312,48 +345,32 @@ export default {
 .icon-color {
   color: #303133;
 }
+.el-menu i {
+  font-size: 25px;
+  margin: 0 10px;
+}
+.el-menu-item span {
+  font-size: 16px;
+}
+.el-menu-item-group span {
+  margin-left: 20px;
+}
+.el-icon-goods {
+  color: #303133;
+}
+.el-menu-item {
+  padding: 0 10px;
+}
+.el-menu-item.is-active {
+  background: rgb(88, 88, 98);
+  color: white;
+}
+.el-submenu .el-menu-item {
+  padding: 0 10px;
+}
 </style>
 
 <style>
-/* 水平样式 */
-.el-menu--horizontal > .el-menu-item,
-.el-menu--horizontal > .el-submenu .el-submenu__title {
-  height: 50px !important;
-  line-height: 50px !important;
-}
-.el-menu--horizontal > div > .el-menu-item,
-.el-menu--horizontal > div > .el-submenu .el-submenu__title {
-  height: 50px !important;
-  line-height: 50px !important;
-}
-.el-menu--horizontal > div > .el-submenu {
-  float: left;
-}
-/* 一级菜单的样式 */
-.el-menu--horizontal > div > .el-menu-item {
-  float: left;
-  margin: 0;
-  border-bottom: 2px solid transparent;
-  color: #909399;
-}
-.el-menu--horizontal > div > .el-submenu.is-active .el-submenu__title {
-  border-bottom: 2px solid #409eff;
-  color: #303133;
-}
-/* 解决下拉三角图标 */
-.el-menu--horizontal > div > .el-submenu .el-submenu__icon-arrow {
-  position: static;
-  vertical-align: middle;
-  margin-left: 8px;
-  margin-top: -3px;
-}
-/* 解决无下拉菜单时 不对齐问题 */
-.el-menu--horizontal > div > .el-submenu .el-submenu__title {
-  height: 60px;
-  line-height: 60px;
-  border-bottom: 2px solid transparent;
-  color: #909399;
-}
 .el-scrollbar .el-scrollbar__wrap {
   overflow-x: hidden;
 }

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Main from '@/components/main'
+import MainOld from '@/components/mainOld'
 import Test from '@/components/test'
 import ScheduleTest from '@/components/ScheduleTest'
 import ScheduleControl from '@/components/control/ScheduleControl'
