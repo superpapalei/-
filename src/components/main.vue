@@ -13,10 +13,10 @@
         <div class="aside-header">
           <div class="aside-logo"></div>
           <span style="margin:0 10px;">知匠项目管控系统</span>
-          <i class="el-icon-s-home icon-color aside-home"></i>
+          <i class="el-icon-s-home icon-color aside-home" @click="refreshPage"></i>
         </div>
         <div class="menu-contain">
-          <el-menu mode="horizontal" :default-active="url" @select="addTab" style="height:50px;" router>
+          <el-menu mode="horizontal" :default-active="url" @select="addBreadCrumb" style="height:50px;" router>
             <!-- 单独的测试页面单独写，不经过权限加载 -->
             <el-submenu index="1">
               <template slot="title">测试</template>
@@ -38,16 +38,74 @@
             <!-- <menuTree :menuTreeItem="menuTreeList" /> -->
           </el-menu>
         </div>
+        <ul class="right-aside-head">
+          <li>
+            <el-popover placement="left" width="300" trigger="hover" class="popoverP">
+              <div class="messageBox">
+                <div class="messageHead">
+                  <span style="color:black;">消息通知</span>
+                </div>
+                <div class="messageBody">
+                  <div v-for="(item,index) in messageList" :key="index" class="messageItem">
+                    <span class="messageTitle">{{item.messageTitle}}
+                    </span>
+                    <el-popover v-if="isReduce(item.messageContent)" placement="left" width="200" trigger="hover"
+                      :content="item.messageContent">
+                      <span class="messageContent" slot="reference">{{item.messageContent | fontWidthMeasure}}
+                      </span>
+                    </el-popover>
+                    <span v-else class="messageContent">{{item.messageContent | fontWidthMeasure}}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <i class="el-icon-message-solid icon-color" slot="reference"></i>
+            </el-popover>
+          </li>
+          <li>
+            <i class="el-icon-question icon-color"></i>
+          </li>
+          <li>
+            <el-dropdown trigger="hover">
+              <span class="dropSpan">
+                <i class="el-icon-user icon-color" style="margin:0;"></i>
+                <i class="el-icon-arrow-down el-icon--right icon-color" style="margin:0;"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown" style="min-width: 150px;">
+                <el-dropdown-item>修改密码</el-dropdown-item>
+                <el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </li>
+          <li @click="screenfull">
+            <i class="iconfont icon-color">&#xe663;</i>
+          </li>
+        </ul>
+      </el-header>
+      <el-header style="height:40px;" v-if="breadCrumbList.length">
+        <div class="breadCrumb">
+          <div style="font-size:15px;"><template v-for="(item, index) in breadCrumbList"><a v-if="index == 0"
+                :key="index" @click="refreshPage">&nbsp;{{ item.MENU_NAME }}>&nbsp;</a><span :key="index"
+                v-else>&nbsp;{{ item.MENU_NAME }}>&nbsp;</span></template></div>
+        </div>
       </el-header>
       <el-main style="margin:0;padding:0;background:#ECF5EF;" class="backTop">
         <el-card>
-          <div slot="header">
-            <span>首页></span>
-          </div>
           <keep-alive>
             <router-view v-if="$route.meta.keepAlive === true" />
           </keep-alive>
           <router-view v-if="$route.meta.keepAlive !== true" />
+          <div v-if="activeTabName == 'main'">
+            <div style="min-height:1500px;">
+              主页内容
+              主页内容
+              主页内容
+              主页内容
+              主页内容
+              主页内容
+              主页内容
+            </div>
+          </div>
         </el-card>
       </el-main>
     </el-container>
@@ -83,11 +141,42 @@ export default {
       asideWidth: "200px",
       calen_visible: false,
       radio2: 3,
-      currentRow: null
+      currentRow: null,
+      messageList: [
+        {
+          messageTitle: "消息标题1",
+          messageContent:
+            "消息内容消息内容消息内容消息内容消息内容消息内容消息内容消息内容"
+        },
+        {
+          messageTitle: "消息标题2",
+          messageContent: "消息内容消息内容消息内容消息内容"
+        }
+      ]
     };
   },
+  filters: {
+    fontWidthMeasure(text) {
+      var canvas = document.createElement("canvas");
+      var context = canvas.getContext("2d");
+      context.font = "14px Microsoft YaHei"; // 设置字体样式，当然，也可以在这里给一个默认值
+      var dimension = context.measureText(text);
+      if (dimension.width > 290) {
+        var strTemp = "";
+        for (var i = 0; i <= text.length; i++) {
+          //遍历字符串
+          if (context.measureText(strTemp).width > 260) {
+            break;
+          }
+          strTemp += text.charAt(i).toString();
+        }
+        text = strTemp + "...";
+      }
+      return text;
+    }
+  },
   methods: {
-    ...mapMutations("navTabs", ["addTab", "setMenuTreeList"]),
+    ...mapMutations("navTabs", ["addTab", "addBreadCrumb", "setMenuTreeList"]),
     ...mapActions("navTabs", ["closeTab", "closeToTab"]),
     //全屏事件
     screenfull() {
@@ -101,7 +190,9 @@ export default {
       screenfull.toggle();
       this.isFullscreen = true;
     },
-
+    refreshPage() {
+      this.$router.go(0); //刷新页面
+    },
     //退出登录
     logout() {
       //清除数据
@@ -114,6 +205,13 @@ export default {
         }
       });
       //this.$router.go(0);//刷新页面
+    },
+    isReduce(text) {
+      var canvas = document.createElement("canvas");
+      var context = canvas.getContext("2d");
+      context.font = "14px Microsoft YaHei"; // 设置字体样式，当然，也可以在这里给一个默认值
+      var dimension = context.measureText(text);
+      return dimension.width > 290;
     },
     openCalendar() {
       this.calen_visible = true;
@@ -182,7 +280,12 @@ export default {
     getIconAll() {}
   },
   computed: {
-    ...mapState("navTabs", ["tabList", "menuTreeList", "menuTreeListFlatten"]),
+    ...mapState("navTabs", [
+      "tabList",
+      "breadCrumbList",
+      "menuTreeList",
+      "menuTreeListFlatten"
+    ]),
     url() {
       let index = this.$store.state.navTabs.activeUrlName;
 
@@ -206,7 +309,7 @@ export default {
     //this.getMenuTree(); //获得菜单权限树,获取角标在后去权限之后
     this.getPath();
     this.addTab("main");
-    this.addTab(this.defaultUrl); //刷新之后添加的
+    //this.addTab(this.defaultUrl); //刷新之后添加的
   }
 };
 </script>
@@ -232,7 +335,7 @@ export default {
   padding: 0;
   position: relative;
 }
-/*侧边图标样式*/
+/*左侧样式*/
 .aside-header-contain {
   display: inline-block;
 }
@@ -266,51 +369,80 @@ export default {
   left: 50%;
   transform: translateX(-50%);
 }
-
-/* .el-header li {
+/* 右侧样式 */
+.right-aside-head {
+  float: right;
+  margin: 0 20px;
+}
+.right-aside-head li {
   float: left;
-} */
-/* .el-header li:hover {
+}
+.right-aside-head li:hover {
   cursor: pointer;
-  background: #0092c5;
-} */
-/* .el-header i {
+  background: #cbced4;
+}
+.right-aside-head i {
+  font-size: 18px;
   line-height: 50px;
-  color: white;
-} */
-/* .el-header ul {
   margin: 0 10px;
-} */
-/* .el-header ul:nth-child(1) i {
-  font-size: 20px;
-  margin: 0 10px;
-} */
-/* .el-header ul:nth-child(1) li span {
-  color: white;
+}
+.dropSpan {
   line-height: 50px;
   font-size: 14px;
-  margin-right: 10px;
-  margin-left: -10px;
-} */
-/* .el-header ul:nth-child(2) li span {
-  color: white;
-  line-height: 50px;
-  font-size: 14px;
-} */
-/* .el-dropdown {
-  margin: 0 15px;
-} */
-/* .el-dropdown-menu__item:hover {
-  color: #606266;
-  background: #eee;
-} */
-.tabs {
-  width: 100%;
-  height: 40px;
-  background-color: #f5f7fa;
+  margin: 0 10px;
 }
 .icon-color {
   color: #303133;
+}
+.header-title {
+  font-size: 28px;
+}
+.breadCrumb {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #ebeef5;
+  user-select: none;
+}
+.breadCrumb a {
+  cursor: pointer;
+  color: #000;
+}
+.breadCrumb a:hover {
+  color: #409eff !important;
+}
+.messageBox {
+  width: 100%;
+}
+.messageHead {
+  width: 100%;
+  height: 30px;
+  padding: 0 5px;
+  border-bottom: 1px solid #ebeef5;
+  box-sizing: border-box;
+}
+.messageBody {
+  width: 100%;
+}
+.messageItem {
+  widows: 100%;
+  height: 50px;
+  padding: 0 5px;
+  border-bottom: 1px solid #ebeef5;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.messageItem:hover {
+  background: #f5f7fa;
+}
+.messageTitle {
+  height: 28px;
+  line-height: 14px;
+  display: table-cell;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+.messageContent {
+  display: block;
 }
 </style>
 
@@ -335,6 +467,18 @@ export default {
   margin: 0;
   border-bottom: 2px solid transparent;
   color: #909399;
+}
+.el-menu--horizontal > .el-menu .el-menu-item.is-active {
+  color: #409eff;
+}
+.el-menu--horizontal > .el-menu .el-menu-item:hover {
+  background: #f5f7fa;
+}
+.el-menu--horizontal > div > .el-menu .el-menu-item.is-active {
+  color: #409eff;
+}
+.el-menu--horizontal > div > .el-menu .el-menu-item:hover {
+  background: #f5f7fa;
 }
 .el-menu--horizontal > div > .el-submenu.is-active .el-submenu__title {
   border-bottom: 2px solid #409eff;
@@ -393,8 +537,5 @@ export default {
 }
 .el-form-item {
   margin-bottom: 10px;
-}
-.header-title {
-  font-size: 28px;
 }
 </style>

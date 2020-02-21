@@ -13,7 +13,8 @@ const state = {
     tabList: [],
     //导航数组，等权限控制做好通过后台读取
     menuTreeListFlatten: [],
-    menuTreeList: []
+    menuTreeList: [],
+    breadCrumbList: [],//导航
 }
 
 const mutations = {
@@ -124,6 +125,20 @@ const mutations = {
     emptyMenuTreeList(state) {
         state.menuTreeList = [];
         state.menuTreeListFlatten = [];
+    },
+    addBreadCrumb(state, index) {
+        state.breadCrumbList = [];
+        state.breadCrumbList = findFatherIndex(index, []);
+        state.breadCrumbList.splice(0, 0, {
+            SYSTEMMENUID: 0,
+            PSYSTEMMENUID: 0,
+            MENU_LINK: 'main',
+            MENU_NAME: '首页'
+        });
+        state.activeTabName = index;
+    },
+    emptyBreadCrumb(state) {
+        state.breadCrumbList = [];
     }
 };
 /*
@@ -141,6 +156,32 @@ function arrayChildrenFlatten(array, result) {
         }
     }
     return result;
+}
+function findFatherIndex(index, array) {
+    //根据index找到节点
+    var mapTab = state.menuTreeListFlatten.filter(item => item.MENU_LINK == index);
+    if (mapTab.length > 0) {
+        array.splice(0, 0, {
+            SYSTEMMENUID: mapTab.SYSTEMMENUID,
+            PSYSTEMMENUID: mapTab.PSYSTEMMENUID,
+            MENU_LINK: mapTab.MENU_LINK,
+            MENU_NAME: mapTab.MENU_NAME
+        })
+        if (mapTab.PSYSTEMMENUID > 0) {
+            var mapTabF = state.menuTreeListFlatten.filter(item => item.SYSTEMMENUID == mapTab.PSYSTEMMENUID);
+            if (mapTabF.length) {
+                findFatherIndex(mapTabF[0].MENU_LINK, array);
+            }
+        }
+    } else {
+        array.push(
+            {
+                MENU_LINK: index,
+                MENU_NAME: ''
+            }
+        )
+    }
+    return array;
 }
 
 const getters = {

@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import store from '.././store'
 import Router from 'vue-router'
 import Main from '@/components/main'
 import MainOld from '@/components/mainOld'
@@ -29,33 +30,21 @@ const router = new Router({
           path: '/test',
           name: 'test',
           component: Test,
-          meta: {
-            returnMain: true//该页面刷新回到主界面
-          }
         },
         {
           path: '/emp',
           name: 'emp',
           component: emp,
-          meta: {
-            returnMain: true
-          }
         },
         {
           path: '/dept',
           name: 'dept',
           component: dept,
-          meta: {
-            returnMain: true
-          }
         },
         {
           path: '/ScheduleTest',
           name: 'ScheduleTest',
           component: ScheduleTest,
-          meta: {
-            returnMain: true//该页面刷新回到主界面
-          }
         }
       ]
     }
@@ -70,13 +59,17 @@ Router.prototype.push = function push(location) {
 //路由守卫
 router.beforeEach((to, from, next) => {
   //其他具体需求开发时再加。如只允许一个账号登录等。
-  if (from.path == '/' && to.meta.returnMain) {//如果是刷新判断是否需要回到主界面
-    if (to.name == 'login' || to.name == 'main') {
-      next()
-    }
-    else {
-      next('/main');
-    }
+  // if (from.path == '/' && to.meta.returnMain) {//如果是刷新判断是否需要回到主界面
+  //   if (to.name == 'login' || to.name == 'main') {
+  //     next()
+  //   }
+  //   else {
+  //     next('/main');
+  //   }
+  // }
+  if (from.path == '/' && to.path !='/main') {//所有刷新回到主界面
+    store.commit('navTabs/emptyBreadCrumb');//到主页面后清空导航
+    next('/main');
   }
   else {//不是刷新
     next();
