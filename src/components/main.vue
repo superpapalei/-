@@ -59,7 +59,9 @@
                   </div>
                 </div>
               </div>
-              <i class="el-icon-message-solid icon-color" slot="reference"></i>
+              <i class="el-icon-message-solid icon-color" style="position:relative;" slot="reference">
+                <span class="unReadMessage"></span>
+              </i>
             </el-popover>
           </li>
           <li>
@@ -316,7 +318,7 @@ export default {
 
 <style scoped>
 .center {
-  width: 99.5%;
+  width: 100%;
   margin: 0 auto;
 }
 .page {
@@ -402,6 +404,7 @@ export default {
   padding: 10px 15px;
   border: 1px solid #ebeef5;
   user-select: none;
+  box-sizing: border-box;
 }
 .breadCrumb a {
   cursor: pointer;
@@ -443,6 +446,18 @@ export default {
 }
 .messageContent {
   display: block;
+}
+.unReadMessage {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 8px;
+  height: 8px;
+  color: #fff;
+  background-image: linear-gradient(#54a3ff, #006eed);
+  background-clip: padding-box;
+  border: 1px solid #24292e;
+  border-radius: 50%;
 }
 </style>
 
@@ -508,10 +523,10 @@ export default {
   padding: 4px 0 !important;
 }
 .el-card__header {
-  padding: 10px 15px !important;
+  padding: 10px !important;
 }
 .el-card__body {
-  padding: 15px;
+  padding: 10px;
 }
 .el-dialog__body {
   padding: 20px;
