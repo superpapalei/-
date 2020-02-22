@@ -185,7 +185,7 @@
                       "></div>
                     <!-- 箭头的方向class -->
                     <div :class="{
-                        'lineArrow-base': line.arrow,
+                        'lineArrow-base': line.arrow && line.width>0 && line.top>0,
                         'lineArrow-top': line.arrow && line.arrowDir == 'top',
                         'lineArrow-right':
                           line.arrow && line.arrowDir == 'right',

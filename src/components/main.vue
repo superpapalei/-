@@ -161,7 +161,7 @@ export default {
     fontWidthMeasure(text) {
       var canvas = document.createElement("canvas");
       var context = canvas.getContext("2d");
-      context.font = "14px Microsoft YaHei"; // 设置字体样式，当然，也可以在这里给一个默认值
+      context.font = "14px Microsoft YaHei";
       var dimension = context.measureText(text);
       if (dimension.width > 290) {
         var strTemp = "";
@@ -211,7 +211,7 @@ export default {
     isReduce(text) {
       var canvas = document.createElement("canvas");
       var context = canvas.getContext("2d");
-      context.font = "14px Microsoft YaHei"; // 设置字体样式，当然，也可以在这里给一个默认值
+      context.font = "14px Microsoft YaHei";
       var dimension = context.measureText(text);
       return dimension.width > 290;
     },
