@@ -624,6 +624,52 @@ export default {
           type: "warning"
         })
           .then(() => {
+            var connectData = this.data.filter(
+              item => item.no == this.dragLineList[index].dataNo
+            );
+            if (connectData.length > 0) {
+              this.data = this.data.filter(
+                item => item.no != this.dragLineList[index].dataNo
+              );
+              this.$emit("input", this.data);
+              this.dataChange = true;
+            }
+            //看开始节点和结束节点是否有虚拟节点，有的话删除
+            var startBlock = this.barBlcokList.filter(
+              item => item.no == this.dragLineList[index].star
+            );
+            if (startBlock.length > 0) {
+              startBlock = startBlock[0];
+              if (startBlock.type == "work") {
+                var startConnectLine = this.dragLineList.filter(
+                  item =>
+                    item.star == startBlock.no || item.end == startBlock.no
+                );
+                if (startConnectLine.length == 1) {
+                  //说明只连接了这一条线，可以删除
+                  this.barBlcokList = this.barBlcokList.filter(
+                    item => item.no != this.dragLineList[index].star
+                  );
+                }
+              }
+            }
+            var endBlock = this.barBlcokList.filter(
+              item => item.no == this.dragLineList[index].end
+            );
+            if (endBlock.length > 0) {
+              endBlock = endBlock[0];
+              if (endBlock.type == "work") {
+                var startConnectLine = this.dragLineList.filter(
+                  item => item.star == endBlock.no || item.end == endBlock.no
+                );
+                if (startConnectLine.length == 1) {
+                  //说明只连接了这一条线，可以删除
+                  this.barBlcokList = this.barBlcokList.filter(
+                    item => item.no != this.dragLineList[index].end
+                  );
+                }
+              }
+            }
             this.dragLineList.splice(index, 1);
             this.dragLineDashList.splice(index, 1);
           })
@@ -635,11 +681,10 @@ export default {
           type: "warning"
         })
           .then(() => {
+            var no = this.barBlcokList[index].no;
             //获取相关联的线条
             var connectLineList = this.dragLineList.filter(
-              item =>
-                item.star == this.barBlcokList[index].no ||
-                item.end == this.barBlcokList[index].no
+              item => item.star == no || item.end == no
             );
             if (connectLineList.length > 0) {
               for (var i = this.dragLineList.length - 1; i >= 0; i--) {
@@ -648,13 +693,71 @@ export default {
                     item => item.no == this.dragLineList[i].no
                   ).length > 0
                 ) {
+                  var connectData = this.data.filter(
+                    item => item.no == this.dragLineList[i].dataNo
+                  );
+                  if (connectData.length > 0) {
+                    this.data = this.data.filter(
+                      item => item.no != this.dragLineList[i].dataNo
+                    );
+                    this.$emit("input", this.data);
+                    this.dataChange = true;
+                  }
+                  //看开始节点和结束节点是否有虚拟节点，有的话删除
+                  var startBlock = this.barBlcokList.filter(
+                    item => item.no == this.dragLineList[i].star
+                  );
+                  if (startBlock.length > 0) {
+                    startBlock = startBlock[0];
+                    if (startBlock.type == "work") {
+                      var startConnectLine = this.dragLineList.filter(
+                        item =>
+                          item.star == startBlock.no ||
+                          item.end == startBlock.no
+                      );
+                      if (startConnectLine.length == 1) {
+                        //说明只连接了这一条线，可以删除
+                        this.barBlcokList = this.barBlcokList.filter(
+                          item => item.no != this.dragLineList[i].star
+                        );
+                      }
+                    }
+                  }
+                  var endBlock = this.barBlcokList.filter(
+                    item => item.no == this.dragLineList[i].end
+                  );
+                  if (endBlock.length > 0) {
+                    endBlock = endBlock[0];
+                    if (endBlock.type == "work") {
+                      var startConnectLine = this.dragLineList.filter(
+                        item =>
+                          item.star == endBlock.no || item.end == endBlock.no
+                      );
+                      if (startConnectLine.length == 1) {
+                        //说明只连接了这一条线，可以删除
+                        this.barBlcokList = this.barBlcokList.filter(
+                          item => item.no != this.dragLineList[i].end
+                        );
+                      }
+                    }
+                  }
                   //删除关联线条
                   this.dragLineList.splice(i, 1);
                   this.dragLineDashList.splice(i, 1);
                 }
               }
             }
-            this.barBlcokList.splice(index, 1);
+            var connectData = this.data.filter(
+              item => item.no == this.barBlcokList[index].dataNo
+            );
+            if (connectData.length > 0) {
+              this.data = this.data.filter(
+                item => item.no != this.barBlcokList[index].dataNo
+              );
+              this.$emit("input", this.data);
+              this.dataChange = true;
+            }
+            this.barBlcokList = this.barBlcokList.filter(item => item.no != no);
           })
           .catch(() => {});
       }
