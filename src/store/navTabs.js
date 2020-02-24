@@ -45,9 +45,9 @@ const mutations = {
             if (state.closeToArray.includes(index)) isClose = false;
             else isClose = true;
             let tabName = '';
-            var mapTab = state.menuTreeListFlatten.filter(item => item.MENU_LINK == oldIndex);
+            var mapTab = state.menuTreeListFlatten.filter(item => item.menu_link == oldIndex);
             if (mapTab.length > 0)
-                tabName = mapTab[0].MENU_TEXT;
+                tabName = mapTab[0].menu_name;
             else
                 tabName = tabsName(index);
             state.tabList.push({
@@ -130,10 +130,10 @@ const mutations = {
         state.breadCrumbList = [];
         state.breadCrumbList = findFatherIndex(index, []);
         state.breadCrumbList.splice(0, 0, {
-            SYSTEMMENUID: 0,
-            PSYSTEMMENUID: 0,
-            MENU_LINK: 'main',
-            MENU_NAME: '首页'
+            menu_id: 0,
+            menu_pid: 0,
+            menu_link: 'main',
+            menu_name: '首页'
         });
         state.activeTabName = index;
     },
@@ -159,25 +159,25 @@ function arrayChildrenFlatten(array, result) {
 }
 function findFatherIndex(index, array) {
     //根据index找到节点
-    var mapTab = state.menuTreeListFlatten.filter(item => item.MENU_LINK == index);
+    var mapTab = state.menuTreeListFlatten.filter(item => item.menu_link == index);
     if (mapTab.length > 0) {
         array.splice(0, 0, {
-            SYSTEMMENUID: mapTab.SYSTEMMENUID,
-            PSYSTEMMENUID: mapTab.PSYSTEMMENUID,
-            MENU_LINK: mapTab.MENU_LINK,
-            MENU_NAME: mapTab.MENU_NAME
+            menu_id: mapTab.menu_id,
+            menu_pid: mapTab.menu_pid,
+            menu_link: mapTab.menu_link,
+            menu_name: mapTab.menu_name
         })
-        if (mapTab.PSYSTEMMENUID > 0) {
-            var mapTabF = state.menuTreeListFlatten.filter(item => item.SYSTEMMENUID == mapTab.PSYSTEMMENUID);
+        if (mapTab.menu_pid > 0) {
+            var mapTabF = state.menuTreeListFlatten.filter(item => item.menu_id == mapTab.menu_pid);
             if (mapTabF.length) {
-                findFatherIndex(mapTabF[0].MENU_LINK, array);
+                findFatherIndex(mapTabF[0].menu_link, array);
             }
         }
     } else {
         array.push(
             {
-                MENU_LINK: index,
-                MENU_NAME: ''
+                menu_link: index,
+                menu_name: ''
             }
         )
     }

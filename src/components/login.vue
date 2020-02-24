@@ -27,6 +27,9 @@
         <div class="submitBtn" @click="loginSubmit">登录</div>
       </div>
     </div>
+    <div class="loginFooter">
+      <p class="copyRightText">Copyright © 2020 佛山知匠科技有限公司</p>
+    </div>
   </div>
 </template>
 <script>
@@ -96,6 +99,7 @@ export default {
 </script>
 <style scoped>
 .loginBody {
+  position: relative;
   width: 100%;
   height: 100vh;
   background-color: #eff2f7;
@@ -106,14 +110,13 @@ export default {
   display: flex;
   align-items: center;
   background-color: #e9f1f8;
-  box-sizing: border-box;
 }
 .loginLogo {
   height: 50px;
   margin-left: 20px;
 }
 .centerDiv {
-  position: fixed;
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -122,7 +125,6 @@ export default {
   background-color: white;
   box-shadow: 1px 1px 10px 1px rgba(0, 0, 0, 0.25);
   font-size: 15px;
-  box-sizing: border-box;
 }
 .mainInfo {
   width: 100%;
@@ -174,6 +176,16 @@ export default {
   background-color: #409eff;
   color: #fff;
   cursor: pointer;
+}
+.loginFooter {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  text-align: center;
+}
+.copyRightText {
+  font-size: 14px;
+  color: #909399;
 }
 </style>
 <style>

@@ -5,21 +5,21 @@
       <el-submenu v-if="
       item.children &&
         item.children.length >= 1 &&
-        item.MENU_TYPE == 'menu'
-    " :index="item.MENU_LINK" :key="item.SystemMenuID">
+        item.menu_type == 'menu'
+    " :index="item.menu_link" :key="item.menu_pid">
         <template slot="title">
-          {{ item.MENU_NAME }}
+          {{ item.menu_name }}
         </template>
         <el-menu-item-group>
           <menuTree :menuTreeItem="item.children" />
         </el-menu-item-group>
       </el-submenu>
       <!-- 没有子节点，直接el-menu-item -->
-      <el-menu-item v-else-if="item.MENU_TYPE == 'menu'" :index="item.MENU_LINK" :route="'/' + menuTreeItem.MENU_LINK"
-        :key="item.SystemMenuID">
+      <el-menu-item v-else-if="item.menu_type == 'menu'" :index="item.menu_link" :route="'/' + menuTreeItem.menu_link"
+        :key="item.menu_pid">
         <!-- 不加图标了 -->
-        <span slot="title">{{ item.MENU_NAME }}</span>
-        <el-badge v-if="getAllBadge(item.MENU_LINK) > 0" class="mark r" :value="getAllBadge(item.MENU_LINK)"></el-badge>
+        <span slot="title">{{ item.menu_name }}</span>
+        <el-badge v-if="getAllBadge(item.menu_link) > 0" class="mark r" :value="getAllBadge(item.menu_link)"></el-badge>
       </el-menu-item>
     </template>
   </div>

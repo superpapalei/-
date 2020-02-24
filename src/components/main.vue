@@ -87,8 +87,8 @@
       <el-header style="height:40px;" v-if="breadCrumbList.length">
         <div class="breadCrumb">
           <div style="font-size:15px;"><template v-for="(item, index) in breadCrumbList"><a v-if="index == 0"
-                :key="index" @click="refreshPage">&nbsp;{{ item.MENU_NAME }}>&nbsp;</a><span :key="index"
-                v-else>&nbsp;{{ item.MENU_NAME }}>&nbsp;</span></template></div>
+                :key="index" @click="refreshPage">&nbsp;{{ item.menu_name }}>&nbsp;</a><span :key="index"
+                v-else>&nbsp;{{ item.menu_name }}>&nbsp;</span></template></div>
         </div>
       </el-header>
       <el-main style="margin:0;padding:0;background:#ECF5EF;" class="backTop">
@@ -158,6 +158,7 @@ export default {
     };
   },
   filters: {
+    //测量字符串的px长度
     fontWidthMeasure(text) {
       var canvas = document.createElement("canvas");
       var context = canvas.getContext("2d");
@@ -254,11 +255,11 @@ export default {
           //只有一个菜单，默认加载
           if (res.data.children.length == 1) {
             if (
-              res.data.children[0].MENU_TYPE == "menu" &&
+              res.data.children[0].menu_type == "menu" &&
               (!res.data.children[0].children ||
                 res.data.children[0].children.length == 0)
             ) {
-              this.addTab(res.data.children[0].MENU_LINK);
+              this.addTab(res.data.children[0].menu_link);
             }
           }
           //加载角标
@@ -274,7 +275,7 @@ export default {
     isContainAttr(attr) {
       //是否包含权限
       return (
-        this.menuTreeListFlatten.filter(item => item.MENU_LINK == attr).length >
+        this.menuTreeListFlatten.filter(item => item.menu_link == attr).length >
         0
       );
     },
@@ -311,7 +312,6 @@ export default {
     //this.getMenuTree(); //获得菜单权限树,获取角标在后去权限之后
     this.getPath();
     this.addTab("main");
-    //this.addTab(this.defaultUrl); //刷新之后添加的
   }
 };
 </script>

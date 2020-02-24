@@ -682,6 +682,7 @@ export default {
         })
           .then(() => {
             var no = this.barBlcokList[index].no;
+            var dataNo = this.barBlcokList[index].dataNo;
             //获取相关联的线条
             var connectLineList = this.dragLineList.filter(
               item => item.star == no || item.end == no
@@ -747,13 +748,9 @@ export default {
                 }
               }
             }
-            var connectData = this.data.filter(
-              item => item.no == this.barBlcokList[index].dataNo
-            );
+            var connectData = this.data.filter(item => item.no == dataNo);
             if (connectData.length > 0) {
-              this.data = this.data.filter(
-                item => item.no != this.barBlcokList[index].dataNo
-              );
+              this.data = this.data.filter(item => item.no != dataNo);
               this.$emit("input", this.data);
               this.dataChange = true;
             }
