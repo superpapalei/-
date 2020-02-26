@@ -1,21 +1,31 @@
 import Vue from 'vue'
+import store from '.././store'
 import Router from 'vue-router'
+import Login from '@/components/login'
 import Main from '@/components/main'
+import MainOld from '@/components/mainOld'
 import Test from '@/components/test'
 import ScheduleTest from '@/components/ScheduleTest'
 import ScheduleControl from '@/components/control/ScheduleControl'
+import emp from '@/components/hr/emp'
+import dept from '@/components/hr/dept'
 
 Vue.use(Router)
 
 const router = new Router({
   routes: [
     {
+      path: '/login',
+      component: Login,
+      name: 'login'
+    },
+    {
       path: '*',
-      redirect: '/main'
+      redirect: '/login'
     },
     {
       path: '',
-      redirect: '/main'
+      redirect: '/login'
     },
     {
       path: '/main',
@@ -26,19 +36,21 @@ const router = new Router({
           path: '/test',
           name: 'test',
           component: Test,
-          meta: {
-            returnMain: true//该页面刷新回到主界面
-          }
         },
-    
-   
+        {
+          path: '/emp',
+          name: 'emp',
+          component: emp,
+        },
+        {
+          path: '/dept',
+          name: 'dept',
+          component: dept,
+        },
         {
           path: '/ScheduleTest',
           name: 'ScheduleTest',
           component: ScheduleTest,
-          meta: {
-            returnMain: true//该页面刷新回到主界面
-          }
         }
       ]
     }
@@ -52,19 +64,23 @@ Router.prototype.push = function push(location) {
 
 //路由守卫
 router.beforeEach((to, from, next) => {
-  //其他具体需求开发时再加。如只允许一个账号登录等。
-  if (from.path == '/' && to.meta.returnMain) {//如果是刷新判断是否需要回到主界面
-    if (to.name == 'login' || to.name == 'main') {
-      next()
+  // if (!Cookies.get('cid') && !Cookies.get('customerType') && to.name != 'login') {//判断用户信息，不合法返回登陆界面
+  //   next('/login')
+  // } else {
+    if (from.path == '/') {
+      store.commit('navTabs/emptyBreadCrumb');//到主页面后清空导航
+      if (to.name == 'login' || to.name == 'main') {
+        next()
+      }
+      else {
+        next('/main');
+      }
     }
-    else {
-      next('/main');
+    else {//不是刷新
+      next();
+      history.pushState(null, null, location.href);//禁止后退，搭配APP.VUE里面的mounted
     }
-  }
-  else {//不是刷新
-    next();
-    history.pushState(null, null, location.href);//禁止后退，搭配APP.VUE里面的mounted
-  }
+  // }
 })
 
 export default router;

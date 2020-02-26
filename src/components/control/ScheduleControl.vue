@@ -1,201 +1,128 @@
 <template>
   <div class="controller-container">
     <!-- 定义控件大小范围 -->
-    <div
-      :style="{
+    <div :style="{
         height: initHeight + 'px',
         width:
           initWidth.toString().indexOf('%') == -1 ? initWidth + 'px' : initWidth
-      }"
-    >
+      }">
       <!-- 画图区域 -->
-      <div
-        class="area-paint"
-        :style="{ width: initIsShowDetailArea ? '85%' : '100%' }"
-      >
+      <div class="area-paint" :style="{ width: initIsShowDetailArea ? '85%' : '100%' }">
         <!-- 相对日历，只计算跨度，不要求具体时间。此处后面需要修改为兼容相对和绝对 -->
-        <div
-          class="table-head-area-container"
-          :style="{
+        <div class="table-head-area-container" :style="{
             height: initTableHeadCellHeight * initTableHeadRowNum + 'px'
-          }"
-          ref="headAreaContainer"
-        >
+          }" ref="headAreaContainer">
           <!-- 表头宽度需要加上滚动条宽度20px-->
-          <div
-            class="table-head-area"
-            :style="{ width: initCellWidth * 104 + 20 + 'px', height: '100%' }"
-          >
+          <div class="table-head-area"
+            :style="{ width: initCellWidth * (tableHeadData2.length ? tableHeadData2.length : 104) + 20 + 'px', height: '100%' }">
             <!-- 第一行表头 -->
             <div>
-              <div
-                v-for="(item, index) in tableHeadData1"
-                :key="'year' + index"
-                class="table-head-cell"
-                :style="{
+              <div v-for="(item, index) in tableHeadData1" :key="'year' + index" class="table-head-cell" :style="{
                   width: item.width + 'px',
                   height: initTableHeadCellHeight + 'px',
                   top: 0 + 'px',
                   left: item.left + 'px'
-                }"
-              >
+                }">
                 <div class="cell-text">{{ item.text }}</div>
               </div>
             </div>
             <!-- 第二行表头-->
             <div>
-              <div
-                v-for="(item, index) in tableHeadData2"
-                :key="'week' + index"
-                class="table-head-cell"
-                :style="{
+              <div v-for="(item, index) in tableHeadData2" :key="'week' + index" class="table-head-cell" :style="{
                   width: item.width + 'px',
                   height: initTableHeadCellHeight + 'px',
                   top: initTableHeadCellHeight + 'px',
                   left: item.width * index + 'px'
-                }"
-              >
+                }">
                 <div class="cell-text">{{ item.text }}</div>
               </div>
             </div>
           </div>
         </div>
         <!-- 单元格区域 -->
-        <div
-          class="table-cell-area-container"
-          :style="{
+        <div class="table-cell-area-container" :style="{
             height:
               initHeight - initTableHeadCellHeight * initTableHeadRowNum + 'px'
-          }"
-          ref="cellAreaContainer"
-        >
-          <div
-            class="table-cell-area"
-            :style="{
+          }" ref="cellAreaContainer">
+          <div class="table-cell-area" :style="{
               width: initCellWidth * tableHeadData2.length + 'px',
               height: initCellHeight * initCellRowNum + 'px'
-            }"
-          >
+            }">
             <div class="table-row-div">
               <!-- 默认先加载10行initCellRowNum -->
-              <div
-                class="table-row"
-                v-for="item in initCellRowNum"
-                :key="'table-row' + (item - 1)"
-                :style="{
+              <div class="table-row" v-for="item in initCellRowNum" :key="'table-row' + (item - 1)" :style="{
                   top: initCellHeight * (item - 1) + 'px',
                   height: initCellHeight + 'px'
-                }"
-              >
-                <div
-                  v-for="item2 in tableHeadData2.length"
-                  :key="'table-cell' + (item2 - 1)"
-                  class="table-cell"
-                  :style="{
+                }">
+                <div v-for="item2 in tableHeadData2.length" :key="'table-cell' + (item2 - 1)" class="table-cell" :style="{
                     width: initCellWidth + 'px',
                     left: initCellWidth * (item2 - 1) + 'px'
-                  }"
-                ></div>
+                  }"></div>
               </div>
             </div>
             <!-- 实际拖动的控件区域 -->
             <div class="control-tool-area">
               <!-- 实际拖动的基准节点图标 -->
-              <div
-                class="barBlcok divHide"
-                style="top:0;left:0;"
-                ref="controlBarBlcok"
-              >
+              <div class="barBlcok divHide" style="top:0;left:0;" ref="controlBarBlcok">
                 <div class="qigan"></div>
                 <div class="yuan"></div>
                 <div class="sanjiao"></div>
                 <div class="barText"></div>
               </div>
               <!-- 实际拖动的工作节点图标 -->
-              <div
-                class="barBlcok divHide"
-                style="top:0;left:0;"
-                ref="controlBarBlcok_work"
-              >
+              <div class="barBlcok divHide" style="top:0;left:0;" ref="controlBarBlcok_work">
                 <!-- <div class="qigan"></div> -->
                 <div class="yuan"></div>
                 <!-- <div class="sanjiao"></div> -->
                 <div class="barText"></div>
               </div>
               <!-- 实际拉出来的虚线 -->
-              <div
-                class="dragLine"
-                :style="{
+              <div class="dragLine" :style="{
                   top: dragLineControl.top + 'px',
                   left: dragLineControl.left + 'px',
                   width: dragLineControl.width + 'px',
                   transform: 'rotate(' + dragLineControl.transform + 'rad)'
-                }"
-              ></div>
+                }"></div>
               <!-- 拖动时显示虚线 -->
             </div>
             <!-- 节点及线等的显示区域 -->
             <div class="bar-area">
               <!-- 第一种节点和第二种的显示区域 -->
               <div>
-                <div
-                  v-for="(item, index) in barBlcokList"
-                  :key="'barBlcok' + index"
-                  class="barBlcok"
-                  :style="{ top: item.top + 'px', left: item.left + 'px' }"
-                  :ref="'barBlcokList_' + index"
+                <div v-for="(item, index) in barBlcokList" :key="'barBlcok' + index" class="barBlcok"
+                  :style="{ top: item.top + 'px', left: item.left + 'px' }" :ref="'barBlcokList_' + index"
                   @mousedown="onMouseDown($event, 'real-barBlcok', index)"
                   @mouseover="onMouseOver($event, index, 'realBarOver')"
                   @mouseout="onMouseOut($event, index, 'realBarOut')"
                   @mouseup="onMouseUp($event, index, 'control-barBlcok')"
-                  @dblclick="onDBClick($event, item, index, 'barBlcokList')"
-                >
+                  @dblclick="onDBClick($event, item, index, 'barBlcokList')">
                   <div class="qigan" v-if="item.type == 'base'"></div>
-                  <div
-                    class="yuan"
-                    :class="{ backgroundDo: item.status == 'complete' }"
-                  ></div>
+                  <div class="yuan" :class="{ backgroundDo: item.status == 'complete' }"></div>
                   <div class="sanjiao" v-if="item.type == 'base'"></div>
-                  <div
-                    class="barText"
-                    @dblclick.stop.prevent="
+                  <div class="barText" @dblclick.stop.prevent="
                       onDBClick($event, item, index, 'barBlcokListText')
-                    "
-                  >
+                    ">
                     {{ item.text }}
                   </div>
                 </div>
               </div>
               <!-- 第一种节点和第二种的控制点 -->
               <div>
-                <div
-                  v-for="(item, index) in barBlockControlList"
-                  :key="'barBlockControlList' + index"
-                  class="barBlockControlRight"
-                  :ref="'barBlockControlList_' + index"
-                  :style="{
+                <div v-for="(item, index) in barBlockControlList" :key="'barBlockControlList' + index"
+                  class="barBlockControlRight" :ref="'barBlockControlList_' + index" :style="{
                     top: item.top + 'px',
                     left: item.left + 'px',
                     'background-color': 'rgba(0, 0, 0, 0)'
-                  }"
-                  @mousedown="onMouseDown($event, 'control-barBlcok', index)"
+                  }" @mousedown="onMouseDown($event, 'control-barBlcok', index)"
                   @mouseover="onMouseOver($event, index, 'controlOver')"
-                  @mouseout="onMouseOut($event, index, 'controlOut')"
-                ></div>
+                  @mouseout="onMouseOut($event, index, 'controlOut')"></div>
               </div>
               <!-- 实际连接线条的集合 -->
               <div>
                 <!-- 线条和箭头的容器 -->
-                <div
-                  v-for="(lineArr, lineArrIndex) in dragLineList"
-                  :key="'dragLineList' + lineArrIndex"
-                >
-                  <div
-                    v-for="(line, index) in lineArr.lineList"
-                    :key="'lineList' + index"
-                    class="lineContainer"
-                    :class="{ divHide: !lineArr.show }"
-                    :style="{
+                <div v-for="(lineArr, lineArrIndex) in dragLineList" :key="'dragLineList' + lineArrIndex">
+                  <div v-for="(line, index) in lineArr.lineList" :key="'lineList' + index" class="lineContainer"
+                    :class="{ divHide: !lineArr.show }" :style="{
                       width: line.width + 'px',
                       height: line.height + 'px',
                       left: line.left + 'px',
@@ -208,26 +135,18 @@
                         line.arrow && line.arrowDir == 'bottom' ? '6px' : '0px',
                       'padding-left':
                         line.arrow && line.arrowDir == 'left' ? '6px' : '0px'
-                    }"
-                  >
+                    }">
                     <!-- 文字在哪个线上根据横线的长度决定 -->
-                    <div
-                      class="lineText"
-                      :class="{
+                    <div class="lineText" :class="{
                         'lineText-horizental': lineArr.textDir == 'horizental',
                         'lineText-vertical': lineArr.textDir == 'vertical'
-                      }"
-                      v-if="lineArr.textDir == line.type"
-                      @dblclick="
+                      }" v-if="lineArr.textDir == line.type" @dblclick="
                         onDBClick($event, lineArr, lineArrIndex, 'lineText')
-                      "
-                    >
+                      ">
                       {{ lineArr.text }}
                     </div>
                     <!-- 根据是否有箭头和箭头的方向取不同的class -->
-                    <div
-                      class="connentLine"
-                      :class="{
+                    <div class="connentLine" :class="{
                         'connentLine-vertical':
                           line.type == 'vertical' && line.borderType != 'dash',
                         'connentLine-vertical-dash':
@@ -254,74 +173,55 @@
                           line.arrow && line.arrowDir == 'right',
                         'connentLine-horizental-left':
                           line.arrow && line.arrowDir == 'left'
-                      }"
-                      :ref="'dragLineList' + lineArrIndex + 'lineList' + index"
+                      }" :ref="'dragLineList' + lineArrIndex + 'lineList' + index"
                       @mouseover="onMouseOver($event, lineArrIndex, 'lineOver')"
-                      @mouseout="onMouseOut($event, lineArrIndex, 'lineOut')"
-                      @dblclick="
+                      @mouseout="onMouseOut($event, lineArrIndex, 'lineOut')" @dblclick="
                         onDBClick(
                           $event,
                           lineArr,
                           lineArrIndex,
                           'lineContainer'
                         )
-                      "
-                    ></div>
+                      "></div>
                     <!-- 箭头的方向class -->
-                    <div
-                      :class="{
-                        'lineArrow-base': line.arrow,
+                    <div :class="{
+                        'lineArrow-base': line.arrow && line.width>0 && line.top>0,
                         'lineArrow-top': line.arrow && line.arrowDir == 'top',
                         'lineArrow-right':
                           line.arrow && line.arrowDir == 'right',
                         'lineArrow-bottom':
                           line.arrow && line.arrowDir == 'bottom',
                         'lineArrow-left': line.arrow && line.arrowDir == 'left'
-                      }"
-                    ></div>
+                      }"></div>
                   </div>
                 </div>
               </div>
               <!-- 实际线条对应的虚线 -->
               <div>
-                <div
-                  v-for="(dashLine, index) in dragLineDashList"
-                  :key="'dashLine' + index"
-                  class="dragLine"
-                  :class="{ divHide: !dashLine.show }"
-                  :style="{
+                <div v-for="(dashLine, index) in dragLineDashList" :key="'dashLine' + index" class="dragLine"
+                  :class="{ divHide: !dashLine.show }" :style="{
                     top: dashLine.top + 'px',
                     left: dashLine.left + 'px',
                     width: dashLine.width + 'px',
                     transform: 'rotate(' + dashLine.transform + 'rad)'
-                  }"
-                ></div>
+                  }"></div>
               </div>
             </div>
           </div>
           <!-- 工具栏区域 -->
-          <div
-            class="tool-split"
-            :style="{
+          <div class="tool-split" :style="{
               width: toolBarCollapse ? '8px' : initToolBarWidth + 'px',
               height: initToolBarHeight + 'px',
               top: toolBarTop + 'px',
               left: toolBarLeft + 'px'
-            }"
-          >
-            <div
-              class="tool-area"
-              :style="{
+            }">
+            <div class="tool-area" :style="{
                 width: toolBarCollapse ? '0px' : initToolBarWidth - 8 + 'px'
-              }"
-            >
+              }">
               <div class="tool-item">
                 <!-- 工具栏基准节点图标 -->
-                <div
-                  class="barBlcok"
-                  :class="{ divHide: toolBarCollapse }"
-                  @mousedown.stop.prevent="onMouseDown($event, 'tool-barBlcok')"
-                >
+                <div class="barBlcok" :class="{ divHide: toolBarCollapse }"
+                  @mousedown.stop.prevent="onMouseDown($event, 'tool-barBlcok')">
                   <div class="qigan"></div>
                   <div class="yuan"></div>
                   <div class="sanjiao"></div>
@@ -330,13 +230,9 @@
               </div>
               <div class="tool-item">
                 <!-- 工具栏工作节点图标 -->
-                <div
-                  class="barBlcok"
-                  :class="{ divHide: toolBarCollapse }"
-                  @mousedown.stop.prevent="
+                <div class="barBlcok" :class="{ divHide: toolBarCollapse }" @mousedown.stop.prevent="
                     onMouseDown($event, 'tool-barBlcok-work')
-                  "
-                >
+                  ">
                   <!-- <div class="qigan"></div> -->
                   <div class="yuan"></div>
                   <!-- <div class="sanjiao"></div> -->
@@ -346,14 +242,10 @@
               <div class="tool-item"></div>
             </div>
             <div class="tool-split-bar">
-              <div
-                class="split-toogle"
-                :class="{
+              <div class="split-toogle" :class="{
                   'split-toogle-left': !toolBarCollapse,
                   'split-toogle-right': toolBarCollapse
-                }"
-                @click="toogleSplit"
-              ></div>
+                }" @click="toogleSplit"></div>
             </div>
           </div>
         </div>
@@ -366,9 +258,7 @@
       <input type="text" v-model="editText" @focus="onFocus" ref="inputVal" />
       <span slot="footer" class="dialog-footer">
         <el-button @click="isEdit = false" size="small">取 消</el-button>
-        <el-button type="primary" @click="editInput" size="small"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="editInput" size="small">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -585,7 +475,9 @@ export default {
           lineConnect = lineConnect[0];
           var index = this.dragLineList.indexOf(lineConnect);
           this.onMouseOver(null, index, "lineOver");
-          var startBlock = this.barBlcokList.filter(item=>item.no == lineConnect.star)[0];
+          var startBlock = this.barBlcokList.filter(
+            item => item.no == lineConnect.star
+          )[0];
           this.$refs.cellAreaContainer.scrollLeft = startBlock.left - 100;
         }
       }
@@ -732,6 +624,52 @@ export default {
           type: "warning"
         })
           .then(() => {
+            var connectData = this.data.filter(
+              item => item.no == this.dragLineList[index].dataNo
+            );
+            if (connectData.length > 0) {
+              this.data = this.data.filter(
+                item => item.no != this.dragLineList[index].dataNo
+              );
+              this.$emit("input", this.data);
+              this.dataChange = true;
+            }
+            //看开始节点和结束节点是否有虚拟节点，有的话删除
+            var startBlock = this.barBlcokList.filter(
+              item => item.no == this.dragLineList[index].star
+            );
+            if (startBlock.length > 0) {
+              startBlock = startBlock[0];
+              if (startBlock.type == "work") {
+                var startConnectLine = this.dragLineList.filter(
+                  item =>
+                    item.star == startBlock.no || item.end == startBlock.no
+                );
+                if (startConnectLine.length == 1) {
+                  //说明只连接了这一条线，可以删除
+                  this.barBlcokList = this.barBlcokList.filter(
+                    item => item.no != this.dragLineList[index].star
+                  );
+                }
+              }
+            }
+            var endBlock = this.barBlcokList.filter(
+              item => item.no == this.dragLineList[index].end
+            );
+            if (endBlock.length > 0) {
+              endBlock = endBlock[0];
+              if (endBlock.type == "work") {
+                var startConnectLine = this.dragLineList.filter(
+                  item => item.star == endBlock.no || item.end == endBlock.no
+                );
+                if (startConnectLine.length == 1) {
+                  //说明只连接了这一条线，可以删除
+                  this.barBlcokList = this.barBlcokList.filter(
+                    item => item.no != this.dragLineList[index].end
+                  );
+                }
+              }
+            }
             this.dragLineList.splice(index, 1);
             this.dragLineDashList.splice(index, 1);
           })
@@ -743,11 +681,11 @@ export default {
           type: "warning"
         })
           .then(() => {
+            var no = this.barBlcokList[index].no;
+            var dataNo = this.barBlcokList[index].dataNo;
             //获取相关联的线条
             var connectLineList = this.dragLineList.filter(
-              item =>
-                item.star == this.barBlcokList[index].no ||
-                item.end == this.barBlcokList[index].no
+              item => item.star == no || item.end == no
             );
             if (connectLineList.length > 0) {
               for (var i = this.dragLineList.length - 1; i >= 0; i--) {
@@ -756,13 +694,67 @@ export default {
                     item => item.no == this.dragLineList[i].no
                   ).length > 0
                 ) {
+                  var connectData = this.data.filter(
+                    item => item.no == this.dragLineList[i].dataNo
+                  );
+                  if (connectData.length > 0) {
+                    this.data = this.data.filter(
+                      item => item.no != this.dragLineList[i].dataNo
+                    );
+                    this.$emit("input", this.data);
+                    this.dataChange = true;
+                  }
+                  //看开始节点和结束节点是否有虚拟节点，有的话删除
+                  var startBlock = this.barBlcokList.filter(
+                    item => item.no == this.dragLineList[i].star
+                  );
+                  if (startBlock.length > 0) {
+                    startBlock = startBlock[0];
+                    if (startBlock.type == "work") {
+                      var startConnectLine = this.dragLineList.filter(
+                        item =>
+                          item.star == startBlock.no ||
+                          item.end == startBlock.no
+                      );
+                      if (startConnectLine.length == 1) {
+                        //说明只连接了这一条线，可以删除
+                        this.barBlcokList = this.barBlcokList.filter(
+                          item => item.no != this.dragLineList[i].star
+                        );
+                      }
+                    }
+                  }
+                  var endBlock = this.barBlcokList.filter(
+                    item => item.no == this.dragLineList[i].end
+                  );
+                  if (endBlock.length > 0) {
+                    endBlock = endBlock[0];
+                    if (endBlock.type == "work") {
+                      var startConnectLine = this.dragLineList.filter(
+                        item =>
+                          item.star == endBlock.no || item.end == endBlock.no
+                      );
+                      if (startConnectLine.length == 1) {
+                        //说明只连接了这一条线，可以删除
+                        this.barBlcokList = this.barBlcokList.filter(
+                          item => item.no != this.dragLineList[i].end
+                        );
+                      }
+                    }
+                  }
                   //删除关联线条
                   this.dragLineList.splice(i, 1);
                   this.dragLineDashList.splice(i, 1);
                 }
               }
             }
-            this.barBlcokList.splice(index, 1);
+            var connectData = this.data.filter(item => item.no == dataNo);
+            if (connectData.length > 0) {
+              this.data = this.data.filter(item => item.no != dataNo);
+              this.$emit("input", this.data);
+              this.dataChange = true;
+            }
+            this.barBlcokList = this.barBlcokList.filter(item => item.no != no);
           })
           .catch(() => {});
       }

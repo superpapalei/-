@@ -17,53 +17,37 @@ function logout() {
         }
     });
 }
-
+function funcThen(response, resolve, reject) {
+    var res = response.data;
+    if (res.code == DECODE.CODE_INVALID) {//失效
+        logout();
+        console.log(res.msg);
+        reject(res);
+    } else if (res.code == DECODE.CODE_OK) {//成功
+        resolve(res);
+    } else {//其他返回失败
+        console.log(res.msg);
+        reject(res);
+    }
+}
+function funcCatch(err, reject) {
+    console.log(err.msg);
+    reject(err)
+}
 /**
  * 封装get方法
  * @param url 
  * @param params 
  * @returns {Promise} 
  */
-export function get(url, params = {}, config = {}) {
+export function z_get(url, params = {}, config = {}) {
     Axios.defaults.withCredentials = false;
     return new Promise((resolve, reject) => {
-        // if (Cookies.get("cid") && sessionStorage.getItem("_userId") && sessionStorage.getItem("_userId") != Cookies.get("cid")) {
-        //     logout();
-        //     reject('登录失效');
-        // }
         Axios.get(baseUrl + url, {
             params: params,
         }, config)
-            .then(response => {
-                Axios.defaults.withCredentials = true;
-                var res = response.data;
-                if (res.code != undefined) {//vue返回code
-                    if (res.code == DECODE.CODE_INVALID) {//失效
-                        logout();
-                        console.log(res.msg);
-                        reject(res);
-                    } else if (res.code == DECODE.CODE_OK) {//成功
-                        resolve(res);
-                    } else {//其他返回失败
-                        console.log(res.msg);
-                        reject(res);
-                    }
-                } else if (res.success != undefined) {//ext返回success
-                    if (res.success)
-                        resolve(res);
-                    else {
-                        console.log(res.msg);
-                        reject(res);
-                    }
-                } else {//ext只返回数据的类型
-                    resolve(res);
-                }
-            })
-            .catch(err => {
-                Axios.defaults.withCredentials = true;
-                console.log(err.msg);
-                reject(err)
-            })
+            .then(response => funcThen(response, resolve, reject))
+            .catch(err => funcCatch(err, reject))
     })
 }
 /**
@@ -72,44 +56,12 @@ export function get(url, params = {}, config = {}) {
  * @param data
  * @returns {Promise}
  */
-export function post(url, data = {}, config = {}) {
+export function z_post(url, data = {}, config = {}) {
     Axios.defaults.withCredentials = false;
     return new Promise((resolve, reject) => {
-        // if (Cookies.get("cid") && sessionStorage.getItem("_userId") && sessionStorage.getItem("_userId") != Cookies.get("cid")) {
-        //     logout();
-        //     reject('登录失效');
-        // }
         Axios.post(baseUrl + url, data, config)
-            .then(response => {
-                Axios.defaults.withCredentials = true;
-                var res = response.data;
-                if (res.code != undefined) {//vue返回code
-                    if (res.code == DECODE.CODE_INVALID) {//失效
-                        logout();
-                        console.log(res.msg);
-                        reject(res);
-                    } else if (res.code == DECODE.CODE_OK) {//成功
-                        resolve(res);
-                    } else {//其他返回失败
-                        console.log(res.msg);
-                        reject(res);
-                    }
-                } else if (res.success != undefined) {//ext返回success
-                    if (res.success)
-                        resolve(res);
-                    else {
-                        console.log(res.msg);
-                        reject(res);
-                    }
-                } else {//ext只返回数据的类型
-                    resolve(res);
-                }
-            })
-            .catch(err => {
-                Axios.defaults.withCredentials = true;
-                console.log(err.msg);
-                reject(err);
-            })
+            .then(response => funcThen(response, resolve, reject))
+            .catch(err => funcCatch(err, reject))
     })
 }
 /**
@@ -118,44 +70,12 @@ export function post(url, data = {}, config = {}) {
  * @param data
  * @returns {Promise}
  */
-export function patch(url, data = {}, config = {}) {
+export function z_patch(url, data = {}, config = {}) {
     Axios.defaults.withCredentials = false;
     return new Promise((resolve, reject) => {
-        // if (Cookies.get("cid") && sessionStorage.getItem("_userId") && sessionStorage.getItem("_userId") != Cookies.get("cid")) {
-        //     logout();
-        //     reject('登录失效');
-        // }
         Axios.patch(baseUrl + url, data, config)
-            .then(response => {
-                Axios.defaults.withCredentials = true;
-                var res = response.data;
-                if (res.code != undefined) {//vue返回code
-                    if (res.code == DECODE.CODE_INVALID) {//失效
-                        logout();
-                        console.log(res.msg);
-                        reject(res);
-                    } else if (res.code == DECODE.CODE_OK) {//成功
-                        resolve(res);
-                    } else {//其他返回失败
-                        console.log(res.msg);
-                        reject(res);
-                    }
-                } else if (res.success != undefined) {//ext返回success
-                    if (res.success)
-                        resolve(res);
-                    else {
-                        console.log(res.msg);
-                        reject(res);
-                    }
-                } else {//ext只返回数据的类型
-                    resolve(res);
-                }
-            })
-            .catch(err => {
-                Axios.defaults.withCredentials = true;
-                console.log(err.msg);
-                reject(err);
-            })
+            .then(response => funcThen(response, resolve, reject))
+            .catch(err => funcCatch(err, reject))
     })
 }
 /**
@@ -164,42 +84,25 @@ export function patch(url, data = {}, config = {}) {
  * @param data
  * @returns {Promise}
  */
-export function put(url, data = {}, config = {}) {
+export function z_put(url, data = {}, config = {}) {
     Axios.defaults.withCredentials = false;
     return new Promise((resolve, reject) => {
-        // if (Cookies.get("cid") && sessionStorage.getItem("_userId") && sessionStorage.getItem("_userId") != Cookies.get("cid")) {
-        //     logout();
-        //     reject('登录失效');
-        // }
         Axios.put(baseUrl + url, data, config)
-            .then(response => {
-                Axios.defaults.withCredentials = true;
-                var res = response.data;
-                if (res.code != undefined) {//vue返回code
-                    if (res.code == DECODE.CODE_INVALID) {//失效
-                        logout();
-                        console.log(res.msg);
-                        reject(res);
-                    } else if (res.code == DECODE.CODE_OK) {//成功
-                        resolve(res);
-                    } else {//其他返回失败
-                        console.log(res.msg);
-                        reject(res);
-                    }
-                } else if (res.success != undefined) {//ext返回success
-                    if (res.success)
-                        resolve(res);
-                    else {
-                        console.log(res.msg);
-                        reject(res);
-                    }
-                } else {//ext只返回数据的类型
-                    resolve(res);
-                }
-            }, err => {
-                Axios.defaults.withCredentials = true;
-                console.log(err);
-                reject(err)
-            })
+            .then(response => funcThen(response, resolve, reject))
+            .catch(err => funcCatch(err, reject))
+    })
+}
+/**
+ * 封装delete请求
+ * @param url
+ * @param data
+ * @returns {Promise}
+ */
+export function z_delete(url, data = {}, config = {}) {
+    Axios.defaults.withCredentials = false;
+    return new Promise((resolve, reject) => {
+        Axios.delete(baseUrl + url, data, config)
+            .then(response => funcThen(response, resolve, reject))
+            .catch(err => funcCatch(err, reject))
     })
 }

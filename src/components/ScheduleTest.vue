@@ -1,42 +1,16 @@
 <template>
-  <el-card>
+  <div style="width:100%;">
     <div style="width:35%;height:500px;display:inline-block;">
       <el-button @click="onClick" type="primary">手动改数据</el-button>
-      <el-table
-        border
-        style="width: 100%;"
-        :data="tableData"
-        @row-click="rowClock"
-      >
-        <el-table-column
-          prop="no"
-          label="No"
-          align="center"
-          width="50"
-        ></el-table-column>
-        <el-table-column
-          prop="TaskName"
-          label="任务名"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="StartTime"
-          label="开始时间"
-          align="center"
-          width="100"
-          ><template slot-scope="scope">{{
+      <el-table border style="width: 100%;" :data="tableData" @row-click="rowClock">
+        <el-table-column prop="no" label="No" align="center" width="50"></el-table-column>
+        <el-table-column prop="TaskName" label="任务名" align="center"></el-table-column>
+        <el-table-column prop="StartTime" label="开始时间" align="center" width="100"><template slot-scope="scope">{{
             scope.row.StartTime | datatrans
-          }}</template></el-table-column
-        >
-        <el-table-column
-          prop="EndTime"
-          label="结束时间"
-          align="center"
-          width="100"
-          ><template slot-scope="scope">{{
+          }}</template></el-table-column>
+        <el-table-column prop="EndTime" label="结束时间" align="center" width="100"><template slot-scope="scope">{{
             scope.row.EndTime | datatrans
-          }}</template></el-table-column
-        >
+          }}</template></el-table-column>
         <!-- <el-table-column
           prop="belongto.belongno"
           label="从属节点"
@@ -46,14 +20,9 @@
       </el-table>
     </div>
     <div style="width:64%;min-height:500px;display:inline-block;">
-      <schedule
-        v-model="tableData"
-        :height="500"
-        :width="'100%'"
-        :hightLightNo="hightLightNo"
-      ></schedule>
+      <schedule v-model="tableData" :height="500" :width="'100%'" :hightLightNo="hightLightNo"></schedule>
     </div>
-  </el-card>
+  </div>
 </template>
 
 <script>

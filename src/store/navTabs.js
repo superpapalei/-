@@ -13,7 +13,8 @@ const state = {
     tabList: [],
     //导航数组，等权限控制做好通过后台读取
     menuTreeListFlatten: [],
-    menuTreeList: []
+    menuTreeList: [],
+    breadCrumbList: [],//导航
 }
 
 const mutations = {
@@ -44,9 +45,9 @@ const mutations = {
             if (state.closeToArray.includes(index)) isClose = false;
             else isClose = true;
             let tabName = '';
-            var mapTab = state.menuTreeListFlatten.filter(item => item.MENU_LINK == oldIndex);
+            var mapTab = state.menuTreeListFlatten.filter(item => item.menu_link == oldIndex);
             if (mapTab.length > 0)
-                tabName = mapTab[0].MENU_TEXT;
+                tabName = mapTab[0].menu_name;
             else
                 tabName = tabsName(index);
             state.tabList.push({
@@ -124,6 +125,20 @@ const mutations = {
     emptyMenuTreeList(state) {
         state.menuTreeList = [];
         state.menuTreeListFlatten = [];
+    },
+    addBreadCrumb(state, index) {
+        state.breadCrumbList = [];
+        state.breadCrumbList = findFatherIndex(index, []);
+        state.breadCrumbList.splice(0, 0, {
+            menu_id: 0,
+            menu_pid: 0,
+            menu_link: 'main',
+            menu_name: '首页'
+        });
+        state.activeTabName = index;
+    },
+    emptyBreadCrumb(state) {
+        state.breadCrumbList = [];
     }
 };
 /*
@@ -141,6 +156,32 @@ function arrayChildrenFlatten(array, result) {
         }
     }
     return result;
+}
+function findFatherIndex(index, array) {
+    //根据index找到节点
+    var mapTab = state.menuTreeListFlatten.filter(item => item.menu_link == index);
+    if (mapTab.length > 0) {
+        array.splice(0, 0, {
+            menu_id: mapTab.menu_id,
+            menu_pid: mapTab.menu_pid,
+            menu_link: mapTab.menu_link,
+            menu_name: mapTab.menu_name
+        })
+        if (mapTab.menu_pid > 0) {
+            var mapTabF = state.menuTreeListFlatten.filter(item => item.menu_id == mapTab.menu_pid);
+            if (mapTabF.length) {
+                findFatherIndex(mapTabF[0].menu_link, array);
+            }
+        }
+    } else {
+        array.push(
+            {
+                menu_link: index,
+                menu_name: ''
+            }
+        )
+    }
+    return array;
 }
 
 const getters = {

@@ -9,35 +9,35 @@ const mutations = {
      * 传入一个含名字和数字对象
      * 修改对应名字角标的值
      */
-    changeBadge(state, obj){
+    changeBadge(state, obj) {
         state[obj.name] = obj.index
     },
     /**
      * 传入一个名字
      * 其值+1
      */
-    addBadge(state, name){
+    addBadge(state, name) {
         state[name]++
     },
     /**
      * 传入一个名字
      * 其值-1
      */
-    releaseBadge(state, name){
+    releaseBadge(state, name) {
         state[name]--
     }
 }
 
 const getters = {
-    getRefund: state =>{
+    getRefund: state => {
         return state.refund
     },
-    getPainting: state =>{
+    getPainting: state => {
         return state.painting
     }
 }
 export default {
-    namespaced:true,
+    namespaced: true,
     state,
     mutations,
     getters

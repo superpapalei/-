@@ -14,128 +14,119 @@
       </div>
     </el-dialog>
     <el-container class="page">
-      <el-aside :width="asideWidth" style="overflow:hidden;background:white;">
-        <el-scrollbar style="height:100%;">
-          <div id="aside-header">
-            <div id="aside-logo"></div>
-            <span>知匠项目管理</span>
-          </div>
-          <el-menu
-            style="margin-bottom:10px;"
-            :default-active="url"
-            @select="addTab"
-          >
-          <!-- 单独的测试页面单独写，不经过权限加载 -->
-            <router-link to="/test" tag="div">
-              <el-menu-item index="test">
-                <i class="el-icon-s-home"></i>
-                <span slot="title">测试</span>
-              </el-menu-item>
-            </router-link>
-            <router-link to="/ScheduleTest" tag="div">
-              <el-menu-item index="ScheduleTest">
-                <i class="el-icon-s-home"></i>
-                <span slot="title">计划测试</span>
-              </el-menu-item>
-            </router-link>
+      <el-header style="height:50px;">
+        <div class="aside-header">
+          <div class="aside-logo"></div>
+          <span style="margin:0 10px;">知匠项目管控系统</span>
+          <i class="el-icon-s-home icon-color aside-home" @click="refreshPage"></i>
+        </div>
+        <div class="menu-contain">
+          <el-menu mode="horizontal" :default-active="url" @select="addBreadCrumb" style="height:50px;" router>
+            <!-- 单独的测试页面单独写，不经过权限加载 -->
+            <el-submenu index="1">
+              <template slot="title">测试</template>
+              <el-menu-item-group>
+                <el-menu-item index="test" route="/test">测试</el-menu-item>
+                <el-menu-item index="ScheduleTest" route="/ScheduleTest">计划测试</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-menu-item index="2" route="/22">22</el-menu-item>
+            <el-submenu index="3">
+              <template slot="title">基础数据</template>
+              <el-menu-item-group>
+                <el-menu-item @click.native="openCalendar">日历</el-menu-item>
+                <el-menu-item index="dept" route="/dept">部门</el-menu-item>
+                <el-menu-item index="emp" route="/emp">人员</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
             <!-- 权限树加载 -->
-            <menuTree
-              v-for="item in menuTreeList"
-              :key="item.SystemMenuID"
-              :menuTreeItem="item"
-            />
+            <!-- <menuTree :menuTreeItem="menuTreeList" /> -->
           </el-menu>
-        </el-scrollbar>
-      </el-aside>
-      <el-container style="width:85%; min-width:1050px;">
-        <el-header height="45px">
-          <ul class="l">
-            <li
-              :title="asideStatus == true ? '菜单展开' : '菜单收起'"
-              @click="changeAside"
-            >
-              <i id="asideControll" class="iconfont">&#xe61e;</i>
-              <span class="ml10 mr10">{{
-                asideStatus == true ? "菜单展开" : "菜单收起"
-              }}</span>
-            </li>
-            <!-- <li title="主页" @click="dialogFormVisible = true">
-              <i class="iconfont">&#xe65e;</i>
-            </li> -->
-            <!-- <router-link to="/notification/notificationMain" tag="li">
-              <li title="公告" @click="addTab('notification/notificationMain')">
-                <i class="el-icon-bell"></i>
-                <span class="ml10 mr10">公告</span>
-              </li>
-            </router-link> -->
-          </ul>
-          <ul class="r">
-            <li>
-              <el-dropdown trigger="hover">
-                <span class="el-dropdown-link">
-                  个人中心
-                  <i class="el-icon-arrow-down el-icon--right"></i>
-                </span>
-
-                <el-dropdown-menu slot="dropdown" style="min-width: 150px;">
-                  <el-dropdown-item divided @click.native="logout"
-                    >退出登录</el-dropdown-item
-                  >
-                </el-dropdown-menu>
-              </el-dropdown>
-              <el-dropdown trigger="hover">
-                <span class="el-dropdown-link">
-                  基础
-                  <i class="el-icon-arrow-down el-icon--right"></i>
-                </span>
-
-                <el-dropdown-menu slot="dropdown" style="min-width: 150px;">
-                  <el-dropdown-item @click.native="openCalendar"
-                    >日历
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </li>
-            <li style="margin-right:20px;" @click="screenfull">
-              <i class="iconfont ml10 mr10">&#xe663;</i>
-            </li>
-          </ul>
-        </el-header>
-        <el-main style="margin:0;padding:0;background:#ECF5EF;" class="backTop">
-          <el-tabs
-            class="tabs"
-            v-model="activeTabName"
-            @tab-click="getTab"
-            @tab-remove="closeTab"
-            type="border-card"
-          >
-            <el-tab-pane
-              v-for="item in tabList"
-              :key="item.name"
-              :name="item.name"
-              :label="item.label"
-              :closable="item.closable"
-            ></el-tab-pane>
-            <keep-alive>
-              <router-view v-if="$route.meta.keepAlive === true" />
-            </keep-alive>
-            <router-view v-if="$route.meta.keepAlive !== true" />
-          </el-tabs>
-        </el-main>
-      </el-container>
+        </div>
+        <ul class="right-aside-head">
+          <li>
+            <el-popover placement="left" width="300" trigger="hover" class="popoverP">
+              <div class="messageBox">
+                <div class="messageHead">
+                  <span style="color:black;">消息通知</span>
+                </div>
+                <div class="messageBody">
+                  <div v-for="(item,index) in messageList" :key="index" class="messageItem">
+                    <span class="messageTitle">{{item.messageTitle}}
+                    </span>
+                    <el-popover v-if="isReduce(item.messageContent)" placement="left" width="200" trigger="hover"
+                      :content="item.messageContent">
+                      <span class="messageContent" slot="reference">{{item.messageContent | fontWidthMeasure}}
+                      </span>
+                    </el-popover>
+                    <span v-else class="messageContent">{{item.messageContent | fontWidthMeasure}}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <i class="el-icon-message-solid icon-color" style="position:relative;" slot="reference">
+                <span class="unReadMessage"></span>
+              </i>
+            </el-popover>
+          </li>
+          <li>
+            <i class="el-icon-question icon-color"></i>
+          </li>
+          <li>
+            <el-dropdown trigger="hover">
+              <span class="dropSpan">
+                <i class="el-icon-user icon-color" style="margin:0;"></i>
+                <i class="el-icon-arrow-down el-icon--right icon-color" style="margin:0;"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown" style="min-width: 150px;">
+                <el-dropdown-item>修改密码</el-dropdown-item>
+                <el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </li>
+          <li @click="screenfull">
+            <i class="iconfont icon-color">&#xe663;</i>
+          </li>
+        </ul>
+      </el-header>
+      <el-header style="height:40px;" v-if="breadCrumbList.length">
+        <div class="breadCrumb">
+          <div style="font-size:15px;"><template v-for="(item, index) in breadCrumbList"><a v-if="index == 0"
+                :key="index" @click="refreshPage">&nbsp;{{ item.menu_name }}>&nbsp;</a><span :key="index"
+                v-else>&nbsp;{{ item.menu_name }}>&nbsp;</span></template></div>
+        </div>
+      </el-header>
+      <el-main style="margin:0;padding:0;background:#ECF5EF;" class="backTop">
+        <el-card>
+          <keep-alive>
+            <router-view v-if="$route.meta.keepAlive === true" />
+          </keep-alive>
+          <router-view v-if="$route.meta.keepAlive !== true" />
+          <div v-if="activeTabName == 'main'">
+            <div style="min-height:1500px;">
+              主页内容
+              主页内容
+              主页内容
+              主页内容
+              主页内容
+              主页内容
+              主页内容
+            </div>
+          </div>
+        </el-card>
+      </el-main>
     </el-container>
-    <el-backtop target=".backTop" :right="30" :visibility-height="20"
-      ><div
-        style="{height: 100%;width: 100%;background-color: #f2f5f6;box-shadow: 0 0 6px rgba(0,0,0, .12);
-                        text-align: center;line-height: 40px;color: #1989fa;}"
-      >
+    <el-backtop target=".backTop" :right="30" :visibility-height="20">
+      <div style="{height: 100%;width: 100%;background-color: #f2f5f6;box-shadow: 0 0 6px rgba(0,0,0, .12);
+                        text-align: center;line-height: 40px;color: #1989fa;}">
         TOP
-      </div></el-backtop
-    >
+      </div>
+    </el-backtop>
   </div>
 </template>
 
 <script>
+import menuTree from "./menuTree";
 import { mapMutations, mapActions } from "vuex";
 import { mapState } from "vuex";
 import Vue from "vue";
@@ -146,7 +137,10 @@ import calenUse from "./calen-use/menupage.vue";
 
 export default {
   name: "Main",
-  components: {},
+  components: {
+    menuTree,
+    calenUse
+  },
   data() {
     return {
       defaultUrl: "",
@@ -154,11 +148,43 @@ export default {
       asideWidth: "200px",
       calen_visible: false,
       radio2: 3,
-      currentRow: null
+      currentRow: null,
+      messageList: [
+        {
+          messageTitle: "消息标题1",
+          messageContent:
+            "消息内容消息内容消息内容消息内容消息内容消息内容消息内容消息内容"
+        },
+        {
+          messageTitle: "消息标题2",
+          messageContent: "消息内容消息内容消息内容消息内容"
+        }
+      ]
     };
   },
+  filters: {
+    //测量字符串的px长度
+    fontWidthMeasure(text) {
+      var canvas = document.createElement("canvas");
+      var context = canvas.getContext("2d");
+      context.font = "14px Microsoft YaHei";
+      var dimension = context.measureText(text);
+      if (dimension.width > 290) {
+        var strTemp = "";
+        for (var i = 0; i <= text.length; i++) {
+          //遍历字符串
+          if (context.measureText(strTemp).width > 260) {
+            break;
+          }
+          strTemp += text.charAt(i).toString();
+        }
+        text = strTemp + "...";
+      }
+      return text;
+    }
+  },
   methods: {
-    ...mapMutations("navTabs", ["addTab", "setMenuTreeList"]),
+    ...mapMutations("navTabs", ["addTab", "addBreadCrumb", "setMenuTreeList"]),
     ...mapActions("navTabs", ["closeTab", "closeToTab"]),
     //全屏事件
     screenfull() {
@@ -172,7 +198,9 @@ export default {
       screenfull.toggle();
       this.isFullscreen = true;
     },
-
+    refreshPage() {
+      this.$router.go(0); //刷新页面
+    },
     //退出登录
     logout() {
       //清除数据
@@ -185,6 +213,13 @@ export default {
         }
       });
       //this.$router.go(0);//刷新页面
+    },
+    isReduce(text) {
+      var canvas = document.createElement("canvas");
+      var context = canvas.getContext("2d");
+      context.font = "14px Microsoft YaHei";
+      var dimension = context.measureText(text);
+      return dimension.width > 290;
     },
     openCalendar() {
       this.calen_visible = true;
@@ -225,11 +260,11 @@ export default {
           //只有一个菜单，默认加载
           if (res.data.children.length == 1) {
             if (
-              res.data.children[0].MENU_TYPE == "menu" &&
+              res.data.children[0].menu_type == "menu" &&
               (!res.data.children[0].children ||
                 res.data.children[0].children.length == 0)
             ) {
-              this.addTab(res.data.children[0].MENU_LINK);
+              this.addTab(res.data.children[0].menu_link);
             }
           }
           //加载角标
@@ -245,7 +280,7 @@ export default {
     isContainAttr(attr) {
       //是否包含权限
       return (
-        this.menuTreeListFlatten.filter(item => item.MENU_LINK == attr).length >
+        this.menuTreeListFlatten.filter(item => item.menu_link == attr).length >
         0
       );
     },
@@ -253,7 +288,12 @@ export default {
     getIconAll() {}
   },
   computed: {
-    ...mapState("navTabs", ["tabList", "menuTreeList", "menuTreeListFlatten"]),
+    ...mapState("navTabs", [
+      "tabList",
+      "breadCrumbList",
+      "menuTreeList",
+      "menuTreeListFlatten"
+    ]),
     url() {
       let index = this.$store.state.navTabs.activeUrlName;
 
@@ -277,124 +317,207 @@ export default {
     //this.getMenuTree(); //获得菜单权限树,获取角标在后去权限之后
     this.getPath();
     this.addTab("main");
-    this.addTab(this.defaultUrl); //刷新之后添加的
-  },
-  components: {
-    calenUse
   }
 };
 </script>
 
 <style scoped>
 .center {
-  width: 99.5%;
+  width: 100%;
   margin: 0 auto;
 }
 .page {
   box-sizing: border-box;
   height: 100vh;
 }
-.el-header {
-  background: #464c5b;
-  padding: 0;
-}
-/*侧边栏样式*/
-#aside-header {
-  width: 100%;
-  height: 60px;
-  display: flex;
+.page-contain {
+  display: inline-flex;
   justify-content: center;
   align-items: center;
-  background: white;
-  color: #464c5b;
-  font-size: 20px;
-  font-weight: bold;
-}
-#aside-logo {
-  width: 35px;
-  height: 35px;
-  margin-right: 15px;
-  line-height: 60px;
-  display: inline-block;
-  background: url("../assets/img/headLogo.png") no-repeat;
-  background-size: cover;
 }
 /*顶部导航样式*/
 .el-header {
-  background: #0d6ba8;
+  /* background: #0d6ba8; */
+  background: white;
   padding: 0;
+  position: relative;
 }
-.el-header li {
+/*左侧样式*/
+.aside-header-contain {
+  display: inline-block;
+}
+.aside-header {
+  height: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: bold;
+  margin-left: 20px;
+}
+.aside-logo {
+  width: 35px;
+  height: 35px;
+  line-height: 60px;
+  display: inline-block;
+  background: url("../assets/img/zjkj.jpg") no-repeat;
+  background-size: cover;
+}
+.aside-home {
+  font-size: 25px;
+}
+.aside-home:hover {
+  background: #cbced4;
+  cursor: pointer;
+}
+.menu-contain {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+/* 右侧样式 */
+.right-aside-head {
+  float: right;
+  margin: 0 20px;
+}
+.right-aside-head li {
   float: left;
 }
-.el-header li:hover {
+.right-aside-head li:hover {
   cursor: pointer;
-  background: #0092c5;
+  background: #cbced4;
 }
-.el-header i {
+.right-aside-head i {
+  font-size: 18px;
   line-height: 50px;
-  color: white;
-}
-.el-header ul {
   margin: 0 10px;
 }
-.el-header ul:nth-child(1) i {
-  font-size: 20px;
+.dropSpan {
+  line-height: 50px;
+  font-size: 14px;
   margin: 0 10px;
-}
-.el-header ul:nth-child(1) li span {
-  color: white;
-  line-height: 50px;
-  font-size: 14px;
-  margin-right: 10px;
-  margin-left: -10px;
-}
-.el-header ul:nth-child(2) li span {
-  color: white;
-  line-height: 50px;
-  font-size: 14px;
-}
-.el-dropdown {
-  margin: 0 15px;
-}
-.el-dropdown-menu__item:hover {
-  color: #606266;
-  background: #eee;
-}
-.tabs {
-  width: 100%;
-  height: 40px;
-  background-color: #f5f7fa;
 }
 .icon-color {
   color: #303133;
 }
-.el-menu i {
-  font-size: 25px;
-  margin: 0 10px;
+.header-title {
+  font-size: 28px;
 }
-.el-menu-item span {
-  font-size: 16px;
+.breadCrumb {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #ebeef5;
+  user-select: none;
+  box-sizing: border-box;
 }
-.el-menu-item-group span {
-  margin-left: 20px;
+.breadCrumb a {
+  cursor: pointer;
+  color: #000;
 }
-.el-icon-goods {
-  color: #303133;
+.breadCrumb a:hover {
+  color: #409eff !important;
 }
-.el-menu-item {
-  padding: 0 10px;
+.messageBox {
+  width: 100%;
 }
-.el-menu-item.is-active {
-  background: rgb(88, 88, 98);
-  color: white;
+.messageHead {
+  width: 100%;
+  height: 30px;
+  padding: 0 5px;
+  border-bottom: 1px solid #ebeef5;
+  box-sizing: border-box;
 }
-.el-submenu .el-menu-item {
-  padding: 0 10px;
+.messageBody {
+  width: 100%;
+}
+.messageItem {
+  widows: 100%;
+  height: 50px;
+  padding: 0 5px;
+  border-bottom: 1px solid #ebeef5;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.messageItem:hover {
+  background: #f5f7fa;
+}
+.messageTitle {
+  height: 28px;
+  line-height: 14px;
+  display: table-cell;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+.messageContent {
+  display: block;
+}
+.unReadMessage {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 8px;
+  height: 8px;
+  color: #fff;
+  background-image: linear-gradient(#54a3ff, #006eed);
+  background-clip: padding-box;
+  border: 1px solid #24292e;
+  border-radius: 50%;
 }
 </style>
 
 <style>
+/* 水平样式 */
+.el-menu--horizontal > .el-menu-item,
+.el-menu--horizontal > .el-submenu .el-submenu__title {
+  height: 50px !important;
+  line-height: 50px !important;
+}
+.el-menu--horizontal > div > .el-menu-item,
+.el-menu--horizontal > div > .el-submenu .el-submenu__title {
+  height: 50px !important;
+  line-height: 50px !important;
+}
+.el-menu--horizontal > div > .el-submenu {
+  float: left;
+}
+/* 一级菜单的样式 */
+.el-menu--horizontal > div > .el-menu-item {
+  float: left;
+  margin: 0;
+  border-bottom: 2px solid transparent;
+  color: #909399;
+}
+.el-menu--horizontal > .el-menu .el-menu-item.is-active {
+  color: #409eff;
+}
+.el-menu--horizontal > .el-menu .el-menu-item:hover {
+  background: #f5f7fa;
+}
+.el-menu--horizontal > div > .el-menu .el-menu-item.is-active {
+  color: #409eff;
+}
+.el-menu--horizontal > div > .el-menu .el-menu-item:hover {
+  background: #f5f7fa;
+}
+.el-menu--horizontal > div > .el-submenu.is-active .el-submenu__title {
+  border-bottom: 2px solid #409eff;
+  color: #303133;
+}
+/* 解决下拉三角图标 */
+.el-menu--horizontal > div > .el-submenu .el-submenu__icon-arrow {
+  position: static;
+  vertical-align: middle;
+  margin-left: 8px;
+  margin-top: -3px;
+}
+/* 解决无下拉菜单时 不对齐问题 */
+.el-menu--horizontal > div > .el-submenu .el-submenu__title {
+  height: 60px;
+  line-height: 60px;
+  border-bottom: 2px solid transparent;
+  color: #909399;
+}
 .el-scrollbar .el-scrollbar__wrap {
   overflow-x: hidden;
 }
@@ -405,10 +528,10 @@ export default {
   padding: 4px 0 !important;
 }
 .el-card__header {
-  padding: 10px 15px !important;
+  padding: 10px !important;
 }
 .el-card__body {
-  padding: 15px;
+  padding: 10px;
 }
 .el-dialog__body {
   padding: 20px;
@@ -434,8 +557,5 @@ export default {
 }
 .el-form-item {
   margin-bottom: 10px;
-}
-.header-title {
-  font-size: 28px;
 }
 </style>
