@@ -1,7 +1,7 @@
 <template>
   <div class="calen_menu">
    <el-dialog
-      width="40%"
+      width="700px"
      title="日历"
       :visible.sync="calen_comVisible"
       :close-on-click-modal="false"
@@ -16,7 +16,7 @@
 
     </el-dialog>
     <el-container>
-      <el-aside width="120px">
+      <el-aside width="90px">
         <ul>
           <el-button type="primary" size="mini" @click="handleClose" icon="el-icon-close">关 闭</el-button>
         </ul>

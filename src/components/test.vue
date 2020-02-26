@@ -2,6 +2,17 @@
   <div>
     <div>
       <div>
+      <p> 星期{{ rq.getDay() }}</p>
+      <input v-model="rq">
+      </div>
+         <div>
+      <p> 星期{{ rq1.getDay() }}</p>
+      <input v-model="rq1">
+      </div>
+      <div>
+        间隔天数{{Math.floor((rq1-rq) / (24 * 3600 * 1000))}}
+      </div>
+      <div>
         开始 <input v-model="r1" />
       </div>
       <div>
@@ -23,6 +34,8 @@
 export default {
   data() {
     return {
+      rq:new Date("1900-1-1"),
+      rq1:new Date("2100-1-1"),
       r1: 1900,
       r2: 1900,
       inty: "请输入年份",

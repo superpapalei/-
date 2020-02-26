@@ -4,7 +4,7 @@
       title="日历"
       :visible.sync="calen_visible"
       :close-on-click-modal="false"
-      width="30%"
+      width="580px"
     >
       <div slot="title" class="header-title">
         <span class="el-icon-date"> 日历</span>
