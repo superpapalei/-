@@ -462,6 +462,7 @@ export default {
 </style>
 
 <style>
+/* 全局样式放在这 */
 /* 水平样式 */
 .el-menu--horizontal > .el-menu-item,
 .el-menu--horizontal > .el-submenu .el-submenu__title {
@@ -474,47 +475,47 @@ export default {
   line-height: 50px !important;
 }
 .el-menu--horizontal > div > .el-submenu {
-  float: left;
+  float: left !important;
 }
 /* 一级菜单的样式 */
 .el-menu--horizontal > div > .el-menu-item {
-  float: left;
-  margin: 0;
-  border-bottom: 2px solid transparent;
-  color: #909399;
+  float: left !important;
+  margin: 0 !important;
+  border-bottom: 2px solid transparent !important;
+  color: #909399 !important;
 }
 .el-menu--horizontal > .el-menu .el-menu-item.is-active {
-  color: #409eff;
+  color: #409eff !important;
 }
 .el-menu--horizontal > .el-menu .el-menu-item:hover {
-  background: #f5f7fa;
+  background: #f5f7fa !important;
 }
 .el-menu--horizontal > div > .el-menu .el-menu-item.is-active {
-  color: #409eff;
+  color: #409eff !important;
 }
 .el-menu--horizontal > div > .el-menu .el-menu-item:hover {
-  background: #f5f7fa;
+  background: #f5f7fa !important;
 }
 .el-menu--horizontal > div > .el-submenu.is-active .el-submenu__title {
-  border-bottom: 2px solid #409eff;
-  color: #303133;
+  border-bottom: 2px solid #409eff !important;
+  color: #303133 !important;
 }
 /* 解决下拉三角图标 */
 .el-menu--horizontal > div > .el-submenu .el-submenu__icon-arrow {
-  position: static;
-  vertical-align: middle;
-  margin-left: 8px;
-  margin-top: -3px;
+  position: static !important;
+  vertical-align: middle !important;
+  margin-left: 8px !important;
+  margin-top: -3px !important;
 }
 /* 解决无下拉菜单时 不对齐问题 */
 .el-menu--horizontal > div > .el-submenu .el-submenu__title {
-  height: 60px;
-  line-height: 60px;
-  border-bottom: 2px solid transparent;
-  color: #909399;
+  height: 60px !important;
+  line-height: 60px !important;
+  border-bottom: 2px solid transparent !important;
+  color: #909399 !important;
 }
 .el-scrollbar .el-scrollbar__wrap {
-  overflow-x: hidden;
+  overflow-x: hidden !important;
 }
 .el-scrollbar > div {
   margin-bottom: 0px !important;
@@ -526,10 +527,10 @@ export default {
   padding: 10px !important;
 }
 .el-card__body {
-  padding: 10px;
+  padding: 10px !important;
 }
 .el-dialog__body {
-  padding: 20px;
+  padding: 20px !important;
 }
 .el-table td,
 .el-table th {
@@ -545,12 +546,12 @@ export default {
   display: table-cell !important;
 }
 .el-table .success-row {
-  background: #f0f9eb;
+  background: #f0f9eb !important;
 }
 .el-dropdown-menu__item {
-  line-height: 25px;
+  line-height: 25px !important;
 }
 .el-form-item {
-  margin-bottom: 10px;
+  margin-bottom: 10px !important;
 }
 </style>
