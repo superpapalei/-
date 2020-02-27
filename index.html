@@ -28,15 +28,15 @@
         baseUrl: 'http://localhost:5000/',
       },
       test: {
-        baseUrl: 'http://',
+        baseUrl: 'http://47.107.56.156:2021/',
       },
       formal: {
         baseUrl: 'http://',
       }
     }
 
-    var urlSetting = urlArr.local;//本地
-    //var urlSetting = urlArr.test;//测试
+    //var urlSetting = urlArr.local;//本地
+    var urlSetting = urlArr.test;//测试
     //var urlSetting = urlArr.formal;//正式
 
     var baseUrl = urlSetting.baseUrl;
