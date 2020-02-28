@@ -60,7 +60,6 @@
 </template>
 
 <script>
-import { z_get, z_post } from "@/api/httpASP";
 export default {
   data() {
     return {
@@ -102,7 +101,7 @@ export default {
   methods: {
     //刷新数据
     refreshData() {
-      z_get("api/depts/tree")
+      this.z_get("api/depts/tree")
         .then(res => {
           this.$message({
             message: "加载数据成功",
@@ -138,7 +137,7 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           this.loading = true;
-          z_post("api/depts", this.form)
+          this.z_post("api/depts", this.form)
             .then(res => {
               this.$refs.AddDrawer.closeDrawer();
               this.loading = false;

@@ -13,6 +13,7 @@ import './assets/css/base.css'
 import store from './store'
 import { showFullScreenLoading, tryHideFullScreenLoading } from './api/loading'
 import * as custom from './common/js/filter'
+import { z_get, z_post, z_patch, z_put } from './api/httpASP'
 
 Vue.use(ElementUI);
 Vue.use(Cookies);
@@ -22,6 +23,12 @@ Axios.defaults.withCredentials = true;
 Vue.prototype.Global = {
   baseUrl: baseUrl,
 }
+//引入全局方法
+Vue.prototype.z_get = z_get;
+Vue.prototype.z_post = z_post;
+Vue.prototype.z_patch = z_patch;
+Vue.prototype.z_put = z_put;
+
 //请求拦截
 Axios.interceptors.request.use(config => {
   //解决IE请求缓存(不知道什么用，先注释了)
@@ -31,7 +38,7 @@ Axios.interceptors.request.use(config => {
   //在axios中传入config，配置一个参数来控制。如果loading为false，则不需要loading
   if (config.loading != undefined && config.loading == false)
     return config;
-    showFullScreenLoading();
+  showFullScreenLoading();
   return config;
 }, err => {
   tryHideFullScreenLoading();

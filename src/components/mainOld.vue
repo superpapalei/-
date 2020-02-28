@@ -121,7 +121,6 @@ import { mapState } from "vuex";
 import Vue from "vue";
 import Cookies from "js-cookie";
 import screenfull from "screenfull";
-import { QueryWebMenuByUserId } from "@/api/webMenuASP";
 import calenUse from "./calen-use/menupage.vue";
 
 export default {
@@ -197,7 +196,7 @@ export default {
     //获得菜单数组并传入store ,await不能阻塞主线程，这里可能没起作用
     async getMenuTree() {
       this.$store.commit("navTabs/emptyMenuTreeList");
-      await QueryWebMenuByUserId({
+      await this.z_get({
         userid: JSON.parse(Cookies.get("userInfo")).userId
       }).then(res => {
         if (res.data.children.length > 0) {
