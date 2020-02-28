@@ -7,8 +7,11 @@ import MainOld from '@/components/mainOld'
 import Test from '@/components/test'
 import ScheduleTest from '@/components/ScheduleTest'
 import ScheduleControl from '@/components/control/ScheduleControl'
+
 import emp from '@/components/hr/emp'
 import dept from '@/components/hr/dept'
+
+import standardTask from '@/components/project-preparation/standard-task'
 
 Vue.use(Router)
 
@@ -51,6 +54,11 @@ const router = new Router({
           path: '/ScheduleTest',
           name: 'ScheduleTest',
           component: ScheduleTest,
+        },
+        {
+          path: '/standardTask',
+          name: 'standardTask',
+          component: standardTask,
         }
       ]
     }

@@ -25,7 +25,12 @@
                 <el-menu-item index="ScheduleTest" route="/ScheduleTest">计划测试</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-menu-item index="2" route="/22">22</el-menu-item>
+            <el-submenu index="2">
+              <template slot="title">项目准备</template>
+              <el-menu-item-group>
+                <el-menu-item index="standardTask" route="/standardTask">标准任务</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
             <el-submenu index="3">
               <template slot="title">基础数据</template>
               <el-menu-item-group>
