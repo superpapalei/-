@@ -101,7 +101,7 @@ export default {
   methods: {
     //刷新数据
     refreshData() {
-      this.z_get("api/depts/tree")
+      this.z_get("api/dept/tree")
         .then(res => {
           this.$message({
             message: "加载数据成功",
@@ -137,7 +137,7 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           this.loading = true;
-          this.z_post("api/depts", this.form)
+          this.z_post("api/dept", this.form)
             .then(res => {
               this.$refs.AddDrawer.closeDrawer();
               this.loading = false;

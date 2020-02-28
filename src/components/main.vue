@@ -97,7 +97,7 @@
         </div>
       </el-header>
       <el-main style="margin:0;padding:0;background:#ECF5EF;" class="backTop">
-        <el-card>
+        <el-card class="mainContent">
           <keep-alive>
             <router-view v-if="$route.meta.keepAlive === true" />
           </keep-alive>
@@ -531,6 +531,9 @@ export default {
 .el-card__body {
   padding: 10px !important;
 }
+.mainContent .el-card__body{
+  padding: 20px !important;
+}
 .el-dialog__body {
   padding: 20px !important;
 }
@@ -555,5 +558,8 @@ export default {
 }
 .el-form-item {
   margin-bottom: 10px !important;
+}
+.el-button{
+  padding: 12px;
 }
 </style>
