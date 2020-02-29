@@ -556,9 +556,6 @@ export default {
 .el-dropdown-menu__item {
   line-height: 25px !important;
 }
-.el-form-item {
-  margin-bottom: 10px !important;
-}
 .el-button{
   padding: 12px;
 }
