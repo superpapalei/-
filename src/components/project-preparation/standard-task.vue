@@ -37,7 +37,7 @@
           <el-table-column prop="st_note" label="说明" align="center"></el-table-column>
           <el-table-column label="操作" width="150" prop="handle">
             <template slot-scope="scope">
-              <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="eidtTaskShow(scope.row)">
+              <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTaskShow(scope.row)">
               </el-button>
               <el-button type="danger" icon="el-icon-delete" size="mini" circle @click="deleteOne(scope.row)">
               </el-button>
@@ -173,7 +173,6 @@ export default {
     refreshData() {
       this.z_get("api/standard_task/treeList", {condition: this.condition})
         .then(res => {
-          console.log(res);
           this.deptDataFilter = res.dict.dept_id;
           this.taskData = res.data;
         })
@@ -288,8 +287,9 @@ export default {
       });
     },
     //编辑数据
-    eidtTaskShow(row) {
+    editTaskShow(row) {
       this.taskModel = JSON.parse(JSON.stringify(row));
+      this.taskModel.dept_name = this.filterDeptName(this.taskModel.dept_id);
       this.addTaskText = "编辑节点";
       this.addOrNot = false;
       this.addTaskVisiable = true;
