@@ -32,7 +32,6 @@ Vue.prototype.z_delete = z_delete;
 
 //请求拦截
 Axios.interceptors.request.use(config => {
-  console.log(config)
   //解决IE请求缓存(不知道什么用，先注释了)
   // if (config.method === 'get') {
   //   config.params.tForIE = new Date()

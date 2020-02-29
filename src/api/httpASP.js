@@ -99,11 +99,11 @@ export function z_put(url, data = {}, config = {}) {
  * @param data
  * @returns {Promise}
  */
-export function z_delete(url, params = {}, config = {}) {
+export function z_delete(url, data = {}, config = {}) {
     Axios.defaults.withCredentials = false;
     return new Promise((resolve, reject) => {
         Axios.delete(baseUrl + url, {
-            params: params,
+            data: data,
             config: config
         })
             .then(response => funcThen(response, resolve, reject))

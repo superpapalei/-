@@ -2,9 +2,9 @@
   <div class="standard-task">
     <div class="topLayout">
       <div class="tbar">
-        <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="refreshData"></el-button>
-        <el-input @keyup.enter.native="search()" placeholder="请输入任务编号或任务名称" v-model="condition" style="width:300px;">
-          <el-button @click="search()" slot="append" icon="el-icon-search">搜索</el-button>
+        <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
+        <el-input @keyup.enter.native="refreshData" placeholder="请输入任务编号或任务名称" v-model="condition" style="width:300px;">
+          <el-button @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
         </el-input>
         <el-button type="primary" style="margin-left:10px;" @click="addNewTaskShow('root')">新增根节点</el-button>
         <el-button type="primary" :disabled="selection.length!=1" @click="addNewTaskShow('children')">新增子节点</el-button>
@@ -27,8 +27,8 @@
           <el-table-column type="selection" width="55" align="center"></el-table-column>
           <el-table-column prop="st_id" label="任务编号" align="center" width="150"></el-table-column>
           <el-table-column prop="st_name" label="任务名称" align="center" width="150"></el-table-column>
-          <el-table-column prop="dept_id" label="部门" align="center" width="150">
-            <template slot-scope="scope">{{searchDeptName(scope.row.dept_id)}}</template>
+          <el-table-column prop="dept_id" label="部门" align="center" width="180">
+            <template slot-scope="scope">{{filterDeptName(scope.row.dept_id)}}</template>
           </el-table-column>
           <el-table-column prop="st_period" label="工期(天)" align="center" width="90"></el-table-column>
           <el-table-column prop="st_type" label="类别" align="center" width="90">
@@ -107,8 +107,8 @@ export default {
     return {
       condition: "",
       taskData: [], //表格数据
+      deptDataFilter:[],
       deptData: [], //部门数据
-      deptDataFlatten: [],
       selection: [],
       addTaskVisiable: false,
       taskModel: {},
@@ -171,8 +171,10 @@ export default {
   },
   methods: {
     refreshData() {
-      this.z_get("api/standard_task/treeList")
+      this.z_get("api/standard_task/treeList", {condition: this.condition})
         .then(res => {
+          console.log(res);
+          this.deptDataFilter = res.dict.dept_id;
           this.taskData = res.data;
         })
         .catch(res => {});
@@ -182,6 +184,7 @@ export default {
       this.$refs.taskForm.resetFields();
     },
     search() {
+      this.condition = "";
       this.refreshData();
     },
     //表格树选中改变
@@ -287,25 +290,20 @@ export default {
     //编辑数据
     eidtTaskShow(row) {
       this.taskModel = JSON.parse(JSON.stringify(row));
-      var dept = this.deptDataFlatten.filter(
-        item => item.dept_id == this.taskModel.dept_id
-      );
-      if (dept.length) {
-        this.taskModel.dept_name = dept[0].dept_name;
-      }
       this.addTaskText = "编辑节点";
       this.addOrNot = false;
       this.addTaskVisiable = true;
     },
     //删除一个
     deleteOne(row) {
-      this.onDeleteClick(row);
+      var list = [];
+      list.push(row);
+      this.onDeleteClick(list);
     },
     //删除树
     deleteList() {
       if (this.selection.length) {
-        var realSelect = this.arrayChildrenFlatten(this.selection, []);
-        this.onDeleteClick(realSelect);
+        this.onDeleteClick(this.selection);
       }
     },
     onDeleteClick(list) {
@@ -315,7 +313,8 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.z_delete("api/standard_task/list", list)
+          var realSelect = this.arrayChildrenFlatten(list, []);
+          this.z_delete("api/standard_task/list", realSelect)
             .then(res => {
               this.$message({
                 message: "删除成功",
@@ -340,17 +339,16 @@ export default {
       this.z_get("api/dept/tree", {}, { loading: false })
         .then(res => {
           this.deptData = res.data;
-          this.deptDataFlatten = this.arrayChildrenFlatten(this.deptData, []);
         })
         .catch(res => {
           console.log(res.msg);
         });
     },
-    searchDeptName(id) {
+    filterDeptName(id) {
       var name = id;
-      var dept = this.deptDataFlatten.filter(item => item.dept_id == id);
+      var dept = this.deptDataFilter.filter(item => item.value == id);
       if (dept.length) {
-        name = dept[0].dept_name;
+        name = dept[0].display;
       }
       return name;
     },
@@ -407,7 +405,6 @@ export default {
     }
   },
   mounted() {
-    this.selectDept();
     this.refreshData();
   }
 };
