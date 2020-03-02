@@ -3,15 +3,19 @@
     <div class="topLayout">
       <div class="tbar">
         <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
-        <el-input @keyup.enter.native="refreshData" placeholder="请输入任务编号或任务名称" v-model="condition" style="width:300px;">
-          <el-button @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
+        <el-input size="small" @keyup.enter.native="refreshData" placeholder="请输入任务编号或任务名称" v-model="condition"
+          style="width:300px;">
+          <el-button size="small" @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
         </el-input>
-        <el-button type="primary" style="margin-left:10px;" @click="addNewTaskShow('root')">新增根节点</el-button>
-        <el-button type="primary" :disabled="selection.length!=1" @click="addNewTaskShow('children')">新增子节点</el-button>
-        <el-button type="danger" :disabled="selection.length==0" @click="deleteList">删除选中节点({{selection.length}})
+        <el-button type="primary" size="small" style="margin-left:10px;" @click="addNewTaskShow('root')">新增根节点
+        </el-button>
+        <el-button type="primary" size="small" :disabled="selection.length!=1" @click="addNewTaskShow('children')">新增子节点
+        </el-button>
+        <el-button type="danger" size="small" :disabled="selection.length==0" @click="deleteList">
+          删除选中节点({{selection.length}})
         </el-button>
         <el-dropdown style="margin-left:10px;">
-          <el-button>
+          <el-button size="small">
             操作<i class="el-icon-arrow-down el-icon--right"></i>
           </el-button>
           <el-dropdown-menu slot="dropdown">
@@ -20,7 +24,7 @@
           </el-dropdown-menu>
         </el-dropdown>
       </div>
-      <div class="topContent" style="height:350px;">
+      <div class="topContent" style="height:300px;">
         <el-table ref="taskTable" style="width: 100%;" height="100%" :data="taskData" tooltip-effect="dark"
           highlight-current-row row-key="st_id" default-expand-all @selection-change="handleSelectionChange"
           @select-all="handleSelectAll" @row-click="handleRowClick">
@@ -45,10 +49,12 @@
           </el-table-column>
         </el-table>
       </div>
+      <div class="bottomContent" style="height:250px;">
+      </div>
     </div>
-    <el-dialog width="500px" :title="addTaskText" :close-on-click-modal="false" :visible.sync="addTaskVisiable"
+    <el-dialog width="450px" :title="addTaskText" :close-on-click-modal="false" :visible.sync="addTaskVisiable"
       top="5vh" @closed="refreshForm">
-      <el-form :model="taskModel" label-width="100px" ref="taskForm" :rules="add_rules">
+      <el-form size="small" :model="taskModel" label-width="100px" ref="taskForm" :rules="add_rules">
         <el-form-item label="任务编号">
           <el-input class="formItem" v-model="taskModel.st_id" placeholder="系统自动生成" disabled>
           </el-input>
@@ -92,8 +98,9 @@
           </el-input>
         </el-form-item>
         <el-form-item style="text-align:center;margin-right:100px;">
-          <el-button @click="addTaskVisiable = false">取&nbsp;&nbsp;消</el-button>
-          <el-button type="primary" @click="onSaveTaskClick" style="margin-left:30px;">保&nbsp;&nbsp;存</el-button>
+          <el-button size="medium" @click="addTaskVisiable = false">取&nbsp;&nbsp;消</el-button>
+          <el-button type="primary" size="medium" @click="onSaveTaskClick" style="margin-left:30px;">保&nbsp;&nbsp;存
+          </el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -411,8 +418,16 @@ export default {
 }
 .tbar {
   margin-bottom: 10px;
+  padding-left: 20px;
 }
 .formItem {
   width: 300px;
+}
+.topContent {
+  width: 100%;
+}
+.bottomContent {
+  width: 100%;
+  flex: 1;
 }
 </style>

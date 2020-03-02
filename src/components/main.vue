@@ -29,7 +29,7 @@
               <template slot="title">项目准备</template>
               <el-menu-item-group>
                 <el-menu-item index="standardTask" route="/standardTask">标准任务</el-menu-item>
-                 <el-menu-item index="work_post" route="/work_post">岗位</el-menu-item>
+                <el-menu-item index="work_post" route="/work_post">岗位</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="3">
@@ -90,21 +90,21 @@
           </li>
         </ul>
       </el-header>
-      <el-header style="height:40px;" v-if="breadCrumbList.length">
+      <el-header style="height:30px;" v-if="breadCrumbList.length">
         <div class="breadCrumb">
           <div style="font-size:15px;"><template v-for="(item, index) in breadCrumbList"><a v-if="index == 0"
                 :key="index" @click="refreshPage">&nbsp;{{ item.menu_name }}>&nbsp;</a><span :key="index"
                 v-else>&nbsp;{{ item.menu_name }}>&nbsp;</span></template></div>
         </div>
       </el-header>
-      <el-main style="margin:0;padding:0;background:#ECF5EF;" class="backTop">
+      <el-main class="backTop">
         <el-card class="mainContent">
           <keep-alive>
             <router-view v-if="$route.meta.keepAlive === true" />
           </keep-alive>
           <router-view v-if="$route.meta.keepAlive !== true" />
           <div v-if="activeTabName == 'main'">
-            <div style="min-height:1500px;">
+            <div style="height:1500px;">
               主页内容
               主页内容
               主页内容
@@ -404,7 +404,7 @@ export default {
 }
 .breadCrumb {
   width: 100%;
-  padding: 10px 15px;
+  padding: 5px 15px;
   border: 1px solid #ebeef5;
   user-select: none;
   box-sizing: border-box;
@@ -461,6 +461,15 @@ export default {
   background-clip: padding-box;
   border: 1px solid #24292e;
   border-radius: 50%;
+}
+.mainContent {
+  min-height: 100%;
+  box-sizing: border-box;
+}
+.backTop {
+  margin: 0;
+  padding: 0;
+  background: #ecf5ef;
 }
 </style>
 
@@ -532,15 +541,15 @@ export default {
 .el-card__body {
   padding: 10px !important;
 }
-.mainContent .el-card__body{
-  padding: 20px !important;
+.mainContent .el-card__body {
+  padding: 10px 15px 0 !important;
 }
 .el-dialog__body {
   padding: 20px !important;
 }
 .el-table td,
 .el-table th {
-  padding: 6px 0 !important;
+  padding: 5px 0 !important;
 }
 .el-badge__content {
   border: none !important;
@@ -556,8 +565,5 @@ export default {
 }
 .el-dropdown-menu__item {
   line-height: 25px !important;
-}
-.el-button{
-  padding: 12px;
 }
 </style>
