@@ -17,7 +17,6 @@ import { z_get, z_post, z_patch, z_put, z_delete } from './api/httpASP'
 
 Vue.use(ElementUI);
 Vue.use(Cookies);
-Axios.defaults.withCredentials = true;
 
 //引入全局变量
 Vue.prototype.Global = {

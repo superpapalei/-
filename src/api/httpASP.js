@@ -1,14 +1,16 @@
 import Axios from 'axios'
 import Cookies from "js-cookie";
 
-//url到index.html配置
+//baseUrl到index.html配置
+Axios.defaults.withCredentials = true;
+Axios.defaults.baseURL = baseUrl;
 
 const DECODE = {
     CODE_INVALID: -1,//失效
     CODE_OK: 0,//成功
     CODE_FAIL: 1//失败
 }
-
+//退出登录
 function logout() {
     vm.$router.push({
         name: "login",
@@ -41,9 +43,8 @@ function funcCatch(err, reject) {
  * @returns {Promise} 
  */
 export function z_get(url, params = {}, config = {}) {
-    Axios.defaults.withCredentials = false;
     return new Promise((resolve, reject) => {
-        Axios.get(baseUrl + url, {
+        Axios.get(url, {
             params: params,
             config: config
         })
@@ -58,9 +59,8 @@ export function z_get(url, params = {}, config = {}) {
  * @returns {Promise}
  */
 export function z_post(url, data = {}, config = {}) {
-    Axios.defaults.withCredentials = false;
     return new Promise((resolve, reject) => {
-        Axios.post(baseUrl + url, data, config)
+        Axios.post(url, data, config)
             .then(response => funcThen(response, resolve, reject))
             .catch(err => funcCatch(err, reject))
     })
@@ -72,9 +72,8 @@ export function z_post(url, data = {}, config = {}) {
  * @returns {Promise}
  */
 export function z_patch(url, data = {}, config = {}) {
-    Axios.defaults.withCredentials = false;
     return new Promise((resolve, reject) => {
-        Axios.patch(baseUrl + url, data, config)
+        Axios.patch(url, data, config)
             .then(response => funcThen(response, resolve, reject))
             .catch(err => funcCatch(err, reject))
     })
@@ -86,9 +85,8 @@ export function z_patch(url, data = {}, config = {}) {
  * @returns {Promise}
  */
 export function z_put(url, data = {}, config = {}) {
-    Axios.defaults.withCredentials = false;
     return new Promise((resolve, reject) => {
-        Axios.put(baseUrl + url, data, config)
+        Axios.put(url, data, config)
             .then(response => funcThen(response, resolve, reject))
             .catch(err => funcCatch(err, reject))
     })
@@ -100,9 +98,8 @@ export function z_put(url, data = {}, config = {}) {
  * @returns {Promise}
  */
 export function z_delete(url, data = {}, config = {}) {
-    Axios.defaults.withCredentials = false;
     return new Promise((resolve, reject) => {
-        Axios.delete(baseUrl + url, {
+        Axios.delete(url, {
             data: data,
             config: config
         })

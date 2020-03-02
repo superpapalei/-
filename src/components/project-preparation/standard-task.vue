@@ -20,8 +20,8 @@
           </el-dropdown-menu>
         </el-dropdown>
       </div>
-      <div class="topContent">
-        <el-table ref="taskTable" style="width: 100%;height:350px;" :data="taskData" tooltip-effect="dark"
+      <div class="topContent" style="height:350px;">
+        <el-table ref="taskTable" style="width: 100%;" height="100%" :data="taskData" tooltip-effect="dark"
           highlight-current-row row-key="st_id" default-expand-all @selection-change="handleSelectionChange"
           @select-all="handleSelectAll" @row-click="handleRowClick">
           <el-table-column type="selection" width="55" align="center"></el-table-column>

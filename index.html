@@ -10,7 +10,7 @@
   <meta http-equiv="pragram" content="no-cache">
   <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="expires" content="0">
-  <!-- 放在静态文件夹才能读到 -->
+  <!-- 放在静态文件夹 -->
   <link rel="icon" type="image/x-icon" href="./static/base/img/zjkj.png" />
   <title>知匠项目管控系统</title>
 </head>
@@ -21,7 +21,7 @@
   <!-- built files will be auto injected -->
   <script>
     var vm;
-    
+
     //后台地址统一配置
     var urlArr = {
       local: {
@@ -40,22 +40,22 @@
     //var urlSetting = urlArr.formal;//正式
 
     var baseUrl = urlSetting.baseUrl;
-    
+
     var ISPC;
-  ISPC = IsPC();
-  //判断是否为pc端
-  function IsPC() {
-    var userAgentInfo = navigator.userAgent;
-    var Agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod"];
-    var flag = true;
-    for (var v = 0; v < Agents.length; v++) {
-      if (userAgentInfo.indexOf(Agents[v]) > 0) {
-        flag = false;
-        break;
+    ISPC = IsPC();
+    //判断是否为pc端
+    function IsPC() {
+      var userAgentInfo = navigator.userAgent;
+      var Agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod"];
+      var flag = true;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+          flag = false;
+          break;
+        }
       }
+      return flag;
     }
-    return flag;
-  }
 
   </script>
 </body>
