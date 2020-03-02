@@ -23,17 +23,17 @@ function funcThen(response, resolve, reject) {
     var res = response.data;
     if (res.code == DECODE.CODE_INVALID) {//失效
         logout();
-        console.log(res.msg);
+        console.log(res.msg?res.msg:res);
         reject(res);
     } else if (res.code == DECODE.CODE_OK) {//成功
         resolve(res);
     } else {//其他返回失败
-        console.log(res.msg);
+        console.log(res.msg?res.msg:res);
         reject(res);
     }
 }
 function funcCatch(err, reject) {
-    console.log(err.msg);
+    console.log(err.msg?err.msg:err);
     reject(err)
 }
 /**

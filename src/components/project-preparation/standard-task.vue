@@ -260,7 +260,6 @@ export default {
                   confirmButtonText: "确定",
                   type: "error"
                 });
-                console.log(res);
               });
           } else {
             this.z_put("api/standard_task", this.taskModel)
@@ -278,7 +277,6 @@ export default {
                   confirmButtonText: "确定",
                   type: "error"
                 });
-                console.log(res);
               });
           }
         } else {
@@ -328,7 +326,6 @@ export default {
                 confirmButtonText: "确定",
                 type: "error"
               });
-              console.log(res);
             });
         })
         .catch(() => {});
@@ -340,9 +337,7 @@ export default {
         .then(res => {
           this.deptData = res.data;
         })
-        .catch(res => {
-          console.log(res.msg);
-        });
+        .catch(res => {});
     },
     filterDeptName(id) {
       var name = id;
