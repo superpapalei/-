@@ -30,7 +30,12 @@
                 <el-menu-item index="ScheduleTest" route="/ScheduleTest">计划测试</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-menu-item index="2" route="/22">22</el-menu-item>
+            <el-submenu index="2">
+              <template slot="title">项目准备</template>
+              <el-menu-item-group>
+                <el-menu-item index="standardTask" route="/standardTask">标准任务</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
             <el-submenu index="3">
               <template slot="title">基础数据</template>
               <el-menu-item-group>
@@ -97,7 +102,7 @@
         </div>
       </el-header>
       <el-main style="margin:0;padding:0;background:#ECF5EF;" class="backTop">
-        <el-card>
+        <el-card class="mainContent">
           <keep-alive>
             <router-view v-if="$route.meta.keepAlive === true" />
           </keep-alive>
@@ -132,7 +137,6 @@ import { mapState } from "vuex";
 import Vue from "vue";
 import Cookies from "js-cookie";
 import screenfull from "screenfull";
-import { QueryWebMenuByUserId } from "@/api/webMenuASP";
 import calenUse from "./calen-use/menupage.vue";
 
 export default {
@@ -184,7 +188,12 @@ export default {
     }
   },
   methods: {
-    ...mapMutations("navTabs", ["addTab", "addBreadCrumb", "setMenuTreeList"]),
+    ...mapMutations("navTabs", [
+      "addTab",
+      "addBreadCrumb",
+      "setMenuTreeList",
+      "isContainMenu"
+    ]),
     ...mapActions("navTabs", ["closeTab", "closeToTab"]),
     //全屏事件
     screenfull() {
@@ -252,7 +261,7 @@ export default {
     //获得菜单数组并传入store ,await不能阻塞主线程，这里可能没起作用
     async getMenuTree() {
       this.$store.commit("navTabs/emptyMenuTreeList");
-      await QueryWebMenuByUserId({
+      await this.z_get({
         userid: JSON.parse(Cookies.get("userInfo")).userId
       }).then(res => {
         if (res.data.children.length > 0) {
@@ -276,13 +285,6 @@ export default {
           });
         }
       });
-    },
-    isContainAttr(attr) {
-      //是否包含权限
-      return (
-        this.menuTreeListFlatten.filter(item => item.menu_link == attr).length >
-        0
-      );
     },
     //获取角标在获取权限之后
     getIconAll() {}
@@ -467,6 +469,7 @@ export default {
 </style>
 
 <style>
+/* 全局样式放在这 */
 /* 水平样式 */
 .el-menu--horizontal > .el-menu-item,
 .el-menu--horizontal > .el-submenu .el-submenu__title {
@@ -479,47 +482,47 @@ export default {
   line-height: 50px !important;
 }
 .el-menu--horizontal > div > .el-submenu {
-  float: left;
+  float: left !important;
 }
 /* 一级菜单的样式 */
 .el-menu--horizontal > div > .el-menu-item {
-  float: left;
-  margin: 0;
-  border-bottom: 2px solid transparent;
-  color: #909399;
+  float: left !important;
+  margin: 0 !important;
+  border-bottom: 2px solid transparent !important;
+  color: #909399 !important;
 }
 .el-menu--horizontal > .el-menu .el-menu-item.is-active {
-  color: #409eff;
+  color: #409eff !important;
 }
 .el-menu--horizontal > .el-menu .el-menu-item:hover {
-  background: #f5f7fa;
+  background: #f5f7fa !important;
 }
 .el-menu--horizontal > div > .el-menu .el-menu-item.is-active {
-  color: #409eff;
+  color: #409eff !important;
 }
 .el-menu--horizontal > div > .el-menu .el-menu-item:hover {
-  background: #f5f7fa;
+  background: #f5f7fa !important;
 }
 .el-menu--horizontal > div > .el-submenu.is-active .el-submenu__title {
-  border-bottom: 2px solid #409eff;
-  color: #303133;
+  border-bottom: 2px solid #409eff !important;
+  color: #303133 !important;
 }
 /* 解决下拉三角图标 */
 .el-menu--horizontal > div > .el-submenu .el-submenu__icon-arrow {
-  position: static;
-  vertical-align: middle;
-  margin-left: 8px;
-  margin-top: -3px;
+  position: static !important;
+  vertical-align: middle !important;
+  margin-left: 8px !important;
+  margin-top: -3px !important;
 }
 /* 解决无下拉菜单时 不对齐问题 */
 .el-menu--horizontal > div > .el-submenu .el-submenu__title {
-  height: 60px;
-  line-height: 60px;
-  border-bottom: 2px solid transparent;
-  color: #909399;
+  height: 60px !important;
+  line-height: 60px !important;
+  border-bottom: 2px solid transparent !important;
+  color: #909399 !important;
 }
 .el-scrollbar .el-scrollbar__wrap {
-  overflow-x: hidden;
+  overflow-x: hidden !important;
 }
 .el-scrollbar > div {
   margin-bottom: 0px !important;
@@ -531,10 +534,13 @@ export default {
   padding: 10px !important;
 }
 .el-card__body {
-  padding: 10px;
+  padding: 10px !important;
+}
+.mainContent .el-card__body{
+  padding: 20px !important;
 }
 .el-dialog__body {
-  padding: 20px;
+  padding: 20px !important;
 }
 .el-table td,
 .el-table th {
@@ -550,12 +556,12 @@ export default {
   display: table-cell !important;
 }
 .el-table .success-row {
-  background: #f0f9eb;
+  background: #f0f9eb !important;
 }
 .el-dropdown-menu__item {
-  line-height: 25px;
+  line-height: 25px !important;
 }
-.el-form-item {
-  margin-bottom: 10px;
+.el-button{
+  padding: 12px;
 }
 </style>

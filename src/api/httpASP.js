@@ -45,7 +45,8 @@ export function z_get(url, params = {}, config = {}) {
     return new Promise((resolve, reject) => {
         Axios.get(baseUrl + url, {
             params: params,
-        }, config)
+            config: config
+        })
             .then(response => funcThen(response, resolve, reject))
             .catch(err => funcCatch(err, reject))
     })
@@ -98,10 +99,13 @@ export function z_put(url, data = {}, config = {}) {
  * @param data
  * @returns {Promise}
  */
-export function z_delete(url, data = {}, config = {}) {
+export function z_delete(url, params = {}, config = {}) {
     Axios.defaults.withCredentials = false;
     return new Promise((resolve, reject) => {
-        Axios.delete(baseUrl + url, data, config)
+        Axios.delete(baseUrl + url, {
+            params: params,
+            config: config
+        })
             .then(response => funcThen(response, resolve, reject))
             .catch(err => funcCatch(err, reject))
     })

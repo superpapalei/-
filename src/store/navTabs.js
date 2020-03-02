@@ -126,6 +126,10 @@ const mutations = {
         state.menuTreeList = [];
         state.menuTreeListFlatten = [];
     },
+    isContainMenu(state, menu_link) {
+        //是否包含某个菜单
+        return (state.menuTreeListFlatten.filter(item => item.menu_link == menu_link).length > 0);
+    },
     addBreadCrumb(state, index) {
         state.breadCrumbList = [];
         state.breadCrumbList = findFatherIndex(index, []);

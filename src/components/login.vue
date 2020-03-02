@@ -77,6 +77,7 @@ export default {
         window.localStorage.setItem("password", "");
       }
       window.localStorage.setItem("rememberPassWord", this.rememberPassWord);
+      this.emptyBreadCrumb();
       this.$router.push({
         path: "/main"
       });
