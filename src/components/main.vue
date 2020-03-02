@@ -29,6 +29,7 @@
               <template slot="title">项目准备</template>
               <el-menu-item-group>
                 <el-menu-item index="standardTask" route="/standardTask">标准任务</el-menu-item>
+                 <el-menu-item index="work_post" route="/work_post">岗位</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="3">
