@@ -50,7 +50,6 @@
       top="5vh" @closed="refreshForm">
       <el-form :model="taskModel" label-width="100px" ref="taskForm" :rules="add_rules">
         <el-form-item label="任务编号">
-
           <el-input class="formItem" v-model="taskModel.st_id" placeholder="系统自动生成" disabled>
           </el-input>
         </el-form-item>
@@ -62,8 +61,9 @@
           <el-select v-model="taskModel.dept_id" ref="select_dept" placeholder="请选择属部门">
             <el-option :label="taskModel.dept_name" :value="taskModel.dept_id" style="height:auto;padding:0;">
               <el-tree :data="deptData" node-key="dept_id" ref="tree" highlight-current default-expand-all
-                :current-node-key="taskModel.dept_id">
-                <div slot-scope="{node, data}" style="width:100%" @dblclick="handleSelectTreeDblClick(data)">
+                :expand-on-click-node="false" :current-node-key="taskModel.dept_id">
+                <div slot-scope="{node, data}" style="width:100%;user-select:none;"
+                  @click="handleSelectTreeDblClick(data)">
                   {{data.dept_name}}</div>
               </el-tree>
             </el-option>
@@ -107,7 +107,7 @@ export default {
     return {
       condition: "",
       taskData: [], //表格数据
-      deptDataFilter:[],
+      deptDataFilter: [],
       deptData: [], //部门数据
       selection: [],
       addTaskVisiable: false,
@@ -171,7 +171,7 @@ export default {
   },
   methods: {
     refreshData() {
-      this.z_get("api/standard_task/treeList", {condition: this.condition})
+      this.z_get("api/standard_task/treeList", { condition: this.condition })
         .then(res => {
           this.deptDataFilter = res.dict.dept_id;
           this.taskData = res.data;
