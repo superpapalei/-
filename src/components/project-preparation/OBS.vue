@@ -1,110 +1,5 @@
 <template>
-  <div class="standard-task">
-    <div class="topLayout">
-      <div class="tbar">
-        <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
-        <el-input size="small" @keyup.enter.native="refreshData" placeholder="请输入任务编号或任务名称" v-model="condition"
-          style="width:300px;">
-          <el-button size="small" @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
-        </el-input>
-        <el-button type="primary" size="small" style="margin-left:10px;" @click="addNewTaskShow('root')">新增根节点
-        </el-button>
-        <el-button type="primary" size="small" :disabled="selection.length!=1" @click="addNewTaskShow('children')">新增子节点
-        </el-button>
-        <el-button type="danger" size="small" :disabled="selection.length==0" @click="deleteList">
-          删除选中节点({{selection.length}})
-        </el-button>
-        <el-dropdown style="margin-left:10px;">
-          <el-button size="small">
-            操作<i class="el-icon-arrow-down el-icon--right"></i>
-          </el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="expandAll">展开所有节点</el-dropdown-item>
-            <el-dropdown-item @click.native="collapseAll" divided>折叠所有节点</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div>
-      <div class="topContent" style="height:300px;">
-        <el-table ref="taskTable" style="width: 100%;" height="100%" :data="taskData" tooltip-effect="dark"
-          highlight-current-row row-key="st_id" default-expand-all @selection-change="handleSelectionChange"
-          @select-all="handleSelectAll" @row-click="handleRowClick">
-          <el-table-column type="selection" width="55" align="center"></el-table-column>
-          <el-table-column prop="st_id" label="任务编号" align="center" width="150"></el-table-column>
-          <el-table-column prop="st_name" label="任务名称" align="center" width="150"></el-table-column>
-          <el-table-column prop="dept_id" label="部门" align="center" width="180">
-            <template slot-scope="scope">{{filterDeptName(scope.row.dept_id)}}</template>
-          </el-table-column>
-          <el-table-column prop="st_period" label="工期(天)" align="center" width="90"></el-table-column>
-          <el-table-column prop="st_type" label="类别" align="center" width="90">
-            <template slot-scope="scope">{{scope.row.st_type | stTypeTrans}}</template>
-          </el-table-column>
-          <el-table-column prop="st_note" label="说明" align="center"></el-table-column>
-          <el-table-column label="操作" width="150" prop="handle">
-            <template slot-scope="scope">
-              <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTaskShow(scope.row)">
-              </el-button>
-              <el-button type="danger" icon="el-icon-delete" size="mini" circle @click="deleteOne(scope.row)">
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
-      <div class="bottomContent" style="height:250px;">
-      </div>
-    </div>
-    <el-dialog width="450px" :title="addTaskText" :close-on-click-modal="false" :visible.sync="addTaskVisiable"
-      top="5vh" @closed="refreshForm">
-      <el-form size="small" :model="taskModel" label-width="100px" ref="taskForm" :rules="add_rules">
-        <el-form-item label="任务编号">
-          <el-input class="formItem" v-model="taskModel.st_id" placeholder="系统自动生成" disabled>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="上级任务编号">
-          <el-input class="formItem" v-model="taskModel.st_pid" placeholder="无" disabled>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="所属部门" prop="dept_id">
-          <el-select v-model="taskModel.dept_id" ref="select_dept" placeholder="请选择属部门">
-            <el-option :label="taskModel.dept_name" :value="taskModel.dept_id" style="height:auto;padding:0;">
-              <el-tree :data="deptData" node-key="dept_id" ref="tree" highlight-current default-expand-all
-                :expand-on-click-node="false" :current-node-key="taskModel.dept_id">
-                <div slot-scope="{node, data}" style="width:100%;user-select:none;"
-                  @click="handleSelectTreeDblClick(data)">
-                  {{data.dept_name}}</div>
-              </el-tree>
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="任务名称" prop="st_name">
-          <el-input class="formItem" v-model="taskModel.st_name" placeholder="请填写任务名称">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="任务类型">
-          <el-select v-model="taskModel.st_type" placeholder="请选择任务类型">
-            <el-option v-for="item in stType_options" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="工期(天)" prop="st_period">
-          <el-input class="formItem" v-model="taskModel.st_period" placeholder="请填写工期" oninput="value=value.replace(/[^\d.]/g,'')
-                                .replace(/^\./g, '').replace(/\.{2,}/g, '.')
-                                .replace('.', '$#$').replace(/\./g, '')
-                                .replace('$#$', '.')
-                                .slice(0,value.indexOf('.') === -1? value.length: value.indexOf('.') + 3)">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="备注">
-          <el-input class="formItem" type="textarea" :rows="2" v-model="taskModel.st_note" placeholder="备注信息">
-          </el-input>
-        </el-form-item>
-        <el-form-item style="text-align:center;margin-right:100px;">
-          <el-button size="medium" @click="addTaskVisiable = false">取&nbsp;&nbsp;消</el-button>
-          <el-button type="primary" size="medium" @click="onSaveTaskClick" style="margin-left:30px;">保&nbsp;&nbsp;存
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
-  </div>
+  <div class="standard-task">待填充</div>
 </template>
 
 <script>
@@ -114,7 +9,7 @@ export default {
     return {
       condition: "",
       taskData: [], //表格数据
-      deptDataFilter: [],
+      deptDataFilter:[],
       deptData: [], //部门数据
       selection: [],
       addTaskVisiable: false,
@@ -178,7 +73,7 @@ export default {
   },
   methods: {
     refreshData() {
-      this.z_get("api/standard_task/treeList", { condition: this.condition })
+      this.z_get("api/standard_task/treeList", {condition: this.condition})
         .then(res => {
           this.deptDataFilter = res.dict.dept_id;
           this.taskData = res.data;
@@ -267,6 +162,7 @@ export default {
                   confirmButtonText: "确定",
                   type: "error"
                 });
+                console.log(res);
               });
           } else {
             this.z_put("api/standard_task", this.taskModel)
@@ -284,6 +180,7 @@ export default {
                   confirmButtonText: "确定",
                   type: "error"
                 });
+                console.log(res);
               });
           }
         } else {
@@ -333,6 +230,7 @@ export default {
                 confirmButtonText: "确定",
                 type: "error"
               });
+              console.log(res);
             });
         })
         .catch(() => {});
@@ -344,7 +242,9 @@ export default {
         .then(res => {
           this.deptData = res.data;
         })
-        .catch(res => {});
+        .catch(res => {
+          console.log(res.msg);
+        });
     },
     filterDeptName(id) {
       var name = id;
@@ -418,16 +318,8 @@ export default {
 }
 .tbar {
   margin-bottom: 10px;
-  padding-left: 20px;
 }
 .formItem {
   width: 300px;
-}
-.topContent {
-  width: 100%;
-}
-.bottomContent {
-  width: 100%;
-  flex: 1;
 }
 </style>
