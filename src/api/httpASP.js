@@ -46,6 +46,7 @@ export function z_get(url, params = {}, config = {}) {
     return new Promise((resolve, reject) => {
         Axios.get(url, {
             params: params,
+            data: params,
             config: config
         })
             .then(response => funcThen(response, resolve, reject))
@@ -100,6 +101,7 @@ export function z_put(url, data = {}, config = {}) {
 export function z_delete(url, data = {}, config = {}) {
     return new Promise((resolve, reject) => {
         Axios.delete(url, {
+            params: data,
             data: data,
             config: config
         })
