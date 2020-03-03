@@ -12,6 +12,7 @@ import emp from '@/components/hr/emp'
 import dept from '@/components/hr/dept'
 
 import standardTask from '@/components/project-preparation/standard-task'
+import project_classification from '@/components/project-preparation/project_classification'
 import work_post from '@/components/project-preparation/work_post'
 import template_group from '@/components/project-preparation/template_group'
 import template_group_type from '@/components/project-preparation/template_group_type'
@@ -77,6 +78,11 @@ const router = new Router({
           path: '/template_group_type',
           name: 'template_group_type',
           component: template_group_type,
+        },
+        {
+          path: '/project_classification',
+          name: 'project_classification',
+          component: project_classification,
         }
       ]
     }
