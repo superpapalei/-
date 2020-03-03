@@ -1,29 +1,30 @@
 <template>
-  <div class="work_post">
+  <div class="template_group_type">
     <div class="topLayout">
       <div class="tbar">
         <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
-        <el-input @keyup.enter.native="refreshData" placeholder="请输入角色编号或角色名称" v-model="condition" clearable style="width:300px;">
+        <el-input @keyup.enter.native="refreshData" placeholder="请输入模板类型编号或模板类型名称" v-model="condition" clearable style="width:300px;">
           <el-button @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
         </el-input>
-        <el-button type="primary" style="margin-left:10px;" @click="addNewWorkPost()">新增岗位</el-button>
-        <el-button type="danger" :disabled="selection.length==0" @click="deleteList">删除选中岗位({{selection.length}})
+        <el-button type="primary" style="margin-left:10px;" @click="addNewTemplateTypeGroup()">新增模板类型</el-button>
+        <el-button type="danger" :disabled="selection.length==0" @click="deleteList">删除选中模板类型({{selection.length}})
         </el-button>
        
       </div>
       <div class="topContent">
-        <el-table ref="wpTable" style="width: 100%;height:350px;" :data="wpData" tooltip-effect="dark"
-          highlight-current-row row-key="wp_id" default-expand-all @selection-change="handleSelectionChange"
+        <el-table ref="tgtTable" style="width: 100%;height:350px;" :data="tgtData" tooltip-effect="dark"
+          highlight-current-row row-key="tgt_id" default-expand-all @selection-change="handleSelectionChange"
           @select-all="handleSelectAll" @row-click="handleRowClick">
           <el-table-column type="selection" width="55" align="center"></el-table-column>
-          <el-table-column prop="wp_id" label="角色编号" align="center" width="150"></el-table-column>
-          <el-table-column prop="wp_name" label="角色名称" align="center" width="150"></el-table-column>
-          <el-table-column prop="wp_note" label="角色说明" align="center" width="180"></el-table-column>
-          <el-table-column prop="wp_type" label="岗位类型（项目/职能）" align="center" width="300"></el-table-column>
-                       
+         
+          <el-table-column prop="tgt_id" label="模板类型编号" align="center" width="120"></el-table-column>
+          <el-table-column prop="tgt_name" label="模板类型名称" align="center" width="150"></el-table-column>
+                   
+          <el-table-column prop="tgt_note" label="模板类型说明" align="center" width="150"></el-table-column>
+          
           <el-table-column label="操作" width="150" prop="handle">
             <template slot-scope="scope">
-              <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editPostShow(scope.row)">
+              <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTemplateShow(scope.row)">
               </el-button>
               <el-button type="danger" icon="el-icon-delete" size="mini" circle @click="deleteOne(scope.row)">
               </el-button>
@@ -32,29 +33,24 @@
         </el-table>
       </div>
     </div>
-    <el-dialog width="500px" :title="addwpText" :close-on-click-modal="false" :visible.sync="addwpVisiable"
+    <el-dialog width="500px" :title="addgptText" :close-on-click-modal="false" :visible.sync="addgptVisiable"
       top="5vh" @closed="refreshForm">
-      <el-form :model="postModel" label-width="100px" ref="postForm" :rules="add_rules">
-        <el-form-item label="角色编号">
-
-          <el-input class="formItem" v-model="postModel.wp_id" placeholder="系统自动生成" disabled>
+      <el-form :model="templateGroupTypeModel" label-width="100px" ref="templateGroupTypeForm" :rules="add_rules">
+        <el-form-item label="模板类型编号">
+          <el-input class="formItem" v-model="templateGroupTypeModel.tgt_id" placeholder="系统自动生成" disabled>
           </el-input>
         </el-form-item>
-        <el-form-item label="角色名称">
-          <el-input class="formItem" v-model="postModel.wp_name" placeholder="请填写角色名称">
+        <el-form-item label="模板类型名称">
+          <el-input class="formItem" v-model="templateGroupTypeModel.tgt_name" placeholder="请填写模板类型名称">
           </el-input>
         </el-form-item>
-        <el-form-item label="角色说明">
-          <el-input class="formItem" type="textarea" :rows="2" v-model="postModel.wp_note" placeholder="说明信息">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="岗位类型" prop="wp_type">
-          <el-input class="formItem" v-model="postModel.wp_type" placeholder="请填写岗位类型">
+           <el-form-item label="模板类型说明">
+          <el-input class="formItem" type="textarea" :rows="2" v-model="templateGroupTypeModel.tgt_note" placeholder="模板类型说明">
           </el-input>
         </el-form-item>
         
         <el-form-item style="text-align:center;margin-right:100px;">
-          <el-button @click="addwpVisiable = false">取&nbsp;&nbsp;消</el-button>
+          <el-button @click="addgptVisiable = false">取&nbsp;&nbsp;消</el-button>
           <el-button type="primary" @click="onSavePostClick" style="margin-left:30px;">保&nbsp;&nbsp;存</el-button>
         </el-form-item>
       </el-form>
@@ -64,35 +60,35 @@
 
 <script>
 export default {
-  name: "work_post",
+  name: "template_group_type",
   data() {
     return {
       condition: "",
-      wpData: [], //表格数据
+      tgtData: [], //表格数据
       //deptDataFilter:[],
-      deptData: [], //部门数据
+      //deptData: [], //部门数据
       selection: [],
-      addwpVisiable: false,
-      postModel: {},
+      addgptVisiable: false,
+      templateGroupTypeModel: {},
       addOrNot: true, //是否新增
-      addwpText: "",
-      stType_options: [
-        {
-          value: "task",
-          label: "任务"
-        },
-        {
-          value: "work",
-          label: "节点"
-        }
-      ],
-      add_rules: {
-        dept_id: [{ required: true, message: "请选择部门", trigger: "change" }],
-        st_name: [
-          { required: true, message: "请填写任务名称", trigger: "blur" }
-        ],
-        st_period: [{ required: true, message: "请填写工期", trigger: "blur" }]
-      }
+      addgptText: ""
+      // stType_options: [
+      //   {
+      //     value: "task",
+      //     label: "任务"
+      //   },
+      //   {
+      //     value: "work",
+      //     label: "节点"
+      //   }
+      // ],
+      // add_rules: {
+      //   dept_id: [{ required: true, message: "请选择部门", trigger: "change" }],
+      //   st_name: [
+      //     { required: true, message: "请填写任务名称", trigger: "blur" }
+      //   ],
+      //   st_period: [{ required: true, message: "请填写工期", trigger: "blur" }]
+      // }
     };
   },
 //   filters: {
@@ -125,7 +121,7 @@ export default {
 //     }
 //   },
   watch: {
-    addwpVisiable(val) {
+    addgptVisiable(val) {
       if (val) {
         this.selectDept();
       }
@@ -133,16 +129,16 @@ export default {
   },
   methods: {
     refreshData() {
-      this.z_get("api/work_post")
+      this.z_get("api/template_group_type")
         .then(res => {
           //this.deptDataFilter = res.dict.dept_id;
-          this.wpData = res.data;
+          this.tgtData = res.data;
         })
         .catch(res => {});
     },
     //重置表单
     refreshForm() {
-      this.$refs.wpForm.resetFields();
+      this.$refs.tgForm.resetFields();
     },
     search() {
     //   this.condition = "";
@@ -154,10 +150,10 @@ export default {
     },
     // //全选选中子节点
     // handleSelectAll(selection) {
-    //   var val = this.wpData;
+    //   var val = this.tgtData;
     //   var select = false;
     //   for (var i = 0; i < selection.length; i++) {
-    //     if (selection[i].wp_id == val[0].wp_id) {
+    //     if (selection[i].tgt_id == val[0].tgt_id) {
     //       select = true;
     //       break;
     //     }
@@ -172,9 +168,9 @@ export default {
     // selectChildren(val, select) {
     //   for (var i = 0; i < val.length; i++) {
     //     if (select && this.selection.indexOf(val[i]) == -1) {
-    //       this.$refs.wpTable.toggleRowSelection(val[i]);
+    //       this.$refs.tgtTable.toggleRowSelection(val[i]);
     //     } else if (!select && this.selection.indexOf(val[i] > -1)) {
-    //       this.$refs.wpTable.toggleRowSelection(val[i]);
+    //       this.$refs.tgtTable.toggleRowSelection(val[i]);
     //     }
     //     if (val[i].children && val[i].children.length) {
     //       this.selectChildren(val[i].children, select);
@@ -183,24 +179,23 @@ export default {
     // },
 
   
-    addNewWorkPost() {
-        this.addwpText = "新增岗位";
-        this.postModel = {
-            wp_id: "",
-            wp_name:"",
-            wp_note:"",
-            wp_type:""
+    addNewTemplateTypeGroup() {
+        this.addgptText = "新增模板类型";
+        this.templateGroupTypeModel = {
+            tgt_id: "",
+            tgt_name:"",
+            tgt_note:""
       };
       this.addOrNot = true;
-      this.addwpVisiable = true;
+      this.addgptVisiable = true;
     },
 
 
     onSavePostClick() {
-      this.$refs.postForm.validate(valid => {
+      this.$refs.templateGroupTypeForm.validate(valid => {
         if (valid) {
           if (this.addOrNot) {
-            this.z_post("api/work_post", this.postModel)
+            this.z_post("api/template_group_type", this.templateGroupTypeModel)
               .then(res => {
                 this.$message({
                   message: "新增成功",
@@ -208,7 +203,7 @@ export default {
                   duration: 1000
                 });
                 this.refreshData();
-                this.addwpVisiable = false;
+                this.addgptVisiable = false;
               })
               .catch(res => {
                 this.$alert("新增失败", "提示", {
@@ -218,7 +213,7 @@ export default {
                 console.log(res);
               });
           } else {
-            this.z_put("api/work_post", this.postModel)
+            this.z_put("api/template_group_type", this.templateGroupTypeModel)
               .then(res => {
                 this.$message({
                   message: "编辑成功",
@@ -226,7 +221,7 @@ export default {
                   duration: 1000
                 });
                 this.refreshData();
-                this.addwpVisiable = false;
+                this.addgptVisiable = false;
               })
               .catch(res => {
                 this.$alert("编辑失败", "提示", {
@@ -242,13 +237,13 @@ export default {
       });
     },
     //编辑数据
-    editPostShow(row) {
-      this.postModel = JSON.parse(JSON.stringify(row));
-      //this.postModel.wp_name = this.filterDeptName(this.postModel.dept_id);
+    editTemplateShow(row) {
+      this.templateGroupTypeModel = JSON.parse(JSON.stringify(row));
+      //this.templateGroupTypeModel.tgt_id = this.filterDeptName(this.templateGroupTypeModel.dept_id);
 
-      this.addwpText = "编辑岗位";
+      this.addgptText = "编辑模板类型";
       this.addOrNot = false;
-      this.addwpVisiable = true;
+      this.addgptVisiable = true;
     },
     //删除一个
     deleteOne(row) {
@@ -262,18 +257,15 @@ export default {
         this.onDeleteClick(this.selection);
       }
     },
-    onDeleteClick(list) {
-      this.$confirm("是否删除？！", "提示", {
+onDeleteClick(list) {
+      this.$confirm("是否删除？", "提示", {
         confirmButtonText: "是",
         cancelButtonText: "否",
         type: "warning"
       })
         .then(() => {
-          
           var realSelect = this.arrayChildrenFlatten(list, []);
-          
-          this.z_delete("api/work_post/list",  { data: realSelect })
-         //this.z_delete("api/work_post",list)
+          this.z_delete("api/template_group_type/list", { data: realSelect })
             .then(res => {
               this.$message({
                 message: "删除成功",
@@ -287,11 +279,41 @@ export default {
                 confirmButtonText: "确定",
                 type: "error"
               });
-              console.log(res);
             });
         })
         .catch(() => {});
     },
+
+    // onDeleteClick(list) {
+    //   this.$confirm("是否删除？！", "提示", {
+    //     confirmButtonText: "是",
+    //     cancelButtonText: "否",
+    //     type: "warning"
+    //   })
+    //     .then(() => {
+          
+    //       var realSelect = this.arrayChildrenFlatten(list, []);
+          
+    //       this.z_delete("api/template_group_type/list", { data: realSelect })
+    //      //this.z_delete("api/template_group_type",list)
+    //         .then(res => {
+    //           this.$message({
+    //             message: "删除成功",
+    //             type: "success",
+    //             duration: 1000
+    //           });
+    //           this.refreshData();
+    //         })
+    //         .catch(res => {
+    //           this.$alert("删除失败", "提示", {
+    //             confirmButtonText: "确定",
+    //             type: "error"
+    //           });
+    //           console.log(res);
+    //         });
+    //     })
+    //     .catch(() => {});
+    // },
     // //查找部门数据
     // selectDept() {
     //   this.deptData = [];
@@ -325,14 +347,14 @@ export default {
       return result;
     },
     // handleSelectTreeDblClick(data) {
-    //   this.postModel.dept_id = data.dept_id;
-    //   this.postModel.dept_name = data.dept_name;
+    //   this.templateGroupTypeModel.dept_id = data.dept_id;
+    //   this.templateGroupTypeModel.dept_name = data.dept_name;
     //   this.$refs.select_dept.blur();
     // },
     //点击行可以切换选中状态
     handleRowClick(row, column) {
       if (column.property != "handle")
-        this.$refs.wpTable.toggleRowSelection(row);
+        this.$refs.tgtTable.toggleRowSelection(row);
     },
     // expandAll() {
     //   var icon = this.$el.getElementsByClassName("el-table__expand-icon");
@@ -370,7 +392,7 @@ export default {
 </script>
 
 <style scoped>
-.work_post {
+.template_group_type {
   width: 100%;
 }
 .tbar {
