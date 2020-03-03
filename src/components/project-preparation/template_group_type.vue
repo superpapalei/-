@@ -1,27 +1,26 @@
 <template>
-  <div class="template_group">
+  <div class="template_group_type">
     <div class="topLayout">
       <div class="tbar">
         <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
-        <el-input @keyup.enter.native="refreshData" placeholder="请输入组织模板编号或组织模板名称" v-model="condition" style="width:300px;">
+        <el-input @keyup.enter.native="refreshData" placeholder="请输入模板类型编号或模板类型名称" v-model="condition" style="width:300px;">
           <el-button @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
         </el-input>
-        <el-button type="primary" style="margin-left:10px;" @click="addNewTemplateGroup()">新增组织结构模板</el-button>
-        <el-button type="danger" :disabled="selection.length==0" @click="deleteList">删除选中组织结构模板({{selection.length}})
+        <el-button type="primary" style="margin-left:10px;" @click="addNewTemplateTypeGroup()">新增模板类型</el-button>
+        <el-button type="danger" :disabled="selection.length==0" @click="deleteList">删除选中模板类型({{selection.length}})
         </el-button>
        
       </div>
       <div class="topContent">
-        <el-table ref="tgTable" style="width: 100%;height:350px;" :data="tgData" tooltip-effect="dark"
-          highlight-current-row row-key="tg_id" default-expand-all @selection-change="handleSelectionChange"
+        <el-table ref="tgtTable" style="width: 100%;height:350px;" :data="tgtData" tooltip-effect="dark"
+          highlight-current-row row-key="tgt_id" default-expand-all @selection-change="handleSelectionChange"
           @select-all="handleSelectAll" @row-click="handleRowClick">
           <el-table-column type="selection" width="55" align="center"></el-table-column>
-          <el-table-column prop="tg_id" label="组织模板编号" align="center" width="120"></el-table-column>
+         
           <el-table-column prop="tgt_id" label="模板类型编号" align="center" width="120"></el-table-column>
-          <el-table-column prop="tem_tg_id" label="项目组_组织模板编号" align="center" width="180"></el-table-column>
-          <el-table-column prop="wp_id" label="角色编号" align="center" width="90"></el-table-column>
-          <el-table-column prop="tg_name" label="组织模板名称" align="center" width="120"></el-table-column>             
-          <el-table-column prop="tg_node_type" label="节点类型（人/组织）" align="center" width="180"></el-table-column>
+          <el-table-column prop="tgt_name" label="模板类型名称" align="center" width="120"></el-table-column>
+                   
+          <el-table-column prop="tgt_note" label="模板类型说明" align="center" width="120"></el-table-column>
           
           <el-table-column label="操作" width="150" prop="handle">
             <template slot-scope="scope">
@@ -34,36 +33,24 @@
         </el-table>
       </div>
     </div>
-    <el-dialog width="500px" :title="addgpText" :close-on-click-modal="false" :visible.sync="addgpVisiable"
+    <el-dialog width="500px" :title="addgptText" :close-on-click-modal="false" :visible.sync="addgptVisiable"
       top="5vh" @closed="refreshForm">
-      <el-form :model="templateModel" label-width="100px" ref="templateForm" :rules="add_rules">
-        <el-form-item label="组织模板编号">
-          <el-input class="formItem" v-model="templateModel.tg_id" placeholder="系统自动生成" disabled>
-          </el-input>
-        </el-form-item>
+      <el-form :model="templateGroupTypeModel" label-width="100px" ref="templateGroupTypeForm" :rules="add_rules">
         <el-form-item label="模板类型编号">
-          <el-input class="formItem" width="330px" v-model="templateModel.tgt_id" placeholder="请填写已有的模板类型编号（否则会添加失败）">
+          <el-input class="formItem" v-model="templateGroupTypeModel.tgt_id" placeholder="系统自动生成" disabled>
           </el-input>
         </el-form-item>
-        <el-form-item label="项目组_组织模板编号">
-          <el-input class="formItem" v-model="templateModel.tem_tg_id" placeholder="请填写项目组_组织模板编号">
+        <el-form-item label="模板类型名称">
+          <el-input class="formItem" v-model="templateGroupTypeModel.tgt_name" placeholder="请填写模板类型名称">
           </el-input>
         </el-form-item>
-        <el-form-item label="角色编号">
-          <el-input class="formItem" v-model="templateModel.wp_id" placeholder="请填写角色编号">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="组织模板名称" >
-          <el-input class="formItem" v-model="templateModel.tg_name" placeholder="请填写组织模板名称">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="节点类型（人/组织）">
-          <el-input class="formItem" v-model="templateModel.tg_node_type" placeholder="请填写节点类型（人/组织）">
+           <el-form-item label="模板类型说明">
+          <el-input class="formItem" type="textarea" :rows="2" v-model="templateGroupTypeModel.tgt_note" placeholder="模板类型说明">
           </el-input>
         </el-form-item>
         
         <el-form-item style="text-align:center;margin-right:100px;">
-          <el-button @click="addgpVisiable = false">取&nbsp;&nbsp;消</el-button>
+          <el-button @click="addgptVisiable = false">取&nbsp;&nbsp;消</el-button>
           <el-button type="primary" @click="onSavePostClick" style="margin-left:30px;">保&nbsp;&nbsp;存</el-button>
         </el-form-item>
       </el-form>
@@ -73,18 +60,18 @@
 
 <script>
 export default {
-  name: "template_group",
+  name: "template_group_type",
   data() {
     return {
       condition: "",
-      tgData: [], //表格数据
+      tgtData: [], //表格数据
       //deptDataFilter:[],
       //deptData: [], //部门数据
       selection: [],
-      addgpVisiable: false,
-      templateModel: {},
+      addgptVisiable: false,
+      templateGroupTypeModel: {},
       addOrNot: true, //是否新增
-      addgpText: ""
+      addgptText: ""
       // stType_options: [
       //   {
       //     value: "task",
@@ -134,7 +121,7 @@ export default {
 //     }
 //   },
   watch: {
-    addgpVisiable(val) {
+    addgptVisiable(val) {
       if (val) {
         this.selectDept();
       }
@@ -142,10 +129,10 @@ export default {
   },
   methods: {
     refreshData() {
-      this.z_get("api/template_group")
+      this.z_get("api/template_group_type")
         .then(res => {
           //this.deptDataFilter = res.dict.dept_id;
-          this.tgData = res.data;
+          this.tgtData = res.data;
         })
         .catch(res => {});
     },
@@ -163,10 +150,10 @@ export default {
     },
     // //全选选中子节点
     // handleSelectAll(selection) {
-    //   var val = this.tgData;
+    //   var val = this.tgtData;
     //   var select = false;
     //   for (var i = 0; i < selection.length; i++) {
-    //     if (selection[i].tg_id == val[0].tg_id) {
+    //     if (selection[i].tgt_id == val[0].tgt_id) {
     //       select = true;
     //       break;
     //     }
@@ -181,9 +168,9 @@ export default {
     // selectChildren(val, select) {
     //   for (var i = 0; i < val.length; i++) {
     //     if (select && this.selection.indexOf(val[i]) == -1) {
-    //       this.$refs.tgTable.toggleRowSelection(val[i]);
+    //       this.$refs.tgtTable.toggleRowSelection(val[i]);
     //     } else if (!select && this.selection.indexOf(val[i] > -1)) {
-    //       this.$refs.tgTable.toggleRowSelection(val[i]);
+    //       this.$refs.tgtTable.toggleRowSelection(val[i]);
     //     }
     //     if (val[i].children && val[i].children.length) {
     //       this.selectChildren(val[i].children, select);
@@ -192,26 +179,23 @@ export default {
     // },
 
   
-    addNewTemplateGroup() {
-        this.addgpText = "新增组织结构模板";
-        this.templateModel = {
-            tg_id: "",
-            tgt_id:"",
-            tem_tg_id:"",
-            wp_id:"",
-            tg_name:"",
-            tg_node_type:""
+    addNewTemplateTypeGroup() {
+        this.addgptText = "新增模板类型";
+        this.templateGroupTypeModel = {
+            tgt_id: "",
+            tgt_name:"",
+            tgt_note:""
       };
       this.addOrNot = true;
-      this.addgpVisiable = true;
+      this.addgptVisiable = true;
     },
 
 
     onSavePostClick() {
-      this.$refs.templateForm.validate(valid => {
+      this.$refs.templateGroupTypeForm.validate(valid => {
         if (valid) {
           if (this.addOrNot) {
-            this.z_post("api/template_group", this.templateModel)
+            this.z_post("api/template_group_type", this.templateGroupTypeModel)
               .then(res => {
                 this.$message({
                   message: "新增成功",
@@ -219,7 +203,7 @@ export default {
                   duration: 1000
                 });
                 this.refreshData();
-                this.addgpVisiable = false;
+                this.addgptVisiable = false;
               })
               .catch(res => {
                 this.$alert("新增失败", "提示", {
@@ -229,7 +213,7 @@ export default {
                 console.log(res);
               });
           } else {
-            this.z_put("api/template_group", this.templateModel)
+            this.z_put("api/template_group_type", this.templateGroupTypeModel)
               .then(res => {
                 this.$message({
                   message: "编辑成功",
@@ -237,7 +221,7 @@ export default {
                   duration: 1000
                 });
                 this.refreshData();
-                this.addgpVisiable = false;
+                this.addgptVisiable = false;
               })
               .catch(res => {
                 this.$alert("编辑失败", "提示", {
@@ -254,12 +238,12 @@ export default {
     },
     //编辑数据
     editTemplateShow(row) {
-      this.templateModel = JSON.parse(JSON.stringify(row));
-      //this.templateModel.tgt_id = this.filterDeptName(this.templateModel.dept_id);
+      this.templateGroupTypeModel = JSON.parse(JSON.stringify(row));
+      //this.templateGroupTypeModel.tgt_id = this.filterDeptName(this.templateGroupTypeModel.dept_id);
 
-      this.addgpText = "编辑组织结构模板";
+      this.addgptText = "编辑模板类型";
       this.addOrNot = false;
-      this.addgpVisiable = true;
+      this.addgptVisiable = true;
     },
     //删除一个
     deleteOne(row) {
@@ -283,8 +267,8 @@ export default {
           
           var realSelect = this.arrayChildrenFlatten(list, []);
           
-          this.z_delete("api/template_group/list", realSelect)
-         //this.z_delete("api/template_group",list)
+          this.z_delete("api/template_group_type/list", realSelect)
+         //this.z_delete("api/template_group_type",list)
             .then(res => {
               this.$message({
                 message: "删除成功",
@@ -336,14 +320,14 @@ export default {
       return result;
     },
     // handleSelectTreeDblClick(data) {
-    //   this.templateModel.dept_id = data.dept_id;
-    //   this.templateModel.dept_name = data.dept_name;
+    //   this.templateGroupTypeModel.dept_id = data.dept_id;
+    //   this.templateGroupTypeModel.dept_name = data.dept_name;
     //   this.$refs.select_dept.blur();
     // },
     //点击行可以切换选中状态
     handleRowClick(row, column) {
       if (column.property != "handle")
-        this.$refs.tgTable.toggleRowSelection(row);
+        this.$refs.tgtTable.toggleRowSelection(row);
     },
     // expandAll() {
     //   var icon = this.$el.getElementsByClassName("el-table__expand-icon");
@@ -381,13 +365,13 @@ export default {
 </script>
 
 <style scoped>
-.template_group {
+.template_group_type {
   width: 100%;
 }
 .tbar {
   margin-bottom: 10px;
 }
 .formItem {
-  width: 320px;
+  width: 300px;
 }
 </style>

@@ -14,6 +14,7 @@ import dept from '@/components/hr/dept'
 import standardTask from '@/components/project-preparation/standard-task'
 import work_post from '@/components/project-preparation/work_post'
 import template_group from '@/components/project-preparation/template_group'
+import template_group_type from '@/components/project-preparation/template_group_type'
 
 Vue.use(Router)
 
@@ -71,6 +72,11 @@ const router = new Router({
           path: '/template_group',
           name: 'template_group',
           component: template_group,
+        },
+        {
+          path: '/template_group_type',
+          name: 'template_group_type',
+          component: template_group_type,
         }
       ]
     }
