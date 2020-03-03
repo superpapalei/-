@@ -3,7 +3,7 @@
     <div class="topLayout">
       <div class="tbar">
         <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
-        <el-input @keyup.enter.native="refreshData" placeholder="请输入模板类型编号或模板类型名称" v-model="condition" style="width:300px;">
+        <el-input @keyup.enter.native="refreshData" placeholder="请输入模板类型编号或模板类型名称" v-model="condition" clearable style="width:300px;">
           <el-button @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
         </el-input>
         <el-button type="primary" style="margin-left:10px;" @click="addNewTemplateTypeGroup()">新增模板类型</el-button>
@@ -18,9 +18,9 @@
           <el-table-column type="selection" width="55" align="center"></el-table-column>
          
           <el-table-column prop="tgt_id" label="模板类型编号" align="center" width="120"></el-table-column>
-          <el-table-column prop="tgt_name" label="模板类型名称" align="center" width="120"></el-table-column>
+          <el-table-column prop="tgt_name" label="模板类型名称" align="center" width="150"></el-table-column>
                    
-          <el-table-column prop="tgt_note" label="模板类型说明" align="center" width="120"></el-table-column>
+          <el-table-column prop="tgt_note" label="模板类型说明" align="center" width="150"></el-table-column>
           
           <el-table-column label="操作" width="150" prop="handle">
             <template slot-scope="scope">
@@ -257,18 +257,15 @@ export default {
         this.onDeleteClick(this.selection);
       }
     },
-    onDeleteClick(list) {
-      this.$confirm("是否删除？！", "提示", {
+onDeleteClick(list) {
+      this.$confirm("是否删除？", "提示", {
         confirmButtonText: "是",
         cancelButtonText: "否",
         type: "warning"
       })
         .then(() => {
-          
           var realSelect = this.arrayChildrenFlatten(list, []);
-          
-          this.z_delete("api/template_group_type/list", realSelect)
-         //this.z_delete("api/template_group_type",list)
+          this.z_delete("api/template_group_type/list", { data: realSelect })
             .then(res => {
               this.$message({
                 message: "删除成功",
@@ -282,11 +279,41 @@ export default {
                 confirmButtonText: "确定",
                 type: "error"
               });
-              console.log(res);
             });
         })
         .catch(() => {});
     },
+
+    // onDeleteClick(list) {
+    //   this.$confirm("是否删除？！", "提示", {
+    //     confirmButtonText: "是",
+    //     cancelButtonText: "否",
+    //     type: "warning"
+    //   })
+    //     .then(() => {
+          
+    //       var realSelect = this.arrayChildrenFlatten(list, []);
+          
+    //       this.z_delete("api/template_group_type/list", { data: realSelect })
+    //      //this.z_delete("api/template_group_type",list)
+    //         .then(res => {
+    //           this.$message({
+    //             message: "删除成功",
+    //             type: "success",
+    //             duration: 1000
+    //           });
+    //           this.refreshData();
+    //         })
+    //         .catch(res => {
+    //           this.$alert("删除失败", "提示", {
+    //             confirmButtonText: "确定",
+    //             type: "error"
+    //           });
+    //           console.log(res);
+    //         });
+    //     })
+    //     .catch(() => {});
+    // },
     // //查找部门数据
     // selectDept() {
     //   this.deptData = [];

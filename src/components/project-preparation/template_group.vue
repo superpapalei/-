@@ -3,7 +3,7 @@
     <div class="topLayout">
       <div class="tbar">
         <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
-        <el-input @keyup.enter.native="refreshData" placeholder="请输入组织模板编号或组织模板名称" v-model="condition" style="width:300px;">
+        <el-input @keyup.enter.native="refreshData" placeholder="请输入组织模板编号或组织模板名称" v-model="condition" clearable style="width:300px;">
           <el-button @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
         </el-input>
         <el-button type="primary" style="margin-left:10px;" @click="addNewTemplateGroup()">新增组织结构模板</el-button>
@@ -283,7 +283,7 @@ export default {
           
           var realSelect = this.arrayChildrenFlatten(list, []);
           
-          this.z_delete("api/template_group/list", realSelect)
+          this.z_delete("api/template_group/list",  { data: realSelect })
          //this.z_delete("api/template_group",list)
             .then(res => {
               this.$message({

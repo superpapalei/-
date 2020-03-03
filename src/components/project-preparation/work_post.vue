@@ -3,7 +3,7 @@
     <div class="topLayout">
       <div class="tbar">
         <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
-        <el-input @keyup.enter.native="refreshData" placeholder="请输入角色编号或角色名称" v-model="condition" style="width:300px;">
+        <el-input @keyup.enter.native="refreshData" placeholder="请输入角色编号或角色名称" v-model="condition" clearable style="width:300px;">
           <el-button @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
         </el-input>
         <el-button type="primary" style="margin-left:10px;" @click="addNewWorkPost()">新增岗位</el-button>
@@ -272,7 +272,7 @@ export default {
           
           var realSelect = this.arrayChildrenFlatten(list, []);
           
-          this.z_delete("api/work_post/list", realSelect)
+          this.z_delete("api/work_post/list",  { data: realSelect })
          //this.z_delete("api/work_post",list)
             .then(res => {
               this.$message({
