@@ -318,8 +318,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          var realSelect = this.arrayChildrenFlatten(list, []);
-          this.z_delete("api/standard_task/list", { data: realSelect })
+          this.z_delete("api/standard_task/list", { data: list })
             .then(res => {
               this.$message({
                 message: "删除成功",
@@ -353,19 +352,6 @@ export default {
         name = dept[0].display;
       }
       return name;
-    },
-    //多维数组扁平化
-    arrayChildrenFlatten(array, result) {
-      for (var i = 0; i < array.length; i++) {
-        var item = array[i];
-        if (item.children && item.children.length > 0) {
-          result.push(item);
-          result = this.arrayChildrenFlatten(item.children, result);
-        } else {
-          result.push(item);
-        }
-      }
-      return result;
     },
     handleSelectTreeDblClick(data) {
       this.taskModel.dept_id = data.dept_id;

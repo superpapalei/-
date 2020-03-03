@@ -151,12 +151,9 @@ const mutations = {
 function arrayChildrenFlatten(array, result) {
     for (var i = 0; i < array.length; i++) {
         var item = array[i];
+        result.push(item);
         if (item.children && item.children.length > 0) {
-            result.push(item);
             result = arrayChildrenFlatten(item.children, result);
-        }
-        else {
-            result.push(item);
         }
     }
     return result;
