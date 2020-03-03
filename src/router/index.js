@@ -12,6 +12,7 @@ import emp from '@/components/hr/emp'
 import dept from '@/components/hr/dept'
 
 import standardTask from '@/components/project-preparation/standard-task'
+import project_classification from '@/components/project-preparation/project_classification'
 import work_post from '@/components/project-preparation/work_post'
 
 Vue.use(Router)
@@ -65,6 +66,11 @@ const router = new Router({
           path: '/work_post',
           name: 'work_post',
           component: work_post,
+        },
+        {
+          path: '/project_classification',
+          name: 'project_classification',
+          component: project_classification,
         }
       ]
     }
