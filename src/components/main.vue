@@ -30,6 +30,7 @@
               <el-menu-item-group>
                 <el-menu-item index="standardTask" route="/standardTask">标准任务</el-menu-item>
                 <el-menu-item index="work_post" route="/work_post">岗位</el-menu-item>
+                <el-menu-item index="template_group" route="/template_group">项目组织结构模板</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="3">

@@ -13,6 +13,7 @@ import dept from '@/components/hr/dept'
 
 import standardTask from '@/components/project-preparation/standard-task'
 import work_post from '@/components/project-preparation/work_post'
+import template_group from '@/components/project-preparation/template_group'
 
 Vue.use(Router)
 
@@ -65,6 +66,11 @@ const router = new Router({
           path: '/work_post',
           name: 'work_post',
           component: work_post,
+        },
+        {
+          path: '/template_group',
+          name: 'template_group',
+          component: template_group,
         }
       ]
     }
