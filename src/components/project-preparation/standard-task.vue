@@ -1,68 +1,71 @@
 <template>
   <div class="standard-task">
-    <div class="topLayout">
-      <div class="tbar">
-        <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
-        <el-input size="small" @keyup.enter.native="refreshData" placeholder="请输入任务编号或任务名称" v-model="condition"
-          clearable style="width:300px;">
-          <el-button size="small" @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
-        </el-input>
-        <el-button type="primary" size="small" style="margin-left:10px;" @click="addNewTaskShow('root')">新增根节点
-        </el-button>
-        <el-button type="primary" size="small" :disabled="selection.length!=1" @click="addNewTaskShow('children')">新增子节点
-        </el-button>
-        <el-button type="danger" size="small" :disabled="selection.length==0" @click="deleteList">
-          删除选中节点({{selection.length}})
-        </el-button>
-        <el-dropdown style="margin-left:10px;">
-          <el-button size="small">
-            操作<i class="el-icon-arrow-down el-icon--right"></i>
+    <div class="containAll">
+      <div class="topLayout">
+        <div class="tbar">
+          <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
+          <el-input size="small" @keyup.enter.native="refreshData" placeholder="请输入任务编号或任务名称" v-model="condition"
+            clearable style="width:300px;">
+            <el-button size="small" @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
+          </el-input>
+          <el-button type="primary" size="small" style="margin-left:10px;" @click="addNewTaskShow('root')">新增根节点
           </el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="expandAll">展开所有节点</el-dropdown-item>
-            <el-dropdown-item @click.native="collapseAll" divided>折叠所有节点</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div>
-      <div class="topContent" style="height:300px;">
-        <el-table ref="taskTable" style="width: 100%;" height="100%" :data="taskData" tooltip-effect="dark"
-          highlight-current-row row-key="st_id" default-expand-all @selection-change="handleSelectionChange"
-          @select-all="handleSelectAll" @row-click="handleRowClick">
-          <el-table-column type="selection" width="55" align="center"></el-table-column>
-          <el-table-column prop="st_id" label="任务编号" align="center" width="150"></el-table-column>
-          <el-table-column prop="st_name" label="任务名称" align="center" width="150"></el-table-column>
-          <el-table-column prop="dept_id" label="部门" align="center" width="180">
-            <template slot-scope="scope">{{filterDeptName(scope.row.dept_id)}}</template>
-          </el-table-column>
-          <el-table-column prop="st_period" label="工期(天)" align="center" width="90"></el-table-column>
-          <el-table-column prop="st_type" label="类别" align="center" width="90">
-            <template slot-scope="scope">{{scope.row.st_type | stTypeTrans}}</template>
-          </el-table-column>
-          <el-table-column prop="st_note" label="说明" align="center"></el-table-column>
-          <el-table-column label="操作" width="150" prop="handle">
-            <template slot-scope="scope">
-              <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTaskShow(scope.row)">
-              </el-button>
-              <el-button type="danger" icon="el-icon-delete" size="mini" circle @click="deleteOne(scope.row)">
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
-      <div class="bottomContent" style="height:250px;">
+          <el-button type="primary" size="small" :disabled="selection.length!=1" @click="addNewTaskShow('children')">
+            新增子节点
+          </el-button>
+          <el-button type="danger" size="small" :disabled="selection.length==0" @click="deleteList">
+            删除选中节点({{selection.length}})
+          </el-button>
+          <el-dropdown style="margin-left:10px;">
+            <el-button size="small">
+              操作<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native="expandAll">展开所有节点</el-dropdown-item>
+              <el-dropdown-item @click.native="collapseAll" divided>折叠所有节点</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+        <div class="topContent" style="height:300px;">
+          <el-table ref="taskTable" style="width: 100%;" height="100%" :data="taskData" tooltip-effect="dark"
+            highlight-current-row row-key="st_id" default-expand-all @selection-change="handleSelectionChange"
+            @select-all="handleSelectAll" @row-click="handleRowClick">
+            <el-table-column type="selection" width="55" align="center"></el-table-column>
+            <!-- <el-table-column prop="st_id" label="任务编号" align="center" width="150"></el-table-column> -->
+            <el-table-column prop="st_name" label="任务名称" align="center" width="200"></el-table-column>
+            <el-table-column prop="dept_id" label="部门" align="center" width="180">
+              <template slot-scope="scope">{{filterDeptName(scope.row.dept_id)}}</template>
+            </el-table-column>
+            <el-table-column prop="st_period" label="工期(天)" align="center" width="100"></el-table-column>
+            <el-table-column prop="st_type" label="类别" align="center" width="100">
+              <template slot-scope="scope">{{scope.row.st_type | stTypeTrans}}</template>
+            </el-table-column>
+            <el-table-column prop="st_note" label="说明" align="center"></el-table-column>
+            <el-table-column label="操作" width="150" prop="handle">
+              <template slot-scope="scope">
+                <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTaskShow(scope.row)">
+                </el-button>
+                <el-button type="danger" icon="el-icon-delete" size="mini" circle @click="deleteOne(scope.row)">
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <div class="bottomContent" style="height:250px;">
+        </div>
       </div>
     </div>
     <el-dialog width="450px" :title="addTaskText" :close-on-click-modal="false" :visible.sync="addTaskVisiable"
-      top="5vh" @closed="refreshForm">
+      @closed="refreshForm">
       <el-form size="small" :model="taskModel" label-width="100px" ref="taskForm" :rules="add_rules">
-        <el-form-item label="任务编号">
+        <!-- <el-form-item label="任务编号">
           <el-input class="formItem" v-model="taskModel.st_id" placeholder="系统自动生成" disabled>
           </el-input>
         </el-form-item>
         <el-form-item label="上级任务编号">
           <el-input class="formItem" v-model="taskModel.st_pid" placeholder="无" disabled>
           </el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="所属部门" prop="dept_id">
           <el-select v-model="taskModel.dept_id" ref="select_dept" placeholder="请选择属部门">
             <el-option :label="taskModel.dept_name" :value="taskModel.dept_id" style="height:auto;padding:0;">
@@ -227,16 +230,18 @@ export default {
       }
     },
     addNewTaskShow(type) {
-      var st_pid = "";
+      var titleName = "";
+      var st_pid = 0;
       if (type == "root") {
-        st_pid = "";
+        titleName = "";
         this.addTaskText = "新增根节点";
       } else if (type == "children") {
         st_pid = this.selection[0].st_id;
-        this.addTaskText = "新增[" + st_pid + "]的子节点";
+        titleName = this.selection[0].st_name;
+        this.addTaskText = "新增[" + titleName + "]的子节点";
       }
       this.taskModel = {
-        st_id: "",
+        st_id: 0,
         st_pid: st_pid,
         dept_id: "",
         dept_name: "",
@@ -255,7 +260,7 @@ export default {
             this.z_post("api/standard_task", this.taskModel)
               .then(res => {
                 this.$message({
-                  message: "新增成功",
+                  message: "新增成功!",
                   type: "success",
                   duration: 1000
                 });
@@ -263,7 +268,7 @@ export default {
                 this.addTaskVisiable = false;
               })
               .catch(res => {
-                this.$alert("新增失败", "提示", {
+                this.$alert("新增失败!", "提示", {
                   confirmButtonText: "确定",
                   type: "error"
                 });
@@ -272,7 +277,7 @@ export default {
             this.z_put("api/standard_task", this.taskModel)
               .then(res => {
                 this.$message({
-                  message: "编辑成功",
+                  message: "编辑成功!",
                   type: "success",
                   duration: 1000
                 });
@@ -280,7 +285,7 @@ export default {
                 this.addTaskVisiable = false;
               })
               .catch(res => {
-                this.$alert("编辑失败", "提示", {
+                this.$alert("编辑失败!", "提示", {
                   confirmButtonText: "确定",
                   type: "error"
                 });
@@ -321,14 +326,14 @@ export default {
           this.z_delete("api/standard_task/list", { data: list })
             .then(res => {
               this.$message({
-                message: "删除成功",
+                message: "删除成功!",
                 type: "success",
                 duration: 1000
               });
               this.refreshData();
             })
             .catch(res => {
-              this.$alert("删除失败", "提示", {
+              this.$alert("删除失败!", "提示", {
                 confirmButtonText: "确定",
                 type: "error"
               });
@@ -402,9 +407,18 @@ export default {
 .standard-task {
   width: 100%;
 }
+.containAll {
+  width: 1100px;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  box-sizing: border-box;
+  background-color: white;
+}
 .tbar {
   margin-bottom: 10px;
-  padding-left: 20px;
+  padding-left: 10px;
 }
 .formItem {
   width: 300px;
