@@ -4,7 +4,7 @@
       <div class="tbar">
         <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
         <el-input size="small" @keyup.enter.native="refreshData" placeholder="请输入任务编号或任务名称" v-model="condition"
-          style="width:300px;">
+          clearable style="width:300px;">
           <el-button size="small" @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
         </el-input>
         <el-button type="primary" size="small" style="margin-left:10px;" @click="addNewTaskShow('root')">新增根节点
@@ -319,7 +319,7 @@ export default {
       })
         .then(() => {
           var realSelect = this.arrayChildrenFlatten(list, []);
-          this.z_delete("api/standard_task/list", realSelect)
+          this.z_delete("api/standard_task/list", { data: realSelect })
             .then(res => {
               this.$message({
                 message: "删除成功",
