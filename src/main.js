@@ -36,7 +36,7 @@ Axios.interceptors.request.use(config => {
   //   config.params.tForIE = new Date()
   // }
   //在axios中传入config，配置一个参数来控制。如果loading为false，则不需要loading
-  if (config.method === 'get' || config.method === 'delete') {
+  if (config.method === 'get') {
     if (config.config != undefined && config.config.loading != undefined && config.config.loading == false)
       return config;
   } else {

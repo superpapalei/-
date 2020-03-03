@@ -23,17 +23,17 @@ function funcThen(response, resolve, reject) {
     var res = response.data;
     if (res.code == DECODE.CODE_INVALID) {//失效
         logout();
-        console.log(res.msg?res.msg:res);
+        console.log(res.msg ? res.msg : res);
         reject(res);
     } else if (res.code == DECODE.CODE_OK) {//成功
         resolve(res);
     } else {//其他返回失败
-        console.log(res.msg?res.msg:res);
+        console.log(res.msg ? res.msg : res);
         reject(res);
     }
 }
 function funcCatch(err, reject) {
-    console.log(err.msg?err.msg:err);
+    console.log(err.msg ? err.msg : err);
     reject(err)
 }
 /**
@@ -93,17 +93,17 @@ export function z_put(url, data = {}, config = {}) {
     })
 }
 /**
- * 封装delete请求
+ * 封装delete请求（API文档中，显示在Parameters中放在params里面，显示在Request body中放在data中）
  * @param url
  * @param data
  * @returns {Promise}
  */
-export function z_delete(url, data = {}, config = {}) {
+export function z_delete(url, config = {}) {
     return new Promise((resolve, reject) => {
         Axios.delete(url, {
-            params: data,
-            data: data,
-            config: config
+            params: config.params,
+            data: config.data,
+            loading: config.loading
         })
             .then(response => funcThen(response, resolve, reject))
             .catch(err => funcCatch(err, reject))
