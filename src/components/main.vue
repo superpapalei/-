@@ -28,6 +28,7 @@
               <el-menu-item-group>
                 <el-menu-item index="test" route="/test">测试</el-menu-item>
                 <el-menu-item index="ScheduleTest" route="/ScheduleTest">计划测试</el-menu-item>
+                <el-menu-item index="taskList" route="/schedule-task/taskList">排班任务测试</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="2">

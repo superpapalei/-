@@ -14,6 +14,8 @@ import dept from '@/components/hr/dept'
 import standardTask from '@/components/project-preparation/standard-task'
 import work_post from '@/components/project-preparation/work_post'
 
+import taskList from '@/components/schedule-task/taskList'
+
 Vue.use(Router)
 
 const router = new Router({
@@ -61,11 +63,17 @@ const router = new Router({
           name: 'standardTask',
           component: standardTask,
         },
+     
         {
           path: '/work_post',
           name: 'work_post',
           component: work_post,
-        }
+        },
+        {
+          path: '/schedule-task/taskList',
+          name: 'taskList',
+          component: taskList,
+        },
       ]
     }
   ]
