@@ -455,14 +455,13 @@ export default {
 }
 .unReadMessage {
   position: absolute;
-  top: 10px;
+  top: 12px;
   left: 10px;
   width: 8px;
   height: 8px;
   color: #fff;
   background-image: linear-gradient(#54a3ff, #006eed);
   background-clip: padding-box;
-  border: 1px solid #24292e;
   border-radius: 50%;
 }
 .mainContentCard {
@@ -546,7 +545,7 @@ export default {
   padding: 10px !important;
 }
 .mainContentCard .el-card__body {
-  padding: 10px 15px 0 !important;
+  padding: 10px 15px !important;
 }
 .el-dialog__body {
   padding: 20px !important;
