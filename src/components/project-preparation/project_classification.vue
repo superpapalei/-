@@ -1,68 +1,92 @@
 <template>
-  <div class="standard-task">待填充</div>
+  <div class="project_classification">
+    <div class="topLayout">
+      <div class="tbar">
+        <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
+        <el-input @keyup.enter.native="refreshData" placeholder="请输出项目分类编号或者名称" v-model="condition"
+          style="width:300px;">
+          <el-button @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
+        </el-input>
+        <el-button type="primary" style="margin-left:10px;" @click="addNewTaskShow('root')">新增项目类型</el-button>
+        <!-- <el-button type="primary" :disabled="selection.length!=1" @click="addNewTaskShow('children')">新增子节点</el-button> -->
+        <el-button type="danger" :disabled="selection.length==0" @click="deleteList">删除选中节点({{selection.length}})
+        </el-button>
+        <!-- <el-dropdown style="margin-left:10px;">
+          <el-button>
+            操作<i class="el-icon-arrow-down el-icon--right"></i>
+          </el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item @click.native="expandAll">展开所有节点</el-dropdown-item>
+            <el-dropdown-item @click.native="collapseAll" divided>折叠所有节点</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown> -->
+      </div>
+      <div class="topContent">
+        <el-table ref="proclassTable" style="width: 100%;height:350px;" :data="ProclassData" tooltip-effect="dark"
+          highlight-current-row row-key="pc_no" default-expand-all @selection-change="handleSelectionChange"
+          @select-all="handleSelectAll" @row-click="handleRowClick">
+          <el-table-column type="selection" width="55" align="center"></el-table-column>
+          <el-table-column prop="pc_no" label="项目类型编号" align="center" width="150"></el-table-column>
+          <el-table-column prop="pc_name" label="项目类型名称" align="center" width="150"></el-table-column>
+          <el-table-column prop="pc_note" label="说明" align="center" width="180"></el-table-column>
+          <el-table-column label="操作" width="150" prop="handle">
+            <template slot-scope="scope">
+              <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTaskShow(scope.row)">
+              </el-button>
+              <el-button type="danger" icon="el-icon-delete" size="mini" circle @click="deleteOne(scope.row)">
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </div>
+
+    <el-dialog width="500px" :title="addTaskText" :close-on-click-modal="false" :visible.sync="addTaskVisiable"
+      top="5vh" @closed="refreshForm">
+      <el-form :model="taskModel" label-width="100px" ref="taskForm" >
+        
+
+        <!-- <el-form-item label="项目类型编号" prop="pc_no">
+          <el-input class="formItem" v-model="taskModel.pc_no" placeholder="项目类型名称">
+          </el-input>
+        </el-form-item> -->
+
+        <el-form-item label="项目类型名称" prop="pc_name">
+          <el-input class="formItem" v-model="taskModel.pc_name" placeholder="项目类型名称">
+          </el-input>
+        </el-form-item>
+
+        <el-form-item label="备注">
+          <el-input class="formItem" type="textarea" :rows="4" v-model="taskModel.pc_note" placeholder="备注信息">
+          </el-input>
+        </el-form-item>
+        
+        <el-form-item style="text-align:center;margin-right:100px;">
+          <el-button @click="addTaskVisiable = false">取&nbsp;&nbsp;消</el-button>
+          <el-button type="primary" @click="onSaveTaskClick" style="margin-left:30px;">保&nbsp;&nbsp;存</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+  </div>
+
 </template>
 
 <script>
 export default {
-  name: "standard-task",
+  name: "project_classification",
   data() {
     return {
       condition: "",
-      taskData: [], //表格数据
-      deptDataFilter:[],
-      deptData: [], //部门数据
+      ProclassData: [], //表格数据
       selection: [],
       addTaskVisiable: false,
       taskModel: {},
       addOrNot: true, //是否新增
-      addTaskText: "",
-      stType_options: [
-        {
-          value: "task",
-          label: "任务"
-        },
-        {
-          value: "work",
-          label: "节点"
-        }
-      ],
-      add_rules: {
-        dept_id: [{ required: true, message: "请选择部门", trigger: "change" }],
-        st_name: [
-          { required: true, message: "请填写任务名称", trigger: "blur" }
-        ],
-        st_period: [{ required: true, message: "请填写工期", trigger: "blur" }]
-      }
+      addTaskText: ""
     };
   },
-  filters: {
-    datatrans(value) {
-      if (!value || value == "9999-12-31") return "";
-      //时间戳转化大法
-      let date = new Date(value);
-      let y = date.getFullYear();
-      let MM = date.getMonth() + 1;
-      MM = MM < 10 ? "0" + MM : MM;
-      let d = date.getDate();
-      d = d < 10 ? "0" + d : d;
-      let h = date.getHours();
-      h = h < 10 ? "0" + h : h;
-      let m = date.getMinutes();
-      m = m < 10 ? "0" + m : m;
-      let s = date.getSeconds();
-      s = s < 10 ? "0" + s : s;
-      return y + "-" + MM + "-" + d + " "; /* + h + ':' + m + ':' + s; */
-    },
-    stTypeTrans(value) {
-      switch (value) {
-        case "task":
-          return "任务";
-          break;
-        case "work":
-          return "节点";
-          break;
-      }
-    }
+  mounted() {
+    this.refreshData();
   },
   watch: {
     addTaskVisiable(val) {
@@ -73,13 +97,15 @@ export default {
   },
   methods: {
     refreshData() {
-      this.z_get("api/standard_task/treeList", {condition: this.condition})
+      this.z_get("api/project_classification/treeList", {
+        condition: this.condition
+      })
         .then(res => {
-          this.deptDataFilter = res.dict.dept_id;
-          this.taskData = res.data;
+          this.ProclassData = res.data;
         })
         .catch(res => {});
     },
+
     //重置表单
     refreshForm() {
       this.$refs.taskForm.resetFields();
@@ -122,23 +148,18 @@ export default {
       }
     },
     addNewTaskShow(type) {
-      var st_pid = "";
-      if (type == "root") {
-        st_pid = "";
-        this.addTaskText = "新增根节点";
-      } else if (type == "children") {
-        st_pid = this.selection[0].st_id;
-        this.addTaskText = "新增[" + st_pid + "]的子节点";
-      }
+      // var pro_pc_no = "";
+      // if (type == "root") {
+      //   pc_no = "";
+      //   this.addTaskText = "新增根节点";
+      // } else if (type == "children") {
+      //   pro_pc_no = this.selection[0].pc_no;
+      //   this.addTaskText = "新增[" + pro_pc_no + "]的子节点";
+      // }
       this.taskModel = {
-        st_id: "",
-        st_pid: st_pid,
-        dept_id: "",
-        dept_name: "",
-        st_name: "",
-        st_type: "task",
-        st_period: "",
-        st_note: ""
+        pc_no: "",
+        pc_name: "",
+        pc_note: ""
       };
       this.addOrNot = true;
       this.addTaskVisiable = true;
@@ -147,7 +168,7 @@ export default {
       this.$refs.taskForm.validate(valid => {
         if (valid) {
           if (this.addOrNot) {
-            this.z_post("api/standard_task", this.taskModel)
+            this.z_post("api/project_classification", this.taskModel)
               .then(res => {
                 this.$message({
                   message: "新增成功",
@@ -165,7 +186,7 @@ export default {
                 console.log(res);
               });
           } else {
-            this.z_put("api/standard_task", this.taskModel)
+            this.z_put("api/project_classification", this.taskModel)
               .then(res => {
                 this.$message({
                   message: "编辑成功",
@@ -191,7 +212,6 @@ export default {
     //编辑数据
     editTaskShow(row) {
       this.taskModel = JSON.parse(JSON.stringify(row));
-      this.taskModel.dept_name = this.filterDeptName(this.taskModel.dept_id);
       this.addTaskText = "编辑节点";
       this.addOrNot = false;
       this.addTaskVisiable = true;
@@ -216,7 +236,7 @@ export default {
       })
         .then(() => {
           var realSelect = this.arrayChildrenFlatten(list, []);
-          this.z_delete("api/standard_task/list", realSelect)
+          this.z_delete("api/project_classification/list", realSelect)
             .then(res => {
               this.$message({
                 message: "删除成功",
@@ -235,25 +255,7 @@ export default {
         })
         .catch(() => {});
     },
-    //查找部门数据
-    selectDept() {
-      this.deptData = [];
-      this.z_get("api/dept/tree", {}, { loading: false })
-        .then(res => {
-          this.deptData = res.data;
-        })
-        .catch(res => {
-          console.log(res.msg);
-        });
-    },
-    filterDeptName(id) {
-      var name = id;
-      var dept = this.deptDataFilter.filter(item => item.value == id);
-      if (dept.length) {
-        name = dept[0].display;
-      }
-      return name;
-    },
+
     //多维数组扁平化
     arrayChildrenFlatten(array, result) {
       for (var i = 0; i < array.length; i++) {
@@ -305,9 +307,6 @@ export default {
         }
       }
     }
-  },
-  mounted() {
-    this.refreshData();
   }
 };
 </script>

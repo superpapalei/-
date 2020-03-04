@@ -36,6 +36,8 @@
               <el-menu-item-group>
                 <el-menu-item index="standardTask" route="/standardTask">标准任务</el-menu-item>
                 <el-menu-item index="work_post" route="/work_post">岗位</el-menu-item>
+                <el-menu-item index="template_group" route="/template_group">项目组织结构模板</el-menu-item>
+                <el-menu-item index="template_group_type" route="/template_group_type">模板分类</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="3">
@@ -44,6 +46,7 @@
                 <el-menu-item @click.native="openCalendar">日历</el-menu-item>
                 <el-menu-item index="dept" route="/dept">部门</el-menu-item>
                 <el-menu-item index="emp" route="/emp">人员</el-menu-item>
+                <el-menu-item index="project_classification" route="/project_classification">项目分类</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <!-- 权限树加载 -->
@@ -104,13 +107,13 @@
         </div>
       </el-header>
       <el-main class="backTop">
-        <el-card class="mainContent">
+        <el-card class="mainContentCard">
           <keep-alive>
             <router-view v-if="$route.meta.keepAlive === true" />
           </keep-alive>
           <router-view v-if="$route.meta.keepAlive !== true" />
           <div v-if="activeTabName == 'main'">
-            <div style="height:1500px;">
+            <div style="height:1500px;background-color:white;">
               主页内容
               主页内容
               主页内容
@@ -468,14 +471,15 @@ export default {
   border: 1px solid #24292e;
   border-radius: 50%;
 }
-.mainContent {
+.mainContentCard {
   min-height: 100%;
+  background-color: #eee;
   box-sizing: border-box;
 }
 .backTop {
   margin: 0;
   padding: 0;
-  background: #ecf5ef;
+  background-color: #ecf5ef;
 }
 </style>
 
@@ -547,7 +551,7 @@ export default {
 .el-card__body {
   padding: 10px !important;
 }
-.mainContent .el-card__body {
+.mainContentCard .el-card__body {
   padding: 10px 15px 0 !important;
 }
 .el-dialog__body {
