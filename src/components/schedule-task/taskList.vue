@@ -24,21 +24,41 @@
           </el-dropdown-menu>
         </el-dropdown>
       </div>
+      
+
+<!-- 项目组织ID	group_id	int			FALSE	TRUE	FALSE -->
+<!-- 项目计划ID	pp_id	int			FALSE	TRUE	TRUE -->
+<!-- 部门ID	dept_id	int			FALSE	TRUE	FALSE -->
+<!-- 标记类型ID	snt_id	int			FALSE	TRUE	FALSE -->
+<!-- 标准任务编号	st_id	int			FALSE	TRUE	FALSE -->
+<!-- 员工ID	emp_id	int			FALSE	TRUE	FALSE -->
+<!-- 作业任务最晚开始时间	t_last_startdate	datetime			FALSE	FALSE	FALSE -->
+
+<!-- 作业任务最早结束时间	t_early_enddate	datetime			FALSE	FALSE	FALSE -->
+<!-- 发布状态	t_release_state	varchar(10)	10		FALSE	FALSE	FALSE -->
+<!-- 发布人	t_release_emp	int			FALSE	FALSE	FALSE -->
+<!-- 投放状态	t_put_state	varchar(10)	10		FALSE	FALSE	FALSE -->
+<!-- 投放人	t_put_emp	int			FALSE	FALSE	FALSE -->
+
+<!-- 任务工期	t_period	int			FALSE	FALSE	FALSE -->
+<!-- 所需班次数	t_shiftcount	int			FALSE	FALSE	FALSE -->
+<!-- 尚需班次数	t_needshifts	int			FALSE	FALSE	FALSE -->
+<!-- 任务管理状态	t_flow_status	int			FALSE	FALSE	FALSE -->
+<!-- 任务执行状态	t_status	int			FALSE	FALSE	FALSE -->
+<!-- 任务优先级	t_priority	int			FALSE	FALSE	FALSE -->
+<!-- 任务排产备注	t_note	varchar(100)	100		FALSE	FALSE	FALSE -->
+<!-- 是否被分解	t_isdecompose	int			FALSE	FALSE	FALSE -->
       <div class="topContent" style="height:300px;">
         <el-table ref="taskTable" style="width: 100%;" height="100%" :data="taskData" tooltip-effect="dark"
-          highlight-current-row row-key="st_id" default-expand-all @selection-change="handleSelectionChange"
+          highlight-current-row row-key="t_id" default-expand-all @selection-change="handleSelectionChange"
           @select-all="handleSelectAll" @row-click="handleRowClick">
           <el-table-column type="selection" width="55" align="center"></el-table-column>
-          <el-table-column prop="st_id" label="任务编号" align="center" width="100"></el-table-column>
-          <el-table-column prop="st_name" label="任务状态" align="center" width="100"></el-table-column>
-            <el-table-column prop="st_period" label="最早开始时间" align="center" width="120"></el-table-column>
-             <el-table-column prop="st_period" label="最晚完工时间" align="center" width="120"></el-table-column>
-          <el-table-column prop="st_period" label="预估工期(天)" align="center" width="110"></el-table-column>
-               <!-- <el-table-column prop="st_period" label="实际工期(天)" align="center" width="110"></el-table-column> -->
-               <el-table-column prop="st_period" label="负责人" align="center" width="90"></el-table-column>
-                <el-table-column prop="st_period" label="执行人" align="center" width="90"></el-table-column>
-         <el-table-column prop="st_period" label="标记" align="center" width="90"></el-table-column>
-          <el-table-column prop="st_note" label="说明" align="center"></el-table-column>
+          <el-table-column prop="t_id" label="任务编号" align="center" width="100"></el-table-column>
+          <el-table-column prop="t_name" label="任务名称" align="center" width="100"></el-table-column>
+            <el-table-column prop="t_early_startdate" label="最早开始时间" align="center" width="120"></el-table-column>
+             <el-table-column prop="t_last_enddate" label="最晚结束时间" align="center" width="120"></el-table-column>
+          
+                <!-- <el-table-column prop="st_period" label="执行人" align="center" width="90"></el-table-column> -->
           <el-table-column label="操作" width="150" prop="handle">
             <template slot-scope="scope">
               <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTaskShow(scope.row)">
@@ -56,14 +76,14 @@
       top="5vh" @closed="refreshForm">
       <el-form size="small" :model="taskModel" label-width="100px" ref="taskForm" :rules="add_rules">
         <el-form-item label="任务编号">
-          <el-input class="formItem" v-model="taskModel.st_id" placeholder="系统自动生成" disabled>
+          <el-input class="formItem" v-model="taskModel.t_id" placeholder="系统自动生成" disabled>
           </el-input>
         </el-form-item>
-        <el-form-item label="上级任务编号">
-          <el-input class="formItem" v-model="taskModel.st_pid" placeholder="无" disabled>
+        <el-form-item label="父任务编号">
+          <el-input class="formItem" v-model="taskModel.jt_pid" placeholder="无" disabled>
           </el-input>
         </el-form-item>
-        <el-form-item label="所属部门" prop="dept_id">
+        <!-- <el-form-item label="所属部门" prop="dept_id">
           <el-select v-model="taskModel.dept_id" ref="select_dept" placeholder="请选择属部门">
             <el-option :label="taskModel.dept_name" :value="taskModel.dept_id" style="height:auto;padding:0;">
               <el-tree :data="deptData" node-key="dept_id" ref="tree" highlight-current default-expand-all
@@ -74,27 +94,18 @@
               </el-tree>
             </el-option>
           </el-select>
-        </el-form-item>
-        <el-form-item label="任务名称" prop="st_name">
+        </el-form-item> -->
+        <el-form-item label="任务名称" prop="t_name">
           <el-input class="formItem" v-model="taskModel.st_name" placeholder="请填写任务名称">
           </el-input>
         </el-form-item>
-        <el-form-item label="任务类型">
-          <el-select v-model="taskModel.st_type" placeholder="请选择任务类型">
-            <el-option v-for="item in stType_options" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
+      
         <el-form-item label="工期(天)" prop="st_period">
           <el-input class="formItem" v-model="taskModel.st_period" placeholder="请填写工期" oninput="value=value.replace(/[^\d.]/g,'')
                                 .replace(/^\./g, '').replace(/\.{2,}/g, '.')
                                 .replace('.', '$#$').replace(/\./g, '')
                                 .replace('$#$', '.')
                                 .slice(0,value.indexOf('.') === -1? value.length: value.indexOf('.') + 3)">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="备注">
-          <el-input class="formItem" type="textarea" :rows="2" v-model="taskModel.st_note" placeholder="备注信息">
           </el-input>
         </el-form-item>
         <el-form-item style="text-align:center;margin-right:100px;">
@@ -178,7 +189,7 @@ export default {
   },
   methods: {
     refreshData() {
-      this.z_get("api/standard_task/treeList", { condition: this.condition })
+      this.z_get("api/task/treeList", { condition: this.condition })
         .then(res => {
           this.deptDataFilter = res.dict.dept_id;
           this.taskData = res.data;
@@ -202,7 +213,7 @@ export default {
       var val = this.taskData;
       var select = false;
       for (var i = 0; i < selection.length; i++) {
-        if (selection[i].st_id == val[0].st_id) {
+        if (selection[i].t_id == val[0].t_id) {
           select = true;
           break;
         }
@@ -227,17 +238,17 @@ export default {
       }
     },
     addNewTaskShow(type) {
-      var st_pid = "";
+      var jt_pid = "";
       if (type == "root") {
-        st_pid = "";
+        jt_pid = "";
         this.addTaskText = "新增根节点";
       } else if (type == "children") {
-        st_pid = this.selection[0].st_id;
-        this.addTaskText = "新增[" + st_pid + "]的子节点";
+        jt_pid = this.selection[0].t_id;
+        this.addTaskText = "新增[" + jt_pid + "]的子节点";
       }
       this.taskModel = {
-        st_id: "",
-        st_pid: st_pid,
+        t_id: "",
+        jt_pid: jt_pid,
         dept_id: "",
         dept_name: "",
         st_name: "",
@@ -252,7 +263,7 @@ export default {
       this.$refs.taskForm.validate(valid => {
         if (valid) {
           if (this.addOrNot) {
-            this.z_post("api/standard_task", this.taskModel)
+            this.z_post("api/task", this.taskModel)
               .then(res => {
                 this.$message({
                   message: "新增成功",
@@ -269,7 +280,7 @@ export default {
                 });
               });
           } else {
-            this.z_put("api/standard_task", this.taskModel)
+            this.z_put("api/task", this.taskModel)
               .then(res => {
                 this.$message({
                   message: "编辑成功",
@@ -319,7 +330,7 @@ export default {
       })
         .then(() => {
           var realSelect = this.arrayChildrenFlatten(list, []);
-          this.z_delete("api/standard_task/list", realSelect)
+          this.z_delete("api/task/list", realSelect)
             .then(res => {
               this.$message({
                 message: "删除成功",
