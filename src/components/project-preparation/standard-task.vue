@@ -32,7 +32,7 @@
             @select-all="handleSelectAll" @row-click="handleRowClick">
             <el-table-column type="selection" width="55" align="center"></el-table-column>
             <!-- <el-table-column prop="st_id" label="任务编号" align="center" width="150"></el-table-column> -->
-            <el-table-column prop="st_name" label="任务名称" align="center" width="200"></el-table-column>
+            <el-table-column prop="st_name" label="任务名称" align="center" width="180"></el-table-column>
             <el-table-column prop="dept_id" label="部门" align="center" width="180">
               <template slot-scope="scope">{{filterDeptName(scope.row.dept_id)}}</template>
             </el-table-column>
@@ -41,7 +41,7 @@
               <template slot-scope="scope">{{scope.row.st_type | stTypeTrans}}</template>
             </el-table-column>
             <el-table-column prop="st_note" label="说明" align="center"></el-table-column>
-            <el-table-column label="操作" width="150" prop="handle">
+            <el-table-column label="操作" width="120" prop="handle">
               <template slot-scope="scope">
                 <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTaskShow(scope.row)">
                 </el-button>
@@ -52,11 +52,17 @@
           </el-table>
         </div>
         <div class="bottomContent" style="height:250px;">
+          <el-tabs v-model="activeName" @tab-click="handleTabClick">
+            <el-tab-pane label="资源需求" name="first">
+
+            </el-tab-pane>
+            <el-tab-pane label="资料需求" name="second">资料需求</el-tab-pane>
+          </el-tabs>
         </div>
       </div>
     </div>
-    <el-dialog width="450px" :title="addTaskText" :close-on-click-modal="false" :visible.sync="addTaskVisiable"
-      @closed="refreshForm">
+    <el-dialog v-dialogDrag width="450px" :title="addTaskText" :close-on-click-modal="false"
+      :visible.sync="addTaskVisiable" @closed="refreshForm">
       <el-form size="small" :model="taskModel" label-width="100px" ref="taskForm" :rules="add_rules">
         <!-- <el-form-item label="任务编号">
           <el-input class="formItem" v-model="taskModel.st_id" placeholder="系统自动生成" disabled>
@@ -124,6 +130,7 @@ export default {
       taskModel: {},
       addOrNot: true, //是否新增
       addTaskText: "",
+      activeName: "first",
       stType_options: [
         {
           value: "task",
@@ -183,10 +190,13 @@ export default {
     refreshData() {
       this.z_get("api/standard_task/treeList", { condition: this.condition })
         .then(res => {
+          console.log(res);
           this.deptDataFilter = res.dict.dept_id;
           this.taskData = res.data;
         })
-        .catch(res => {});
+        .catch(res => {
+          console.log(res);
+        });
     },
     //重置表单
     refreshForm() {
@@ -231,7 +241,7 @@ export default {
     },
     addNewTaskShow(type) {
       var titleName = "";
-      var st_pid = 0;
+      var st_pid = null;
       if (type == "root") {
         titleName = "";
         this.addTaskText = "新增根节点";
@@ -395,7 +405,8 @@ export default {
           }
         }
       }
-    }
+    },
+    handleTabClick() {}
   },
   mounted() {
     this.refreshData();
@@ -428,6 +439,5 @@ export default {
 }
 .bottomContent {
   width: 100%;
-  flex: 1;
 }
 </style>
