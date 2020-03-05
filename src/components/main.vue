@@ -40,6 +40,7 @@
                 <el-menu-item @click.native="openCalendar">日历</el-menu-item>
                 <el-menu-item index="dept" route="/dept">部门</el-menu-item>
                 <el-menu-item index="emp" route="/emp">人员</el-menu-item>
+                <el-menu-item index="cust" route="/cust">客户</el-menu-item>
                 <el-menu-item index="project_classification" route="/project_classification">项目分类</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
