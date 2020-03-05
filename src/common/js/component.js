@@ -30,15 +30,16 @@ Vue.component('zj-form', {
     data() {
         return {
             comparativeData: [],
-            UpdateColumns: [],
+            UpdateColumns: null,
         }
     },
     methods: {
         getUpdateColumns() {
-            this.UpdateColumns = [];
+            this.UpdateColumns = null;
             Object.keys(this.comparativeData).forEach(key => {
                 if (key == 'children') return;
                 if (this.model[key] != this.comparativeData[key]) {
+                    if(this.UpdateColumns == null) this.UpdateColumns = [];
                     this.UpdateColumns.push(key);
                 }
             });
