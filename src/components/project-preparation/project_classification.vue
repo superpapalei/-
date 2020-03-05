@@ -28,7 +28,7 @@
           <el-table-column type="selection" width="55" align="center"></el-table-column>
           <el-table-column prop="pc_no" label="项目类型编号" align="center" width="150"></el-table-column>
           <el-table-column prop="pc_name" label="项目类型名称" align="center" width="150"></el-table-column>
-          <el-table-column prop="pc_note" label="说明" align="center" width="180"></el-table-column>
+          <el-table-column prop="pc_note" label="说明" align="center" width="480"></el-table-column>
           <el-table-column label="操作" width="150" prop="handle">
             <template slot-scope="scope">
               <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTaskShow(scope.row)">
@@ -43,8 +43,7 @@
 
     <el-dialog width="500px" :title="addTaskText" :close-on-click-modal="false" :visible.sync="addTaskVisiable"
       top="5vh" @closed="refreshForm">
-      <el-form :model="taskModel" label-width="100px" ref="taskForm" >
-        
+      <el-form :model="taskModel" label-width="100px" ref="taskForm">
 
         <!-- <el-form-item label="项目类型编号" prop="pc_no">
           <el-input class="formItem" v-model="taskModel.pc_no" placeholder="项目类型名称">
@@ -60,7 +59,7 @@
           <el-input class="formItem" type="textarea" :rows="4" v-model="taskModel.pc_note" placeholder="备注信息">
           </el-input>
         </el-form-item>
-        
+
         <el-form-item style="text-align:center;margin-right:100px;">
           <el-button @click="addTaskVisiable = false">取&nbsp;&nbsp;消</el-button>
           <el-button type="primary" @click="onSaveTaskClick" style="margin-left:30px;">保&nbsp;&nbsp;存</el-button>
@@ -97,9 +96,7 @@ export default {
   },
   methods: {
     refreshData() {
-      this.z_get("api/project_classification/treeList", {
-        condition: this.condition
-      })
+      this.z_get("api/project_classification", { condition: this.condition })
         .then(res => {
           this.ProclassData = res.data;
         })
@@ -235,8 +232,8 @@ export default {
         type: "warning"
       })
         .then(() => {
-          var realSelect = this.arrayChildrenFlatten(list, []);
-          this.z_delete("api/project_classification/list", realSelect)
+          //var realSelect = this.arrayChildrenFlatten(list, []);
+          this.z_delete("api/project_classification/list", { data: list })
             .then(res => {
               this.$message({
                 message: "删除成功",

@@ -16,6 +16,7 @@ import project_classification from '@/components/project-preparation/project_cla
 import work_post from '@/components/project-preparation/work_post'
 import template_group from '@/components/project-preparation/template_group'
 import template_group_type from '@/components/project-preparation/template_group_type'
+import item from '@/components/project-preparation/item'
 import template_group_waiting from '@/components/project-preparation/template_group_waiting'
 
 
@@ -95,6 +96,11 @@ const router = new Router({
           path: '/project_classification',
           name: 'project_classification',
           component: project_classification,
+        },
+        {
+          path: '/item',
+          name: 'item',
+          component: item,
         }
       ]
     }
