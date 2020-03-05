@@ -10,7 +10,7 @@
           </el-input>
           <el-button type="primary" size="small" style="margin-left:10px;" @click="addNewTaskShow('root')">新增根节点
           </el-button>
-          <el-button type="primary" size="small" :disabled="selection.length!=1" @click="addNewTaskShow('children')">
+          <el-button type="primary" size="small" :disabled="!currentRow.st_id" @click="addNewTaskShow('children')">
             新增子节点
           </el-button>
           <el-button type="danger" size="small" :disabled="selection.length==0" @click="deleteList">
@@ -75,7 +75,7 @@
                   <el-table-column type="selection" width="55" align="center"></el-table-column>
                   <el-table-column type="index" width="40" align="center">
                   </el-table-column>
-                  <el-table-column prop="item_no" label="物料编码" align="center" width="150"></el-table-column>
+                  <el-table-column prop="item_no" label="物料编码" align="center" width="130"></el-table-column>
                   <el-table-column prop="item_name" label="物料名称" align="center" width="200"></el-table-column>
                   <el-table-column prop="sti_quantity" label="数量" align="center" width="90"></el-table-column>
                   <el-table-column prop="" label="单位" align="center" width="100"></el-table-column>
@@ -99,6 +99,7 @@
         </el-tabs>
       </div>
     </div>
+    <!-- 任务表单 -->
     <el-dialog v-dialogDrag width="450px" :title="addTaskText" :close-on-click-modal="false"
       :visible.sync="addTaskVisiable" @closed="refreshForm">
       <el-form size="small" :model="taskModel" label-width="100px" ref="taskForm" :rules="add_rules">
@@ -151,8 +152,35 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-    <el-dialog v-dialogDrag width="450px" :title="addTaskItemText" :close-on-click-modal="false"
-      :visible.sync="addTaskItemVisible" @closed="refreshItemForm">
+    <!-- 物料需求 -->
+    <el-dialog width="1000px" :title="addTaskItemText" :close-on-click-modal="false" :visible.sync="addTaskItemVisible">
+      <div class="transferDiv">
+        <div class="leftTransferItem">
+          <div class="tbar">
+            <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="searchItemList"></el-button>
+            <el-input size="small" @keyup.enter.native="refreshItemListData" placeholder="请输入物料编码/名称"
+              v-model="itemListCondition" clearable style="width:250px;">
+              <el-button size="small" @click="refreshItemListData" slot="append" icon="el-icon-search">搜索</el-button>
+            </el-input>
+          </div>
+          <div>
+            <el-table ref="itemListTable" v-loading="loading2" style="width:100%;" height="300" :data="itemListData" tooltip-effect="dark"
+              @row-dblclick="handleRowDbClcik" border stripe>
+              <el-table-column prop="item_no" label="物料编码" align="center" width="130"></el-table-column>
+              <el-table-column prop="item_name" label="物料名称" align="center" width="200"></el-table-column>
+              <el-table-column prop="item_specification" label="描述" align="center"></el-table-column>
+            </el-table>
+            <div style="margin:0 25%;">
+              <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="limit"
+                layout="total, prev, pager, next, jumper" :total="total"></el-pagination>
+            </div>
+          </div>
+        </div>
+        <div class="rightTransferItem"></div>
+      </div>
+    </el-dialog>
+    
+    <el-dialog v-dialogDrag width="450px" title="选择物料" :close-on-click-modal="false" :visible.sync="selectItemVisible">
       <el-form size="small" :model="taskItemModel" label-width="100px" ref="taskItemForm" :rules="addItem_rules">
         <el-form-item label="物料名称" prop="item_name">
           <el-input class="formItem" v-model="taskItemModel.item_no" placeholder="请选择物料" disabled>
@@ -179,10 +207,6 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-    <el-dialog v-dialogDrag width="450px" title="选择物料" :close-on-click-modal="false" :visible.sync="selectItemVisible"
-      append-to-body>
-
-    </el-dialog>
   </div>
 </template>
 
@@ -191,8 +215,12 @@ export default {
   name: "standard-task",
   data() {
     return {
+      limit: 10,
+      currentPage: 1,
+      total: 0,
       condition: "",
       itemCondition: "",
+      itemListCondition: "",
       dataCondition: "",
       taskData: [], //表格数据
       deptDataFilter: [], //部门渲染数据
@@ -200,6 +228,7 @@ export default {
       selection: [], //选中行数据
       itemSelection: [],
       taskItemData: [], //资源
+      itemListData: [],
       taskDataData: [], //资料
       currentRow: {},
       addTaskVisiable: false,
@@ -208,11 +237,13 @@ export default {
       bottomDataShow: false,
       taskModel: {},
       taskItemModel: {},
+      taskItemModelList: [],
       addOrNot: true, //是否新增
       addTaskText: "",
       addTaskItemText: "",
       activeName: "first",
       loading: false,
+      loading2:false,
       stType_options: [
         {
           value: "task",
@@ -277,7 +308,9 @@ export default {
   methods: {
     refreshData() {
       this.taskData = [];
+      this.currentRow = {};
       this.bottomDataShow = false;
+      this.refreshBottom();
       this.z_get("api/standard_task/treeList", { condition: this.condition })
         .then(res => {
           this.deptDataFilter = res.dict.dept_id;
@@ -287,6 +320,7 @@ export default {
     },
     refreshItemData() {
       this.loading = true;
+      this.taskItemData = [];
       this.z_get(
         "api/standard_task_item",
         { st_id: this.currentRow.st_id, condition: this.itemCondition },
@@ -299,14 +333,25 @@ export default {
         .catch(res => {});
     },
     refreshDataData() {
+      this.taskDataData = [];
       this.z_get(
         "api/standard_task_data",
         { condition: this.dataCondition },
         { loading: false }
       )
         .then(res => {
-          console.log(res);
           this.taskDataData = res.data;
+        })
+        .catch(res => {});
+    },
+    refreshItemListData() {
+      this.loading2 = true;
+      this.itemListData = [];
+      this.z_get("api/item/page", { condition: this.itemCondition,page:this.currentPage,limit:this.limit },{loading:false})
+        .then(res => {
+          this.loading2 = false;
+          this.itemListData = res.data;
+          this.total = res.total;
         })
         .catch(res => {});
     },
@@ -314,21 +359,22 @@ export default {
     refreshForm() {
       this.$refs.taskForm.resetFields();
     },
-    refreshItemForm() {
-      this.$refs.taskItemForm.resetFields();
-    },
     refreshBottom() {
       this.itemCondition = "";
       this.dataCondition = "";
     },
     search() {
       this.condition = "";
-      this.refreshBottom();
       this.refreshData();
     },
     searchItem() {
       this.itemCondition = "";
       this.refreshItemData();
+    },
+    searchItemList() {
+      this.itemListCondition = "";
+      this.currentPage = 1;
+      this.refreshItemListData();
     },
     searchData() {
       this.dataCondition = "";
@@ -377,8 +423,8 @@ export default {
         titleName = "";
         this.addTaskText = "新增根节点";
       } else if (type == "children") {
-        st_pid = this.selection[0].st_id;
-        titleName = this.selection[0].st_name;
+        st_pid = this.currentRow.st_id;
+        titleName = this.currentRow.st_name;
         this.addTaskText = "新增[" + titleName + "]的子节点";
       }
       this.taskModel = {
@@ -486,13 +532,8 @@ export default {
         .catch(() => {});
     },
     addNewTaskItemShow() {
-      this.taskItemModel = {
-        item_no: "",
-        item_name: "",
-        st_id: this.currentRow.st_id,
-        sti_quantity: "",
-        sti_note: ""
-      };
+      this.taskItemModelList = [];
+      this.searchItemList();
       this.addTaskItemText = "新增物料需求";
       this.addOrNot = true;
       this.addTaskItemVisible = true;
@@ -527,9 +568,9 @@ export default {
     },
     //点击行可以切换选中状态
     handleRowClick(row, column) {
-      if (column.property != "handle") {
-        this.$refs.taskTable.toggleRowSelection(row);
-      }
+      // if (column.property != "handle") {
+      //   this.$refs.taskTable.toggleRowSelection(row);
+      // }
       if (JSON.stringify(this.currentRow) != JSON.stringify(row)) {
         this.currentRow = row;
         //点击加载tab数据
@@ -540,9 +581,12 @@ export default {
       this.bottomDataShow = true;
     },
     handleRowClick2(row, column) {
-      if (column.property != "handle") {
-        this.$refs.taskItemTable.toggleRowSelection(row);
-      }
+      // if (column.property != "handle") {
+      //   this.$refs.taskItemTable.toggleRowSelection(row);
+      // }
+    },
+    handleRowDbClcik(row){
+        console.log(row)
     },
     expandAll() {
       var icon = this.$el.getElementsByClassName("el-table__expand-icon");
@@ -571,6 +615,10 @@ export default {
           }
         }
       }
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.refreshItemListData();
     }
   },
   mounted() {
@@ -599,5 +647,20 @@ export default {
 }
 .formItem {
   width: 300px;
+}
+.transferDiv {
+  display: inline-block;
+}
+.leftTransferItem {
+  display: inline-block;
+  vertical-align: middle;
+  width: 500px;
+  height: 400px;
+}
+.rightTransferItem {
+  display: inline-block;
+  vertical-align: middle;
+  width: 300px;
+  height: 400px;
 }
 </style>
