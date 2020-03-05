@@ -17,6 +17,7 @@ import { z_get, z_post, z_patch, z_put, z_delete } from './api/httpASP'
 import './common/js/floatCalculate'
 import './common/js/directive'
 import './common/js/component'
+import  { downLoadFile } from "./common/js/commonMethods";
 
 Vue.use(ElementUI);
 Vue.use(Cookies);
@@ -31,6 +32,14 @@ Vue.prototype.z_post = z_post;
 Vue.prototype.z_patch = z_patch;
 Vue.prototype.z_put = z_put;
 Vue.prototype.z_delete = z_delete;
+Vue.prototype.commonMethods = {
+  downLoadFile
+}
+//注册全局filter的同时注册为全局方法
+Object.keys(custom).forEach(key => {
+  Vue.filter(key, custom[key]);
+  Vue.prototype.commonMethods[key] = custom[key];
+})
 
 //请求拦截
 Axios.interceptors.request.use(config => {
@@ -60,11 +69,6 @@ Axios.interceptors.response.use(res => {
   return Promise.reject(err);
 })
 Vue.config.productionTip = false
-
-//注册全局filter
-Object.keys(custom).forEach(key => {
-  Vue.filter(key, custom[key])
-})
 
 /* eslint-disable no-new */
 vm = new Vue({
