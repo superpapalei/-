@@ -32,6 +32,7 @@
                 <el-menu-item index="work_post" route="/work_post">岗位</el-menu-item>
                 <el-menu-item index="template_group" route="/template_group">项目组织结构模板</el-menu-item>
                 <el-menu-item index="template_group_type" route="/template_group_type">模板分类</el-menu-item>
+                <el-menu-item index="template_group_waiting" route="/template_group_waiting">项目组织模板(待整合)</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="3">
