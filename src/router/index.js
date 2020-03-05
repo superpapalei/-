@@ -16,6 +16,8 @@ import project_classification from '@/components/project-preparation/project_cla
 import work_post from '@/components/project-preparation/work_post'
 import template_group from '@/components/project-preparation/template_group'
 import template_group_type from '@/components/project-preparation/template_group_type'
+import template_group_waiting from '@/components/project-preparation/template_group_waiting'
+
 
 Vue.use(Router)
 
@@ -78,6 +80,11 @@ const router = new Router({
           path: '/template_group_type',
           name: 'template_group_type',
           component: template_group_type,
+        },
+        {
+          path: '/template_group_waiting',
+          name: 'template_group_waiting',
+          component:template_group_waiting,
         },
         {
           path: '/project_classification',
