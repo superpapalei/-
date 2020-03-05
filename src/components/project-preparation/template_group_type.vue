@@ -129,7 +129,7 @@ export default {
   },
   methods: {
     refreshData() {
-      this.z_get("api/template_group_type")
+      this.z_get("api/template_group_type", { condition: this.condition })
         .then(res => {
           //this.deptDataFilter = res.dict.dept_id;
           this.tgtData = res.data;
@@ -182,7 +182,7 @@ export default {
     addNewTemplateTypeGroup() {
         this.addgptText = "新增模板类型";
         this.templateGroupTypeModel = {
-            tgt_id: "",
+            tgt_id: 0,
             tgt_name:"",
             tgt_note:""
       };

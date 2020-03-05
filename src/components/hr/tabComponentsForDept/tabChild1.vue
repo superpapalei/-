@@ -15,11 +15,33 @@
         </div>
         <div style="width:100%;height:350px;">
           <el-table style="width: 100%" height="100%" :data="tableData" tooltip-effect="dark" highlight-current-row>
-            <el-table-column prop="emp_name" label="姓名" align="center" width="140"></el-table-column>
-            <el-table-column prop="emp_no" label="工号" align="center" width="200"></el-table-column>
-            <el-table-column label="操作" width="150" prop="handle">
+            <el-table-column type="index" width="60" align="center" label="序号">
+            </el-table-column>
+            <el-table-column prop="emp_name" label="姓名" align="center" width="130"></el-table-column>
+            <el-table-column prop="emp_no" label="工号" align="center" width="145"></el-table-column>
+            <el-table-column label="是否需被排班" align="center" width="135">
               <template slot-scope="scope">
-                <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="eidtShow(scope.row)">
+                <span>{{ scope.row.de_isscheduling | transIsScheduling }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="是否有排班权限" align="center" width="145">
+              <template slot-scope="scope">
+                <span>{{ scope.row.de_isauthority | transIsAuthority }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="is_manager" label="是否为负责人" align="center" width="130">
+              <template slot-scope="scope">
+                <span>{{ scope.row.is_manager | transIsManager }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="is_main_dept" label="是否为主部门" align="center" width="130">
+              <template slot-scope="scope">
+                <span>{{ scope.row.is_main_dept | transIsMainDept }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="140" prop="handle">
+              <template slot-scope="scope">
+                <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editShow(scope.row)">
                 </el-button>
                 <el-button type="danger" icon="el-icon-delete" size="mini" circle @click="deleteOne(scope.row)">
                 </el-button>
@@ -33,25 +55,29 @@
         </el-pagination> -->
       </div>
     </el-card>
-    <el-dialog width="200px"  :title="addDeptEmpText" :close-on-click-modal="false" :visible.sync="addDeptEmpVisiable"
-      top="5vh" @closed="refreshForm">
+    <el-dialog width="400px" :title="addDeptEmpText" :close-on-click-modal="false" :visible.sync="addDeptEmpVisiable"
+      top="5vh" @closed="refreshForm" :append-to-body="true">
       <el-form :model="dept_empModel" label-width="100px" ref="deptEmpForm" :rules="add_rules">
         <el-form-item label="人员" prop="emp_id">
-          <el-input v-model="dept_empModel.emp_id" placeholder="无">
-          </el-input>
-          <!-- <el-select v-model="dept_empModel.emp_id" ref="select_emp" placeholder="请选择人员">
+          <el-select v-model="dept_empModel.emp_id" ref="select_emp" placeholder="请选择人员">
             <el-option v-for="item in empData" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
-          </el-select> -->
+          </el-select>
         </el-form-item>
-        <el-form-item label="是否为管理者" prop="is_manager">
-          <!-- <el-select v-model="dept_empModel.is_manager" ref="select_is_manager" placeholder="是否为管理者">
-            <el-option v-for="item in manager_option" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select> -->
+        <el-form-item label="填选项1" prop="de_isscheduling">
+          <el-checkbox v-model="dept_empModel.de_isscheduling" label="是否需被排班"></el-checkbox>
         </el-form-item>
-        <el-form-item style="text-align:center;margin-right:100px;">
-          <el-button type="primary" @click="onSaveDeptEmpClick" style="margin-left:30px;">保&nbsp;&nbsp;存</el-button>
+        <el-form-item label="填选项2" prop="de_isauthority">
+          <el-checkbox v-model="dept_empModel.de_isauthority" label="是否有排班权限"></el-checkbox>
+        </el-form-item>
+        <el-form-item label="填选项3" prop="is_manager">
+          <el-checkbox v-model="dept_empModel.is_manager" label="是否为管理者"></el-checkbox>
+        </el-form-item>
+        <el-form-item label="填选项4" prop="is_main_dept">
+          <el-checkbox v-model="dept_empModel.is_main_dept" label="是否为主部门"></el-checkbox>
+        </el-form-item>
+        <el-form-item style="text-align:center;margin-right:20px;">
+          <el-button type="primary" @click="onSaveDeptEmpClick" style="margin-left:-60px;">保&nbsp;&nbsp;存</el-button>
           <el-button @click="addDeptEmpVisiable = false">取&nbsp;&nbsp;消</el-button>
         </el-form-item>
       </el-form>
@@ -77,27 +103,18 @@ export default {
     return {
       condition: "",
       tableData: [], //表格数据
-      dept_empModel: {},
+      dept_empModel: {}, //部门人员实例
       addDeptEmpText: "",
       addOrNot: true,
       addDeptEmpVisiable: false,
-      empData: [],
-      manager_option: [
-        {
-          label: false,
-          value: "不是"
-        },
-        {
-          label: true,
-          value: "是"
-        }
-      ],
+      empData: [], //部门数据
       add_rules: {
-        select_emp: [
-          { required: true, message: "请选择人员", trigger: "change" }
+        emp_id: [{ required: true, message: "请选择人员", trigger: "change" }],
+        is_manager: [
+          { required: true, message: "是否为负责人", trigger: "blur" }
         ],
-        select_is_manager: [
-          { required: true, message: "请确定是否为管理者", trigger: "change" }
+        is_main_dept: [
+          { required: true, message: "是否为主部门", trigger: "blur" }
         ]
       }
     };
@@ -107,6 +124,11 @@ export default {
       if (val) {
         this.refreshData();
       }
+    },
+    addDeptEmpVisiable(val) {
+      if (val) {
+        this.selectEmp();
+      }
     }
   },
   methods: {
@@ -115,7 +137,14 @@ export default {
       this.empData = [];
       this.z_get("api/employee", {}, { loading: false })
         .then(res => {
-          this.empData = res.data;
+          console.log(res);
+          if (res.code == 0) {
+            this.empData = res.data;
+            for (var i = 0; i < this.empData.length; i++) {
+              this.empData[i].label = this.empData[i].emp_name;
+              this.empData[i].value = this.empData[i].emp_id;
+            }
+          }
         })
         .catch(res => {});
     },
@@ -136,24 +165,49 @@ export default {
     },
     //删除一条记录
     deleteOne(row) {
-      var list = [];
-      list.push(row);
-      this.onDeleteClick(list);
+      this.onDeleteClick(row);
     },
-    onDeleteClick(list) {
+    onDeleteClick(row) {
+      this.$confirm("是否删除？！", "提示", {
+        confirmButtonText: "是",
+        cancelButtonText: "否",
+        type: "warning"
+      })
+        .then(() => {
+          this.z_delete("api/dept/dept_emp", { data: row })
+            .then(res => {
+              this.$message({
+                message: "删除成功",
+                type: "success",
+                duration: 1000
+              });
+              this.refreshData();
+            })
+            .catch(res => {
+              this.$alert("删除失败", "提示", {
+                confirmButtonText: "确定",
+                type: "warning"
+              });
+              console.log(res);
+            });
+        })
+        .catch(() => {});
     },
     addNewOne() {
       this.addDeptEmpText = "新增部门人员";
       this.dept_empModel = {
         c_id: 1, //现在先写死，到时候通过缓存给该变量赋值
-        is_main_dept: false, //现在先写死，到时候再看怎么赋值
-        is_manager: false
+        dept_id: this.deptId,
+        is_main_dept: false, 
+        is_manager: false,
+        de_isscheduling: "",
+        de_isauthority: ""
       };
       this.addOrNot = true;
       this.addDeptEmpVisiable = true;
     },
     onSaveDeptEmpClick() {
-      this.$refs.deptForm.validate(valid => {
+      this.$refs.deptEmpForm.validate(valid => {
         if (valid) {
           if (this.addOrNot) {
             this.z_post("api/dept/dept_emp", this.dept_empModel)
@@ -198,7 +252,7 @@ export default {
       });
     },
     //编辑数据
-    eidtEmpShow(row) {
+    editShow(row) {
       this.dept_empModel = JSON.parse(JSON.stringify(row));
       this.addDeptEmpText = "编辑节点";
       this.addOrNot = false;
@@ -206,11 +260,49 @@ export default {
     },
     refreshForm() {
       this.$refs.deptEmpForm.resetFields();
+    }
+  },
+  filters: {
+    transIsScheduling: function(value) {
+      switch (value) {
+        case true:
+          return "是";
+          break;
+        case false:
+          return "否";
+          break;
+      }
     },
-    //往父组件（部门）中传入数据
-    sendParamsToParent() {
-      this.$$emit('getParamsFromChild1',this.addOrNot,this.addDeptEmpVisiable);
+    transIsAuthority: function(value) {
+      switch (value) {
+        case true:
+          return "是";
+          break;
+        case false:
+          return "否";
+          break;
+      }
     },
+    transIsMainDept: function(value) {
+      switch (value) {
+        case true:
+          return "是";
+          break;
+        case false:
+          return "否";
+          break;
+      }
+    },
+    transIsManager: function(value) {
+      switch (value) {
+        case true:
+          return "是";
+          break;
+        case false:
+          return "否";
+          break;
+      }
+    }
   },
   created() {}
 };
@@ -224,5 +316,8 @@ export default {
 .tbarStyle {
   margin-top: 13px;
   margin-bottom: 13px;
+}
+.formItem {
+  width: 200px;
 }
 </style>
