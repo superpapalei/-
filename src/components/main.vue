@@ -41,6 +41,7 @@
                 <el-menu-item index="dept" route="/dept">部门</el-menu-item>
                 <el-menu-item index="emp" route="/emp">人员</el-menu-item>
                 <el-menu-item index="project_classification" route="/project_classification">项目分类</el-menu-item>
+                <el-menu-item index="item" route="/item">物料信息</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <!-- 权限树加载 -->
