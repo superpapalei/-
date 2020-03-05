@@ -41,6 +41,7 @@ Axios.interceptors.request.use(config => {
     if (config.loading != undefined && config.loading == false)
       return config;
   }
+  config.headers.Authorization="Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoic3RyaW5nIiwiZXhwIjoxNzYzMzgxOTIyLCJpc3MiOiJ6aGlqaWFuZ2tlamkuY24iLCJhdWQiOiJ6aGlqaWFuZ2tlamkifQ.O1jF3WYUIrQoqa4FA9jGfsxJeTlzYKa-O78kpnonkhs"
   showFullScreenLoading();
   return config;
 }, err => {
