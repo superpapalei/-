@@ -440,29 +440,9 @@ export default {
 
 <style scoped>
 .dept {
-  width: 100%;
-}
-.tbar {
-  margin-bottom: 10px;
-  padding-left: 20px;
+  width: 1100px;
 }
 .formItem {
   width: 300px;
-}
-.topContent {
-  width: 100%;
-}
-.bottomContent {
-  width: 100%;
-  flex: 1;
-}
-.containAll {
-  width: 1100px;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 20px;
-  box-sizing: border-box;
-  background-color: white;
 }
 </style>

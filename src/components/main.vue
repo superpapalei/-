@@ -97,17 +97,19 @@
       </el-header>
       <el-header style="height:30px;" v-if="breadCrumbList.length">
         <div class="breadCrumb">
-          <div style="font-size:15px;"><template v-for="(item, index) in breadCrumbList"><a v-if="index == 0"
-                :key="index" @click="refreshPage">&nbsp;{{ item.menu_name }}>&nbsp;</a><span :key="index"
-                v-else>&nbsp;{{ item.menu_name }}>&nbsp;</span></template></div>
+          <template v-for="(item, index) in breadCrumbList"><a v-if="index == 0" :key="index"
+              @click="refreshPage">&nbsp;{{ item.menu_name }}>&nbsp;</a><span :key="index"
+              v-else>&nbsp;{{ item.menu_name }}>&nbsp;</span></template>
         </div>
       </el-header>
       <el-main class="backTop">
         <el-card class="mainContentCard">
-          <keep-alive>
-            <router-view v-if="$route.meta.keepAlive === true" />
-          </keep-alive>
-          <router-view v-if="$route.meta.keepAlive !== true" />
+          <div class="mainContent">
+            <keep-alive>
+              <router-view class="commonStyle" v-if="$route.meta.keepAlive === true" />
+            </keep-alive>
+            <router-view class="commonStyle" v-if="$route.meta.keepAlive !== true" />
+          </div>
           <div v-if="activeTabName == 'main'">
             <div style="height:1500px;background-color:white;">
               主页内容
@@ -417,6 +419,7 @@ export default {
 .breadCrumb a {
   cursor: pointer;
   color: #000;
+  font-size: 14px;
 }
 .breadCrumb a:hover {
   color: #409eff !important;
@@ -471,6 +474,15 @@ export default {
   background-color: #eee;
   box-sizing: border-box;
 }
+.mainContent {
+  display: flex;
+}
+.commonStyle {
+  margin: 0 auto;
+  padding: 10px 20px;
+  box-sizing: border-box;
+  background-color: white;
+}
 .backTop {
   margin: 0;
   padding: 0;
@@ -479,6 +491,11 @@ export default {
 </style>
 
 <style>
+.tbar {
+  margin-bottom: 10px;
+  padding: 5px 15px;
+  background-color: #eee;
+}
 /* 全局样式放在这 */
 /* 水平样式 */
 .el-menu--horizontal > .el-menu-item,
