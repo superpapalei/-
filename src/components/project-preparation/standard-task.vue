@@ -102,7 +102,8 @@
     <!-- 任务表单 -->
     <el-dialog v-dialogDrag width="450px" :title="addTaskText" :close-on-click-modal="false"
       :visible.sync="addTaskVisiable" @closed="refreshForm">
-      <el-form size="small" :model="taskModel" label-width="100px" ref="taskForm" :rules="add_rules">
+      <zj-form size="small" :newDataFlag='addTaskVisiable' :model="taskModel" label-width="100px" ref="taskForm"
+        :rules="add_rules">
         <!-- <el-form-item label="任务编号">
           <el-input class="formItem" v-model="taskModel.st_id" placeholder="系统自动生成" disabled>
           </el-input>
@@ -150,7 +151,7 @@
           <el-button type="primary" size="medium" @click="onSaveTaskClick" style="margin-left:30px;">保&nbsp;&nbsp;存
           </el-button>
         </el-form-item>
-      </el-form>
+      </zj-form>
     </el-dialog>
     <!-- 物料需求 -->
     <el-dialog width="1000px" :title="addTaskItemText" :close-on-click-modal="false" :visible.sync="addTaskItemVisible">
@@ -164,8 +165,8 @@
             </el-input>
           </div>
           <div>
-            <el-table ref="itemListTable" v-loading="loading2" style="width:100%;" height="300" :data="itemListData" tooltip-effect="dark"
-              @row-dblclick="handleRowDbClcik" border stripe>
+            <el-table ref="itemListTable" v-loading="loading2" style="width:100%;" height="300" :data="itemListData"
+              tooltip-effect="dark" @row-dblclick="handleRowDbClcik" border stripe>
               <el-table-column prop="item_no" label="物料编码" align="center" width="130"></el-table-column>
               <el-table-column prop="item_name" label="物料名称" align="center" width="200"></el-table-column>
               <el-table-column prop="item_specification" label="描述" align="center"></el-table-column>
@@ -179,7 +180,7 @@
         <div class="rightTransferItem"></div>
       </div>
     </el-dialog>
-    
+
     <el-dialog v-dialogDrag width="450px" title="选择物料" :close-on-click-modal="false" :visible.sync="selectItemVisible">
       <el-form size="small" :model="taskItemModel" label-width="100px" ref="taskItemForm" :rules="addItem_rules">
         <el-form-item label="物料名称" prop="item_name">
@@ -236,6 +237,7 @@ export default {
       selectItemVisible: false,
       bottomDataShow: false,
       taskModel: {},
+      taskModelCompare: {},
       taskItemModel: {},
       taskItemModelList: [],
       addOrNot: true, //是否新增
@@ -243,7 +245,7 @@ export default {
       addTaskItemText: "",
       activeName: "first",
       loading: false,
-      loading2:false,
+      loading2: false,
       stType_options: [
         {
           value: "task",
@@ -347,7 +349,15 @@ export default {
     refreshItemListData() {
       this.loading2 = true;
       this.itemListData = [];
-      this.z_get("api/item/page", { condition: this.itemCondition,page:this.currentPage,limit:this.limit },{loading:false})
+      this.z_get(
+        "api/item/page",
+        {
+          condition: this.itemCondition,
+          page: this.currentPage,
+          limit: this.limit
+        },
+        { loading: false }
+      )
         .then(res => {
           this.loading2 = false;
           this.itemListData = res.data;
@@ -461,6 +471,7 @@ export default {
                 });
               });
           } else {
+            this.taskModel.UpdateColumns = this.$refs.taskForm.UpdateColumns;
             this.z_put("api/standard_task", this.taskModel)
               .then(res => {
                 this.$message({
@@ -486,6 +497,7 @@ export default {
     //编辑数据
     editTaskShow(row) {
       this.taskModel = JSON.parse(JSON.stringify(row));
+      this.taskModelCompare = JSON.parse(JSON.stringify(row));
       this.taskModel.dept_name = this.filterDeptName(this.taskModel.dept_id);
       if (this.$refs.tree) {
         this.$refs.tree.setCurrentKey(this.taskModel.dept_id); //赋值选中节点，不能用current-node-key，那样选中节点就不会变
@@ -544,7 +556,7 @@ export default {
     },
     //查找部门数据
     selectDept() {
-      this.z_get("api/dept/tree", {}, { loading: false })
+      this.z_get("api/dept/tree", { condition: "" }, { loading: false })
         .then(res => {
           //如果不一样才赋值
           if (JSON.stringify(this.deptData) != JSON.stringify(res.data)) {
@@ -568,9 +580,9 @@ export default {
     },
     //点击行可以切换选中状态
     handleRowClick(row, column) {
-      // if (column.property != "handle") {
-      //   this.$refs.taskTable.toggleRowSelection(row);
-      // }
+      if (column.property == "handle") {
+        return;
+      }
       if (JSON.stringify(this.currentRow) != JSON.stringify(row)) {
         this.currentRow = row;
         //点击加载tab数据
@@ -585,8 +597,8 @@ export default {
       //   this.$refs.taskItemTable.toggleRowSelection(row);
       // }
     },
-    handleRowDbClcik(row){
-        console.log(row)
+    handleRowDbClcik(row) {
+      console.log(row);
     },
     expandAll() {
       var icon = this.$el.getElementsByClassName("el-table__expand-icon");
