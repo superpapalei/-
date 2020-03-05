@@ -64,27 +64,27 @@
                 </el-input>
                 <el-button type="primary" size="small" style="margin-left:10px;" @click="addNewTaskItemShow">新增资源需求
                 </el-button>
-                <el-button type="danger" size="small" :disabled="itemSelection.length==0">
+                <el-button type="danger" size="small" :disabled="itemSelection.length==0" @click="deleteListItem">
                   删除选中资源({{itemSelection.length}})
                 </el-button>
               </div>
               <div class="gridTable">
                 <el-table ref="taskItemTable" v-loading="loading" style="width:100%;" height="250" :data="taskItemData"
-                  tooltip-effect="dark" highlight-current-row border @selection-change="handleSelectionChange2"
-                  @row-click="handleRowClick2">
+                  tooltip-effect="dark" highlight-current-row border @selection-change="handleSelectionChange2">
                   <el-table-column type="selection" width="55" align="center"></el-table-column>
                   <el-table-column type="index" width="40" align="center">
                   </el-table-column>
                   <el-table-column prop="item_no" label="物料编码" align="center" width="130"></el-table-column>
                   <el-table-column prop="item_name" label="物料名称" align="center" width="200"></el-table-column>
                   <el-table-column prop="sti_quantity" label="数量" align="center" width="90"></el-table-column>
-                  <el-table-column prop="" label="单位" align="center" width="100"></el-table-column>
+                  <el-table-column prop="item_unit" label="单位" align="center" width="100"></el-table-column>
                   <el-table-column prop="sti_note" label="备注" align="center"></el-table-column>
                   <el-table-column label="操作" width="140" prop="handle">
                     <template slot-scope="scope">
-                      <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTaskShow(scope.row)">
+                      <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editItemShow(scope.row)">
                       </el-button>
-                      <el-button type="danger" icon="el-icon-delete" size="mini" circle @click="deleteOne(scope.row)">
+                      <el-button type="danger" icon="el-icon-delete" size="mini" circle
+                        @click="deleteOneItem(scope.row)">
                       </el-button>
                     </template>
                   </el-table-column>
@@ -99,7 +99,8 @@
         </el-tabs>
       </div>
     </div>
-    <!-- 任务表单 -->
+
+    <!-- 新增/修改任务表单 -->
     <el-dialog v-dialogDrag width="450px" :title="addTaskText" :close-on-click-modal="false"
       :visible.sync="addTaskVisiable" @closed="refreshForm">
       <zj-form size="small" :newDataFlag='addTaskVisiable' :model="taskModel" label-width="100px" ref="taskForm"
@@ -153,8 +154,9 @@
         </el-form-item>
       </zj-form>
     </el-dialog>
-    <!-- 物料需求 -->
-    <el-dialog width="1000px" :title="addTaskItemText" :close-on-click-modal="false" :visible.sync="addTaskItemVisible">
+
+    <!-- 新增物料需求 -->
+    <el-dialog width="1000px" title="新增物料需求" :close-on-click-modal="false" :visible.sync="addTaskItemVisible">
       <div class="transferDiv">
         <div class="leftTransferItem">
           <div class="tbar">
@@ -177,18 +179,48 @@
             </div>
           </div>
         </div>
-        <div class="rightTransferItem"></div>
+        <div class="rightTransferItem">
+          <fieldset class="oneItem" v-for="(item,index) in taskItemModelList" :key="index">
+            <legend>物料{{index+1}} <el-button type="danger" icon="el-icon-delete" size="mini" circle
+                @click="deleteSelectItem(index)"></el-button>
+            </legend>
+            <el-form size="small" :model="item" label-width="80px" ref="itemListForm" :rules="addItem_rules">
+              <el-form-item label="物料编码" prop="item_na0">
+                <el-input class="formItem2" v-model="item.item_no" placeholder="请选择物料" disabled>
+                </el-input>
+              </el-form-item>
+              <el-form-item label="物料名称" prop="item_name">
+                <el-input class="formItem2" v-model="item.item_name" placeholder="请选择物料" disabled>
+                </el-input>
+              </el-form-item>
+              <el-form-item label="需求数量" prop="sti_quantity">
+                <el-input class="formItem2" v-model="item.sti_quantity" placeholder="请填写需求数量" oninput="value=value.replace(/[^\d.]/g,'')
+                                .replace(/^\./g, '').replace(/\.{2,}/g, '.')
+                                .replace('.', '$#$').replace(/\./g, '')
+                                .replace('$#$', '.')
+                                .slice(0,value.indexOf('.') === -1? value.length: value.indexOf('.') + 3)">
+                </el-input>
+              </el-form-item>
+              <el-form-item label="备注">
+                <el-input class="formItem2" v-model="item.sti_note" placeholder="备注信息">
+                </el-input>
+              </el-form-item>
+            </el-form>
+          </fieldset>
+        </div>
+        <div class="bottomButton">
+          <el-button size="medium" @click="addTaskItemVisible = false">取&nbsp;&nbsp;消</el-button>
+          <el-button type="primary" size="medium" @click="onSaveItemListClick" style="margin-left:30px;">保&nbsp;&nbsp;存
+          </el-button>
+        </div>
       </div>
     </el-dialog>
 
-    <el-dialog v-dialogDrag width="450px" title="选择物料" :close-on-click-modal="false" :visible.sync="selectItemVisible">
-      <el-form size="small" :model="taskItemModel" label-width="100px" ref="taskItemForm" :rules="addItem_rules">
-        <el-form-item label="物料名称" prop="item_name">
-          <el-input class="formItem" v-model="taskItemModel.item_no" placeholder="请选择物料" disabled>
-            <el-button slot="append" icon="el-icon-search" style="background-color:white;" @click="selectItemShow">
-            </el-button>
-          </el-input>
-        </el-form-item>
+    <!-- 选择/修改物料 -->
+    <el-dialog v-dialogDrag width="450px" :title="addTaskItemText" :close-on-click-modal="false"
+      :visible.sync="selectItemVisible">
+      <zj-form size="small" :newDataFlag='selectItemVisible' :model="taskItemModel" label-width="100px"
+        ref="taskItemForm" :rules="addItem_rules">
         <el-form-item label="需求数量" prop="sti_quantity">
           <el-input class="formItem" v-model="taskItemModel.sti_quantity" placeholder="请填写需求数量" oninput="value=value.replace(/[^\d.]/g,'')
                                 .replace(/^\./g, '').replace(/\.{2,}/g, '.')
@@ -202,11 +234,11 @@
           </el-input>
         </el-form-item>
         <el-form-item style="text-align:center;margin-right:100px;">
-          <el-button size="medium" @click="addTaskItemVisible = false">取&nbsp;&nbsp;消</el-button>
+          <el-button size="medium" @click="selectItemVisible = false">取&nbsp;&nbsp;消</el-button>
           <el-button type="primary" size="medium" @click="onSaveTaskItemClick" style="margin-left:30px;">保&nbsp;&nbsp;存
           </el-button>
         </el-form-item>
-      </el-form>
+      </zj-form>
     </el-dialog>
   </div>
 </template>
@@ -308,6 +340,7 @@ export default {
     }
   },
   methods: {
+    //刷新任务树
     refreshData() {
       this.taskData = [];
       this.currentRow = {};
@@ -320,6 +353,7 @@ export default {
         })
         .catch(res => {});
     },
+    //刷新物料需求
     refreshItemData() {
       this.loading = true;
       this.taskItemData = [];
@@ -334,6 +368,7 @@ export default {
         })
         .catch(res => {});
     },
+    //刷新资料需求
     refreshDataData() {
       this.taskDataData = [];
       this.z_get(
@@ -346,13 +381,14 @@ export default {
         })
         .catch(res => {});
     },
+    //刷新物料item表
     refreshItemListData() {
       this.loading2 = true;
       this.itemListData = [];
       this.z_get(
         "api/item/page",
         {
-          condition: this.itemCondition,
+          condition: this.itemListCondition,
           page: this.currentPage,
           limit: this.limit
         },
@@ -390,7 +426,7 @@ export default {
       this.dataCondition = "";
       this.refreshDataData();
     },
-    //表格树选中改变
+    //当前选中的节点
     handleSelectionChange(val) {
       this.selection = val;
     },
@@ -426,6 +462,7 @@ export default {
         }
       }
     },
+    //显示任务dialog
     addNewTaskShow(type) {
       var titleName = "";
       var st_pid = null;
@@ -450,6 +487,7 @@ export default {
       this.addOrNot = true;
       this.addTaskVisiable = true;
     },
+    //保存新增/编辑任务
     onSaveTaskClick() {
       this.$refs.taskForm.validate(valid => {
         if (valid) {
@@ -472,29 +510,33 @@ export default {
               });
           } else {
             this.taskModel.UpdateColumns = this.$refs.taskForm.UpdateColumns;
-            this.z_put("api/standard_task", this.taskModel)
-              .then(res => {
-                this.$message({
-                  message: "编辑成功!",
-                  type: "success",
-                  duration: 1000
+            if (this.taskModel.UpdateColumns) {
+              this.z_put("api/standard_task", this.taskModel)
+                .then(res => {
+                  this.$message({
+                    message: "编辑成功!",
+                    type: "success",
+                    duration: 1000
+                  });
+                  this.refreshData();
+                  this.addTaskVisiable = false;
+                })
+                .catch(res => {
+                  this.$alert("编辑失败!", "提示", {
+                    confirmButtonText: "确定",
+                    type: "error"
+                  });
                 });
-                this.refreshData();
-                this.addTaskVisiable = false;
-              })
-              .catch(res => {
-                this.$alert("编辑失败!", "提示", {
-                  confirmButtonText: "确定",
-                  type: "error"
-                });
-              });
+            } else {
+              this.addTaskVisiable = false;
+            }
           }
         } else {
           return false;
         }
       });
     },
-    //编辑数据
+    //显示编辑任务
     editTaskShow(row) {
       this.taskModel = JSON.parse(JSON.stringify(row));
       this.taskModelCompare = JSON.parse(JSON.stringify(row));
@@ -506,18 +548,19 @@ export default {
       this.addOrNot = false;
       this.addTaskVisiable = true;
     },
-    //删除一个
+    //删除一个任务
     deleteOne(row) {
       var list = [];
       list.push(row);
       this.onDeleteClick(list);
     },
-    //删除树
+    //删除任务树
     deleteList() {
       if (this.selection.length) {
         this.onDeleteClick(this.selection);
       }
     },
+    //确认删除任务
     onDeleteClick(list) {
       this.$confirm("是否删除？节点下的子节点将一并删除！", "提示", {
         confirmButtonText: "是",
@@ -543,18 +586,124 @@ export default {
         })
         .catch(() => {});
     },
+    //显示新增物料需求
     addNewTaskItemShow() {
       this.taskItemModelList = [];
       this.searchItemList();
-      this.addTaskItemText = "新增物料需求";
       this.addOrNot = true;
       this.addTaskItemVisible = true;
     },
-    onSaveTaskItemClick() {},
-    selectItemShow() {
+    //保存/编辑选中物料
+    onSaveTaskItemClick() {
+      this.$refs.taskItemForm.validate(valid => {
+        if (valid) {
+          if (this.addOrNot) {
+            //新增
+            this.taskItemModelList.push(
+              JSON.parse(JSON.stringify(this.taskItemModel))
+            );
+            this.selectItemVisible = false;
+          } else {
+            //修改
+            this.taskItemModel.UpdateColumns = this.$refs.taskItemForm.UpdateColumns;
+            if (this.taskItemModel.UpdateColumns) {
+              this.z_put("api/standard_task_item", this.taskItemModel)
+                .then(res => {
+                  this.$message({
+                    message: "编辑成功!",
+                    type: "success",
+                    duration: 1000
+                  });
+                  this.refreshItemData();
+                  this.selectItemVisible = false;
+                })
+                .catch(res => {
+                  this.$alert("编辑失败!", "提示", {
+                    confirmButtonText: "确定",
+                    type: "error"
+                  });
+                });
+            } else {
+              this.selectItemVisible = false;
+            }
+          }
+        }
+      });
+    },
+    //保存新增物料需求
+    onSaveItemListClick() {
+      for (var i = 0; i < this.taskItemModelList.length; i++) {
+        if (!this.taskItemModelList[i].sti_quantity) {
+          this.$alert("物料" + (i + 1) + "数量未填写", "提示", {
+            confirmButtonText: "确定",
+            type: "warning"
+          });
+          return;
+        }
+      }
+      this.z_post("api/standard_task_item/list", this.taskItemModelList)
+        .then(res => {
+          this.$message({
+            message: "新增成功!",
+            type: "success",
+            duration: 1000
+          });
+          this.addTaskItemVisible = false;
+          this.refreshItemData();
+        })
+        .catch(res => {
+          this.$alert("新增失败!", "提示", {
+            confirmButtonText: "确定",
+            type: "error"
+          });
+        });
+    },
+    //显示编辑物料需求
+    editItemShow(row) {
+      this.taskItemModel = JSON.parse(JSON.stringify(row));
+      this.addOrNot = false;
+      this.addTaskItemText = "编辑物料需求";
       this.selectItemVisible = true;
     },
-    //查找部门数据
+    //删除一个物料需求
+    deleteOneItem(row) {
+      var list = [];
+      list.push(row);
+      this.onDeleteItemClick(list);
+    },
+    //删除多个物料需求
+    deleteListItem() {
+      if (this.itemSelection.length) {
+        this.onDeleteItemClick(this.itemSelection);
+      }
+    },
+    //确认删除物料需求
+    onDeleteItemClick(list) {
+      this.$confirm("是否删除资源？", "提示", {
+        confirmButtonText: "是",
+        cancelButtonText: "否",
+        type: "warning"
+      })
+        .then(() => {
+          this.z_delete("api/standard_task_item/list", { data: list })
+            .then(res => {
+              this.$message({
+                message: "删除成功!",
+                type: "success",
+                duration: 1000
+              });
+              this.refreshItemData();
+            })
+            .catch(res => {
+              this.$alert("删除失败!", "提示", {
+                confirmButtonText: "确定",
+                type: "error"
+              });
+            });
+        })
+        .catch(() => {});
+    },
+    //刷新部门数据
     selectDept() {
       this.z_get("api/dept/tree", { condition: "" }, { loading: false })
         .then(res => {
@@ -565,6 +714,7 @@ export default {
         })
         .catch(res => {});
     },
+    //渲染部门名字
     filterDeptName(id) {
       var name = id;
       var dept = this.deptDataFilter.filter(item => item.value == id);
@@ -573,12 +723,13 @@ export default {
       }
       return name;
     },
+    //双击选择部门
     handleSelectTreeDblClick(data) {
       this.taskModel.dept_id = data.dept_id;
       this.taskModel.dept_name = data.dept_name;
       this.$refs.select_dept.blur();
     },
-    //点击行可以切换选中状态
+    //点击任务行显示下面
     handleRowClick(row, column) {
       if (column.property == "handle") {
         return;
@@ -592,14 +743,40 @@ export default {
       }
       this.bottomDataShow = true;
     },
-    handleRowClick2(row, column) {
-      // if (column.property != "handle") {
-      //   this.$refs.taskItemTable.toggleRowSelection(row);
-      // }
-    },
+    //双击选中物料
     handleRowDbClcik(row) {
-      console.log(row);
+      this.taskItemModel = {
+        st_id: this.currentRow.st_id,
+        item_no: row.item_no,
+        item_name: row.item_name,
+        sti_quantity: "",
+        sti_note: ""
+      };
+      var isContain = false;
+      for (var i = 0; i < this.taskItemData.length; i++) {
+        if (this.taskItemData[i].item_no == this.taskItemModel.item_no) {
+          isContain = true;
+          break;
+        }
+      }
+      for (var i = 0; i < this.taskItemModelList.length; i++) {
+        if (this.taskItemModelList[i].item_no == this.taskItemModel.item_no) {
+          isContain = true;
+          break;
+        }
+      }
+      if (isContain) {
+        this.$alert("已存在该物料!", "提示", {
+          confirmButtonText: "好的",
+          type: "warning"
+        });
+      } else {
+        this.addOrNot = true;
+        this.addTaskItemText = "新增物料需求";
+        this.selectItemVisible = true;
+      }
     },
+    //展开所有节点
     expandAll() {
       var icon = this.$el.getElementsByClassName("el-table__expand-icon");
       if (icon && icon.length) {
@@ -614,6 +791,7 @@ export default {
         }
       }
     },
+    //折叠所有节点
     collapseAll() {
       var icon = this.$el.getElementsByClassName("el-table__expand-icon");
       if (icon && icon.length) {
@@ -628,9 +806,14 @@ export default {
         }
       }
     },
+    //翻页
     handleCurrentChange(val) {
       this.currentPage = val;
       this.refreshItemListData();
+    },
+    //删除选中的物料
+    deleteSelectItem(index) {
+      this.taskItemModelList.splice(index, 1);
     }
   },
   mounted() {
@@ -660,6 +843,9 @@ export default {
 .formItem {
   width: 300px;
 }
+.formItem2 {
+  width: 200px;
+}
 .transferDiv {
   display: inline-block;
 }
@@ -672,7 +858,18 @@ export default {
 .rightTransferItem {
   display: inline-block;
   vertical-align: middle;
-  width: 300px;
+  margin-left: 20px;
+  width: 350px;
   height: 400px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.oneItem {
+  border: 1px solid #eee;
+  margin-bottom: 10px;
+}
+.bottomButton {
+  text-align: center;
+  margin: 10px 0;
 }
 </style>
