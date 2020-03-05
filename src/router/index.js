@@ -10,7 +10,7 @@ import ScheduleControl from '@/components/control/ScheduleControl'
 
 import emp from '@/components/hr/emp'
 import dept from '@/components/hr/dept'
-
+import cust from '@/components/hr/cust'
 import standardTask from '@/components/project-preparation/standard-task'
 import project_classification from '@/components/project-preparation/project_classification'
 import work_post from '@/components/project-preparation/work_post'
@@ -50,6 +50,11 @@ const router = new Router({
           path: '/emp',
           name: 'emp',
           component: emp,
+        },
+        {
+          path: '/cust',
+          name: 'cust',
+          component: cust,
         },
         {
           path: '/dept',
