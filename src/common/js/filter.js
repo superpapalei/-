@@ -71,10 +71,22 @@ let toLocale = function (time) {
     let date = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
     return date
 };
+/**全局渲染方法*/
+function renderFilter(id, renderData) {
+    var name = id;
+    if (renderData) {
+        var displayName = renderData.filter(item => item.value == id);
+        if (displayName.length) {
+            name = displayName[0].display;
+        }
+    }
+    return name;
+}
 
 export {
     numberFilter,
     dosageFilter,
     digitUppercase,
-    toLocale
+    toLocale,
+    renderFilter
 }
