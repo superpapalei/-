@@ -102,7 +102,7 @@
                 </el-input>
                 <el-button type="primary" size="small" style="margin-left:10px;" @click="addNewTaskDataShow">新增资料需求
                 </el-button>
-                <el-button type="danger" size="small" :disabled="dataSelection.length==0">
+                <el-button type="danger" size="small" :disabled="dataSelection.length==0" @click="deleteListData">
                   删除选中资料({{dataSelection.length}})
                 </el-button>
               </div>
@@ -120,10 +120,11 @@
                   <el-table-column prop="std_note" label="资料说明" align="center"></el-table-column>
                   <el-table-column label="操作" width="140" prop="handle">
                     <template slot-scope="scope">
-                      <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editItemShow(scope.row)">
+                      <el-button type="primary" icon="el-icon-edit" size="mini" circle
+                        @click="editTaskDataShow(scope.row)">
                       </el-button>
                       <el-button type="danger" icon="el-icon-delete" size="mini" circle
-                        @click="deleteOneItem(scope.row)">
+                        @click="deleteOneData(scope.row)">
                       </el-button>
                     </template>
                   </el-table-column>
@@ -634,7 +635,10 @@ export default {
     //显示编辑任务
     editTaskShow(row) {
       this.taskModel = JSON.parse(JSON.stringify(row));
-      this.taskModel.dept_name = this.renderFilter(this.taskModel.dept_id,this.deptDataFilter);
+      this.taskModel.dept_name = this.renderFilter(
+        this.taskModel.dept_id,
+        this.deptDataFilter
+      );
       if (this.$refs.tree) {
         this.$refs.tree.setCurrentKey(this.taskModel.dept_id); //赋值选中节点，不能用current-node-key，那样选中节点就不会变
       }
@@ -804,6 +808,7 @@ export default {
         })
         .catch(() => {});
     },
+    //显示新增资料需求
     addNewTaskDataShow() {
       this.taskDataModel = {
         std_id: 0,
@@ -817,13 +822,97 @@ export default {
       this.addOrNot = true;
       this.addTaskDataVisible = true;
     },
+    //新增/编辑资料需求
     onSaveTaskDataClick() {
       this.$refs.taskDataForm.validate(valid => {
         if (valid) {
           if (this.addOrNot) {
+            this.z_post("api/standard_task_data", this.taskDataModel)
+              .then(res => {
+                this.$message({
+                  message: "新增成功!",
+                  type: "success",
+                  duration: 1000
+                });
+                this.refreshDataData();
+                this.addTaskDataVisible = false;
+              })
+              .catch(res => {
+                this.$alert("新增失败!", "提示", {
+                  confirmButtonText: "确定",
+                  type: "error"
+                });
+              });
+          } else {
+            this.taskDataModel.UpdateColumns = this.$refs.taskDataForm.UpdateColumns;
+            if (this.taskDataModel.UpdateColumns) {
+              this.z_put("api/standard_task_data", this.taskDataModel)
+                .then(res => {
+                  this.$message({
+                    message: "编辑成功!",
+                    type: "success",
+                    duration: 1000
+                  });
+                  this.refreshDataData();
+                  this.addTaskDataVisible = false;
+                })
+                .catch(res => {
+                  this.$alert("编辑失败!", "提示", {
+                    confirmButtonText: "确定",
+                    type: "error"
+                  });
+                });
+            } else {
+              this.addTaskDataVisible = false;
+            }
           }
         }
       });
+    },
+    //显示编辑资料
+    editTaskDataShow(row) {
+      this.taskDataModel = JSON.parse(JSON.stringify(row));
+      this.addTaskDataText = "编辑资料需求";
+      this.addOrNot = false;
+      this.addTaskDataVisible = true;
+    },
+    //删除单个资料需求
+    deleteOneData(row) {
+      var list = [];
+      list.push(row);
+      this.onDeleteDataClick(list);
+    },
+    //删除多个资料需求
+    deleteListData() {
+      if (this.dataSelection.length) {
+        this.onDeleteDataClick(this.dataSelection);
+      }
+    },
+    //确认删除资料需求
+    onDeleteDataClick(list) {
+      this.$confirm("是否删除资料？", "提示", {
+        confirmButtonText: "是",
+        cancelButtonText: "否",
+        type: "warning"
+      })
+        .then(() => {
+          this.z_delete("api/standard_task_data/list", { data: list })
+            .then(res => {
+              this.$message({
+                message: "删除成功!",
+                type: "success",
+                duration: 1000
+              });
+              this.refreshDataData();
+            })
+            .catch(res => {
+              this.$alert("删除失败!", "提示", {
+                confirmButtonText: "确定",
+                type: "error"
+              });
+            });
+        })
+        .catch(() => {});
     },
     //刷新部门数据
     selectDept() {
