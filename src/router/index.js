@@ -14,11 +14,9 @@ import cust from '@/components/hr/cust'
 import standardTask from '@/components/project-preparation/standard-task'
 import project_classification from '@/components/project-preparation/project_classification'
 import work_post from '@/components/project-preparation/work_post'
-import template_group from '@/components/project-preparation/template_group'
-import template_group_type from '@/components/project-preparation/template_group_type'
 import item from '@/components/project-preparation/item'
 import template_group_waiting from '@/components/project-preparation/template_group_waiting'
-
+import template_group_type from '@/components/project-preparation/template_group_type'
 
 Vue.use(Router)
 
@@ -78,19 +76,14 @@ const router = new Router({
           component: work_post,
         },
         {
-          path: '/template_group',
-          name: 'template_group',
-          component: template_group,
+          path: '/template_group_waiting',
+          name: 'template_group_waiting',
+          component:template_group_waiting,
         },
         {
           path: '/template_group_type',
           name: 'template_group_type',
-          component: template_group_type,
-        },
-        {
-          path: '/template_group_waiting',
-          name: 'template_group_waiting',
-          component:template_group_waiting,
+          component:template_group_type,
         },
         {
           path: '/project_classification',
