@@ -94,7 +94,7 @@
 
 
     <el-dialog title="新建客户" :visible.sync="custFormVisible" width="30%" close-on-click-model="false" @closed="refreshForm">
-  <el-form :model="custModel" :rules="rules" ref="custForm" label-width="100px" label-position="right" style="width:400px">
+  <el-form :model="custModel" :rules="rules" ref="custForm" label-width="120px" label-position="right" style="width:400px">
     <el-form-item label="客户代码" prop="c_code">
       <el-input v-model="custModel.c_code" autocomplete="off"></el-input>
     </el-form-item>
@@ -208,7 +208,7 @@ export default {
     //编辑数据
     editDeptShow(row) {
       this.deptModel = JSON.parse(JSON.stringify(row));
-      this.addDeptText = "编辑节点";
+      this.addCustText = "编辑客户信息";
       this.addOrNot = false;
       this.addDeptVisiable = true;
     },
@@ -217,18 +217,8 @@ export default {
     deleteOne(row) {
       var list = [];
       list.push(row);
-      this.onDeleteClick(list);
-    },
-
-    onDeleteClick(list) {
-      this.$confirm("是否删除？删除后无法恢复！", "提示", {
-        confirmButtonText: "是",
-        cancelButtonText: "否",
-        type: "warning"
-      })
-        .then(() => {
-         // var realSelect = this.arrayChildrenFlatten(list, []); //搜索对应节点的分支（从子节点至叶子节点的所有节点）
-          this.z_delete("api/customer", this.list)
+      
+      this.z_delete("api/customer", { data: list })
             .then(res => {
               this.$message({
                 message: "删除成功",
@@ -238,15 +228,41 @@ export default {
               this.refreshData();
             })
             .catch(res => {
-              this.$alert("删除失败", "提示", {
+              this.$alert("操作失败:" + res.msg, "提示", {
                 confirmButtonText: "确定",
-                type: "error"
+                type: "warning"
               });
               console.log(res);
             });
-        })
-        .catch(() => {});
     },
+
+    // onDeleteClick(list) {
+    //   this.$confirm("是否删除？删除后无法恢复！", "提示", {
+    //     confirmButtonText: "是",
+    //     cancelButtonText: "否",
+    //     type: "warning"
+    //   })
+    //     .then(() => {
+    //      // var realSelect = this.arrayChildrenFlatten(list, []); //搜索对应节点的分支（从子节点至叶子节点的所有节点）
+    //       this.z_delete("api/customer", { data: list })
+    //         .then(res => {
+    //           this.$message({
+    //             message: "删除成功",
+    //             type: "success",
+    //             duration: 1000
+    //           });
+    //           this.refreshData();
+    //         })
+    //         .catch(res => {
+    //           this.$alert("删除失败", "提示", {
+    //             confirmButtonText: "确定",
+    //             type: "error"
+    //           });
+    //           console.log(res);
+    //         });
+    //     })
+    //     .catch(() => {});
+    // },
 
     onSaveTaskClick(){
       this.$refs.custForm.validate(valid => {
@@ -293,12 +309,7 @@ export default {
         }
       });
     },  
-    handleEdit(index, row) {
-      console.log(index, row);
-    },
-    handleDelete(index, row) {
-      console.log(index, row);
-    },
+    
 
     /* addNewCust(type) {
       var dept_pid = 1; //创建根节点时，若pid为空，前端后台不匹配；若pid为0，因为pid和id外键关联，后台无法插入
