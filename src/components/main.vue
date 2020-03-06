@@ -38,6 +38,7 @@
                 <el-menu-item index="work_post" route="/work_post">岗位</el-menu-item>
                 <el-menu-item index="template_group" route="/template_group">项目组织结构模板</el-menu-item>
                 <el-menu-item index="template_group_type" route="/template_group_type">模板分类</el-menu-item>
+                <el-menu-item index="template_group_waiting" route="/template_group_waiting">项目组织模板(待整合)</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="3">
@@ -46,7 +47,9 @@
                 <el-menu-item @click.native="openCalendar">日历</el-menu-item>
                 <el-menu-item index="dept" route="/dept">部门</el-menu-item>
                 <el-menu-item index="emp" route="/emp">人员</el-menu-item>
+                <el-menu-item index="cust" route="/cust">客户</el-menu-item>
                 <el-menu-item index="project_classification" route="/project_classification">项目分类</el-menu-item>
+                <el-menu-item index="item" route="/item">物料信息</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <!-- 权限树加载 -->
@@ -101,17 +104,19 @@
       </el-header>
       <el-header style="height:30px;" v-if="breadCrumbList.length">
         <div class="breadCrumb">
-          <div style="font-size:15px;"><template v-for="(item, index) in breadCrumbList"><a v-if="index == 0"
-                :key="index" @click="refreshPage">&nbsp;{{ item.menu_name }}>&nbsp;</a><span :key="index"
-                v-else>&nbsp;{{ item.menu_name }}>&nbsp;</span></template></div>
+          <template v-for="(item, index) in breadCrumbList"><a v-if="index == 0" :key="index"
+              @click="refreshPage">&nbsp;{{ item.menu_name }}>&nbsp;</a><span :key="index"
+              v-else>&nbsp;{{ item.menu_name }}>&nbsp;</span></template>
         </div>
       </el-header>
       <el-main class="backTop">
         <el-card class="mainContentCard">
-          <keep-alive>
-            <router-view v-if="$route.meta.keepAlive === true" />
-          </keep-alive>
-          <router-view v-if="$route.meta.keepAlive !== true" />
+          <div class="mainContent">
+            <keep-alive>
+              <router-view class="commonStyle" v-if="$route.meta.keepAlive === true" />
+            </keep-alive>
+            <router-view class="commonStyle" v-if="$route.meta.keepAlive !== true" />
+          </div>
           <div v-if="activeTabName == 'main'">
             <div style="height:1500px;background-color:white;">
               主页内容
@@ -421,6 +426,7 @@ export default {
 .breadCrumb a {
   cursor: pointer;
   color: #000;
+  font-size: 14px;
 }
 .breadCrumb a:hover {
   color: #409eff !important;
@@ -475,6 +481,15 @@ export default {
   background-color: #eee;
   box-sizing: border-box;
 }
+.mainContent {
+  display: flex;
+}
+.commonStyle {
+  margin: 0 auto;
+  padding: 10px 20px;
+  box-sizing: border-box;
+  background-color: white;
+}
 .backTop {
   margin: 0;
   padding: 0;
@@ -483,6 +498,11 @@ export default {
 </style>
 
 <style>
+.tbar {
+  margin-bottom: 10px;
+  padding: 5px 15px;
+  background-color: #eee;
+}
 /* 全局样式放在这 */
 /* 水平样式 */
 .el-menu--horizontal > .el-menu-item,

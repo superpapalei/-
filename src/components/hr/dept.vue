@@ -29,14 +29,14 @@
           @select-all="handleSelectAll" @row-click="handleRowClick" @row-dblclick="handleRowDbClick">
           <el-table-column type="selection" width="55" align="center"></el-table-column>
           <el-table-column prop="dept_name" label="部门名称" align="center" width="220"></el-table-column>
-          <el-table-column prop="dept_type_id" label="部门类型" align="center" width="150">
+          <el-table-column prop="dept_type_id" label="类型" align="center" width="150">
             <!-- 是否写死，还是动态查数据  -->
             <template slot-scope="scope">{{scope.row.dept_type_id | deptTypeTrans}}</template>
           </el-table-column>
           <el-table-column label="说明" prop="dept_note" align="center"></el-table-column>
           <el-table-column label="操作" width="150" prop="handle">
             <template slot-scope="scope">
-              <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="eidtDeptShow(scope.row)">
+              <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editDeptShow(scope.row)">
               </el-button>
               <el-button type="danger" icon="el-icon-delete" size="mini" circle @click="deleteOne(scope.row)">
               </el-button>
@@ -44,13 +44,13 @@
           </el-table-column>
         </el-table>
       </div>
-      <div class="bottomContent" style="height:450px;margin-top:20px;">
+      <div class="bottomContent" style="height:500px;margin-top:20px;">
         <div>
           <el-tabs style="display:inline-block;width:100%;" v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="部门人员信息" name="emp_dept">
+            <el-tab-pane label="部门员工" name="emp_dept">
               <child1 v-if="isChildUpdate1" :deptName="deptNameSelect" :deptId="deptIdSelect"></child1>
             </el-tab-pane>
-            <el-tab-pane label="页签2" name="tab2">
+            <el-tab-pane label="部门班次" name="shift_dept">
               <child2 v-if="isChildUpdate2"></child2>
             </el-tab-pane>
             <el-tab-pane label="页签3" name="tab3">
@@ -80,8 +80,8 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="部门类型" prop="dept_type_id">
-          <el-select v-model="deptModel.dept_type_id" placeholder="请选择部门类型">
+        <el-form-item label="类型" prop="dept_type_id">
+          <el-select v-model="deptModel.dept_type_id" placeholder="请选择类型">
             <el-option v-for="item in deptType_options" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
@@ -132,11 +132,11 @@ export default {
       deptType_options: [
         {
           value: 1,
-          label: "部门类型1"
+          label: "部门"
         },
         {
           value: 2,
-          label: "部门类型2"
+          label: "小组"
         }
       ],
       add_rules: {
@@ -170,10 +170,10 @@ export default {
     deptTypeTrans(value) {
       switch (value) {
         case 1:
-          return "部门类型1";
+          return "部门";
           break;
         case 2:
-          return "部门类型2";
+          return "小组";
           break;
       }
     },
@@ -286,8 +286,8 @@ export default {
         c_id: 1, //现在先写死，到时候通过缓存给该变量赋值
         dept_name: "",
         dept_pname: "",
-        dept_type_id:"",
-        dept_note:"",
+        dept_type_id: "",
+        dept_note: "",
         dept_pid: dept_pid
       };
       this.deptModel.dept_pname = this.filterDeptName(this.deptModel.dept_pid);
@@ -340,7 +340,7 @@ export default {
       });
     },
     //编辑数据
-    eidtDeptShow(row) {
+    editDeptShow(row) {
       this.deptModel = JSON.parse(JSON.stringify(row));
       this.deptModel.dept_pname = this.filterDeptName(this.deptModel.dept_pid);
       this.addDeptText = "编辑节点";
@@ -366,7 +366,6 @@ export default {
         type: "warning"
       })
         .then(() => {
-          // var realSelect = this.arrayChildrenFlatten(list, []); //搜索对应节点的分支（从子节点至叶子节点的所有节点）
           this.z_delete("api/dept/list", { data: list })
             .then(res => {
               this.$message({
@@ -377,7 +376,7 @@ export default {
               this.refreshData();
             })
             .catch(res => {
-              this.$alert("操作失败:" + res.msg, "提示", {
+              this.$alert("删除失败" , "提示", {
                 confirmButtonText: "确定",
                 type: "warning"
               });
@@ -395,19 +394,6 @@ export default {
       }
       return name;
     },
-    //多维数组扁平化
-    // arrayChildrenFlatten(array, result) {
-    //   for (var i = 0; i < array.length; i++) {
-    //     var item = array[i];
-    //     if (item.children && item.children.length > 0) {
-    //       result.push(item);
-    //       result = this.arrayChildrenFlatten(item.children, result); //递归，将其叶节点至叶子节点的所有节点添加到result集合中
-    //     } else {
-    //       result.push(item);
-    //     }
-    //   }
-    //   return result;
-    // },
     //点击行可以切换选中状态   可以用来给tab赋值
     handleRowClick(row, column) {
       if (column.property != "handle")
@@ -454,29 +440,9 @@ export default {
 
 <style scoped>
 .dept {
-  width: 100%;
-}
-.tbar {
-  margin-bottom: 10px;
-  padding-left: 20px;
+  width: 1100px;
 }
 .formItem {
   width: 300px;
-}
-.topContent {
-  width: 100%;
-}
-.bottomContent {
-  width: 100%;
-  flex: 1;
-}
-.containAll {
-  width: 1100px;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 20px;
-  box-sizing: border-box;
-  background-color: white;
 }
 </style>

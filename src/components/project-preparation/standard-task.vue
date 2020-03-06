@@ -825,20 +825,7 @@ export default {
 
 <style scoped>
 .standard-task {
-  width: 100%;
-}
-.containAll {
   width: 1100px;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 20px;
-  box-sizing: border-box;
-  background-color: white;
-}
-.tbar {
-  margin-bottom: 10px;
-  padding-left: 10px;
 }
 .formItem {
   width: 300px;
