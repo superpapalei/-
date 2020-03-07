@@ -19,20 +19,10 @@
             <li>五</li>
             <li class="weekend">六</li>
           </ul>
-          <calendarContent
-            ref="calendar_swiper"
-            :checkDate="current_day"
-            @on-change="changeIndex"
-          >
-            <div
-              v-for="(month, index) in monthList"
-              :key="index"
-              class="month swiper-item"
-            >
+          <calendarContent ref="calendar_swiper" :checkDate="current_day" @on-change="changeIndex">
+            <div v-for="(month, index) in monthList" :key="index" class="month swiper-item">
               <ul v-for="(week, weekindex) in month" :key="weekindex">
-                <li
-                  v-for="(day, dayindex) in week"
-                  @click="
+                <li v-for="(day, dayindex) in week" @click="
                     chooseDay(
                       day.year,
                       day.month,
@@ -40,28 +30,20 @@
                       day.othermonth,
                       day.mode
                     )
-                  "
-                >
-                  <div
-                    class="week-day"
-                    :class="{
+                  ">
+                  <div class="week-day" :class="{
                       ischecked: checkedDay == day.date,
                       othermonth: day.othermonth,
                       istoday: day.istoday,
                       isworkday: day.isworkday,
                       is_weekend: day.is_weekend
-                    }"
-                  >
+                    }">
                     <span style="padding-top:2px;display:block;">
                       <i class="day">{{ day.day }}</i>
                       <i>{{ day.nongli.old_str }}</i>
                     </span>
                     <div class="thing">
-                      <a
-                        :style="{ color: thing.color }"
-                        v-for="thing in day.thing"
-                        >{{ thing.title }}</a
-                      >
+                      <a :style="{ color: thing.color }" v-for="thing in day.thing">{{ thing.title }}</a>
                     </div>
                   </div>
                 </li>
@@ -71,121 +53,74 @@
         </div>
       </el-aside>
       <el-main width="300px">
-        <el-container
-          ><!-- 时段与操作框-->
-          <el-main width="200px"
-            ><!-- 时段-->
-            <el-container
-              ><!-- 时段-->
-              <el-main
-                ><!-- 时段1-->
+        <el-container>
+          <!-- 时段与操作框-->
+          <el-main width="200px">
+            <!-- 时段-->
+            <el-container>
+              <!-- 时段-->
+              <el-main width="80px">
+                <!-- 时段1-->
                 <div class="day-timediv0">
-                  <ul
-                    v-for="(timeArrange, index) in day_timeList0"
-                    :key="index"
-                    style="padding:0;margin:0"
-                  >
-                    <div
-                      class="day-time"
-                      :class="{
+                  <ul v-for="(timeArrange, index) in day_timeList0" :key="index" style="padding:0;margin:0">
+                    <div class="day-time" :class="{
                         worktime: index >= 8 && index <= 18
-                       
-                       
-                      }"
-                    ></div> 
+                      }"></div>
                   </ul>
-                </div> </el-main
-              ><!-- 时段1-->
-              <el-aside width="110px"
-                ><!-- 时段2-->
+                </div>
+              </el-main><!-- 时段1-->
+              <el-aside width="75px">
+                <!-- 时段2-->
                 <div class="day-timediv1">
-                  <ul
-                    v-for="(timeArrange, index) in day_timeList1"
-                    :key="index"
-                    style="padding:0;margin:0"
-                  >
-                    <div
-                      class="day-time"
-                      :class="{
+                  <ul v-for="(timeArrange, index) in day_timeList1" :key="index" style="padding:0;margin:0">
+                    <div class="day-time" :class="{
                             worktime: index >= 8 && index <= 18
-                      }"
-                    ></div>
+                      }"></div>
                   </ul>
-                </div> </el-aside
-              ><!-- 时段2--> </el-container
-            ><!-- 时段--> </el-main
-          ><!-- 时段-->
+                </div>
+              </el-aside><!-- 时段2-->
+            </el-container><!-- 时段-->
+          </el-main><!-- 时段-->
           <el-aside width="100px">
             <div class="handleDiv">
               <ul>
-                <el-button
-                  type="primary"
-                  size="mini"
-                  @click="handleCancel"
-                  icon="el-icon-check"
-                  >确 定</el-button
-                >
+                <el-button type="primary" size="mini" @click="handleCancel" icon="el-icon-check">确 定</el-button>
               </ul>
               <ul>
-                <el-button
-                  type="primary"
-                  size="mini"
-                  @click="handleCancel"
-                  icon="el-icon-close"
-                  >取 消
+                <el-button type="primary" size="mini" @click="handleCancel" icon="el-icon-close">取 消
                 </el-button>
               </ul>
 
               <ul>
-                <el-button
-                  type="primary"
-                  size="mini"
-                  @click="labelToWorkDay(true)"
-                  icon="el-icon-service"
-                  >工 作</el-button
-                >
+                <el-button type="primary" size="mini" @click="labelToWorkDay(true)" icon="el-icon-service">工 作
+                </el-button>
               </ul>
               <ul>
-                <el-button
-                  type="primary"
-                  size="mini"
-                  @click="labelToWorkDay(false)"
-                  >非 工 作</el-button
-                >
-              </ul>
-               <ul>
-                <el-button
-                  type="primary"
-                  size="mini"
-                  @click="labelToWorkDay(false)"
-                  >周期操作</el-button
-                >
+                <el-button type="primary" size="mini" @click="labelToWorkDay(false)">非 工 作</el-button>
               </ul>
               <ul>
-                <el-button
-                  type="primary"
-                  size="mini"
-                  @click="handleCancel"
-                  icon="el-icon-question"
-                  >帮 助
+                <el-button type="primary" size="mini" @click="labelToWorkDay(false)">周期操作</el-button>
+              </ul>
+              <ul>
+                <el-button type="primary" size="mini" @click="handleCancel" icon="el-icon-question">帮 助
                 </el-button>
               </ul>
               <ul style="padding-top:60px">
-                
-                <div class="worktime" style="width:20px;display:inline-block;"> 
-                &nbsp;
+
+                <div class="worktime" style="width:20px;display:inline-block;">
+                  &nbsp;
                 </div>
-                <div style="width:30px;display:inline-block;"> 
-                工作
+                <div style="width:30px;display:inline-block;">
+                  工作
                 </div>
               </ul>
               <ul style="padding-top:10px">
-                
-                <div class="noworktime" style="width:20px;display:inline-block;"> 
-                &nbsp;
+
+                <div class="noworktime" style="width:20px;display:inline-block;">
+                  &nbsp;
                 </div>
-                <div  style="width:30px;display:inline-block;"> 
-                休息
+                <div style="width:30px;display:inline-block;">
+                  休息
                 </div>
               </ul>
             </div>
@@ -331,8 +266,8 @@ export default {
           nongli: format.solar2lunar(_year, _month + 1, _day),
           istoday:
             this.today.getFullYear() == _year &&
-            this.today.getMonth() == _month &&
-            this.today.getDate() == _day
+              this.today.getMonth() == _month &&
+              this.today.getDate() == _day
               ? true
               : false,
           isworkday: this.workDayFomat(year, month, day),
@@ -371,8 +306,8 @@ export default {
 
               istoday:
                 this.today.getFullYear() == year &&
-                this.today.getMonth() == month &&
-                this.today.getDate() == day
+                  this.today.getMonth() == month &&
+                  this.today.getDate() == day
                   ? true
                   : false,
               isworkday: this.workDayFomat(year, month, day),
@@ -395,8 +330,8 @@ export default {
               nongli: format.solar2lunar(_year, _month + 1, _day), //根据真实（该月范围内的）日期转化成农历
               istoday:
                 this.today.getFullYear() == _year &&
-                this.today.getMonth() == _month &&
-                this.today.getDate() == _day
+                  this.today.getMonth() == _month &&
+                  this.today.getDate() == _day
                   ? true
                   : false,
               ischecked: false,
@@ -621,7 +556,7 @@ export default {
 }
 .isworkday {
   /* font-weight: bold; */
-   
+
   background: #e6a23c !important;
 }
 .el-main {
@@ -640,7 +575,7 @@ export default {
   background: #fff;
 }
 .day-time {
-  background-color: #f2f6fc;;
+  background-color: #f2f6fc;
   position: relative;
   margin: 0;
   padding: 0;
@@ -654,7 +589,7 @@ export default {
   height: 15px;
 }
 .worktime {
-  background-color:  #e6a23c;
+  background-color: #e6a23c;
 }
 .noworktime {
   background-color: #f2f6fc;

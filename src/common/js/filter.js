@@ -71,6 +71,22 @@ let toLocale = function (time) {
     let date = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
     return date
 };
+let dateFormat=function(time,format) {
+    if (!isNaN(time)) return "";
+    let _time = new Date(time);
+    let year = _time.getFullYear();
+    let month = addZeroIfNeed(_time.getMonth() + 1);
+    let day = addZeroIfNeed(_time.getDate());
+    let hour = addZeroIfNeed(_time.getHours());
+    let minute = addZeroIfNeed(_time.getMinutes());
+    let second = addZeroIfNeed(_time.getSeconds());
+    let date =
+      year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
+    if (format == "yyyy-MM-dd") {
+      date = year + "-" + month + "-" + day;
+    }
+    return date;
+  }
 /**全局渲染方法*/
 function renderFilter(id, renderData) {
     var name = id;
@@ -88,5 +104,6 @@ export {
     dosageFilter,
     digitUppercase,
     toLocale,
+    dateFormat,
     renderFilter
 }
