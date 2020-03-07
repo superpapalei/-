@@ -133,9 +133,6 @@ const router = new Router({
           component: scheduling_note_type,
         },
         {
-          path: '/template_group',
-          name: 'template_group',
-          component: template_group,
           path: '/template_group_waiting',
           name: 'template_group_waiting',
           component:template_group_waiting,

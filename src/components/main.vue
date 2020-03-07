@@ -518,12 +518,12 @@ export default {
 </style>
 
 <style>
+/* 全局样式放在这 */
 .tbar {
   margin-bottom: 10px;
   padding: 5px 15px;
   background-color: #eee;
 }
-/* 全局样式放在这 */
 /* 水平样式 */
 .el-menu--horizontal > .el-menu-item,
 .el-menu--horizontal > .el-submenu .el-submenu__title {

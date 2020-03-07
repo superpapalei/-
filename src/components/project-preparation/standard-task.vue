@@ -1026,7 +1026,7 @@ export default {
   width: 200px;
 }
 .transferDiv {
-  display: inline-block;
+  display: inline;
 }
 .leftTransferItem {
   display: inline-block;
