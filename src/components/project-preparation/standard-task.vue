@@ -137,8 +137,8 @@
     </div>
 
     <!-- 新增/修改任务表单 -->
-    <el-dialog v-dialogDrag width="450px" :title="addTaskText" :close-on-click-modal="false"
-      :visible.sync="addTaskVisiable" @closed="refreshForm">
+    <el-dialog v-if="addTaskVisiable" v-dialogDrag width="450px" :title="addTaskText" :close-on-click-modal="false"
+      :visible.sync="addTaskVisiable">
       <zj-form size="small" :newDataFlag='addTaskVisiable' :model="taskModel" label-width="100px" ref="taskForm"
         :rules="add_rules">
         <!-- <el-form-item label="任务编号">
@@ -153,7 +153,7 @@
           <el-select v-model="taskModel.dept_id" ref="select_dept" placeholder="请选择属部门">
             <el-option :label="taskModel.dept_name" :value="taskModel.dept_id" style="height:auto;padding:0;">
               <el-tree :data="deptData" node-key="dept_id" ref="tree" default-expand-all :expand-on-click-node="false"
-                highlight-current>
+                highlight-current :current-node-key="taskModel.dept_id">
                 <div slot-scope="{node, data}" style="width:100%;user-select:none;"
                   @click="handleSelectTreeDblClick(data)">
                   {{data.dept_name}}</div>
@@ -255,7 +255,7 @@
     </el-dialog>
 
     <!-- 选择/修改物料 -->
-    <el-dialog v-dialogDrag width="450px" :title="addTaskItemText" :close-on-click-modal="false"
+    <el-dialog v-if="selectItemVisible" v-dialogDrag width="450px" :title="addTaskItemText" :close-on-click-modal="false"
       :visible.sync="selectItemVisible">
       <zj-form size="small" :newDataFlag='selectItemVisible' :model="taskItemModel" label-width="100px"
         ref="taskItemForm" :rules="addItem_rules">
@@ -280,8 +280,8 @@
     </el-dialog>
 
     <!-- 新增/编辑资料需求 -->
-    <el-dialog v-dialogDrag width="450px" :title="addTaskDataText" :close-on-click-modal="false"
-      :visible.sync="addTaskDataVisible" @closed="refreshDataForm">
+    <el-dialog v-if="addTaskDataVisible" v-dialogDrag width="450px" :title="addTaskDataText"
+      :close-on-click-modal="false" :visible.sync="addTaskDataVisible">
       <zj-form size="small" :newDataFlag='addTaskDataVisible' :model="taskDataModel" label-width="100px"
         ref="taskDataForm" :rules="addData_rules">
         <el-form-item label="资料名称" prop="std_name">
@@ -307,7 +307,7 @@
           </el-input>
         </el-form-item>
         <el-form-item style="text-align:center;margin-right:100px;">
-          <el-button size="medium" @click="addTaskVisiable = false">取&nbsp;&nbsp;消</el-button>
+          <el-button size="medium" @click="addTaskDataVisible = false">取&nbsp;&nbsp;消</el-button>
           <el-button type="primary" size="medium" @click="onSaveTaskDataClick" style="margin-left:30px;">保&nbsp;&nbsp;存
           </el-button>
         </el-form-item>
@@ -491,13 +491,6 @@ export default {
         })
         .catch(res => {});
     },
-    //重置表单
-    refreshForm() {
-      this.$refs.taskForm.resetFields();
-    },
-    refreshDataForm() {
-      this.$refs.taskDataForm.resetFields();
-    },
     refreshBottom() {
       this.itemCondition = "";
       this.dataCondition = "";
@@ -639,9 +632,6 @@ export default {
         this.taskModel.dept_id,
         this.deptDataFilter
       );
-      if (this.$refs.tree) {
-        this.$refs.tree.setCurrentKey(this.taskModel.dept_id); //赋值选中节点，不能用current-node-key，那样选中节点就不会变
-      }
       this.addTaskText = "编辑节点";
       this.addOrNot = false;
       this.addTaskVisiable = true;
