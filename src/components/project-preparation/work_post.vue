@@ -18,7 +18,9 @@
           <!-- <el-table-column type="selection" width="55" align="center"></el-table-column> -->
           <el-table-column prop="wp_id" label="序号" align="center" width="60"></el-table-column>
           <el-table-column prop="wp_name" label="岗位名称" align="center" width="150"></el-table-column>
-          <el-table-column prop="wp_type" label="岗位类型" align="center" width="150"></el-table-column>
+          <el-table-column prop="wp_type" label="岗位类型" align="center" width="150">
+            <template slot-scope="scope">{{scope.row.wp_type | stTypeTrans}}</template>
+          </el-table-column>
           <el-table-column prop="wp_note" label="岗位说明" align="center" width="180"></el-table-column>
           
           <el-table-column label="操作" width="150" prop="handle" center>
@@ -95,35 +97,38 @@ export default {
       // }
     };
   },
-//   filters: {
-//     datatrans(value) {
-//       if (!value || value == "9999-12-31") return "";
-//       //时间戳转化大法
-//       let date = new Date(value);
-//       let y = date.getFullYear();
-//       let MM = date.getMonth() + 1;
-//       MM = MM < 10 ? "0" + MM : MM;
-//       let d = date.getDate();
-//       d = d < 10 ? "0" + d : d;
-//       let h = date.getHours();
-//       h = h < 10 ? "0" + h : h;
-//       let m = date.getMinutes();
-//       m = m < 10 ? "0" + m : m;
-//       let s = date.getSeconds();
-//       s = s < 10 ? "0" + s : s;
-//       return y + "-" + MM + "-" + d + " "; /* + h + ':' + m + ':' + s; */
-//     },
-//     stTypeTrans(value) {
-//       switch (value) {
-//         case "task":
-//           return "任务";
-//           break;
-//         case "work":
-//           return "节点";
-//           break;
-//       }
-//     }
-//   },
+  filters: {
+    datatrans(value) {
+      if (!value || value == "9999-12-31") return "";
+      //时间戳转化大法
+      let date = new Date(value);
+      let y = date.getFullYear();
+      let MM = date.getMonth() + 1;
+      MM = MM < 10 ? "0" + MM : MM;
+      let d = date.getDate();
+      d = d < 10 ? "0" + d : d;
+      let h = date.getHours();
+      h = h < 10 ? "0" + h : h;
+      let m = date.getMinutes();
+      m = m < 10 ? "0" + m : m;
+      let s = date.getSeconds();
+      s = s < 10 ? "0" + s : s;
+      return y + "-" + MM + "-" + d + " "; /* + h + ':' + m + ':' + s; */
+    },
+    stTypeTrans(value) {
+      switch (value) {
+        case "0":
+          return "职能";
+          break;
+        case "work":
+          return "项目";
+          break;
+          default:
+          return "临时";
+          break;
+      }
+    }
+  },
   watch: {
     addwpVisiable(val) {
       if (val) {
