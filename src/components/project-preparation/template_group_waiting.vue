@@ -4,24 +4,21 @@
       <el-aside width="20%" class="tgaside">
         <div>
           <el-h1>模板分类</el-h1>
-          <el-button icon="el-icon-refresh" style="margin-left:10px;" title="刷新" size="mini" circle @click="refreshTGTData"></el-button>
-          <el-button type="mini"  @click="addNewTemplateTypeGroup()">+</el-button>
+          <el-button icon="el-icon-refresh" style="margin-left:10px;" title="刷新" size="mini" circle
+            @click="refreshTGTData"></el-button>
+          <el-button type="mini" @click="addNewTemplateTypeGroup()">+</el-button>
           <el-button type="mini" :disabled="selection.length==0" @click="deleteOne(scope.row)">—</el-button>
         </div>
-
         <el-menu>
-          <el-menu-item  route="/test" el-icon-link><i class="el-icon-link"></i>全部分类</el-menu-item>
+          <el-menu-item el-icon-link @click="refreshData()"><i class="el-icon-link"></i>全部分类</el-menu-item>
           <template v-for="(item, key) in tgtData">
-          
-          <el-menu-item :key="key" :index="item.tgt_id">
-          <template slot="title">
-            <i :class="item.m_icon"></i>
-            <span>{{ item.tgt_name }}</span>
-          </template>
-          </el-menu-item>
-          
-          <!-- <el-submenu index="1">
-
+            <el-menu-item :key="key" :index="item.tgt_id" @click="refreshTemGData(item.tgt_id)">
+              <template slot="title">
+                <i class="el-icon-link"></i>
+                <span>{{ item.tgt_name }}</span>
+              </template>
+            </el-menu-item>
+            <!-- <el-submenu index="1">
             <template slot="title"><i class="el-icon-message"></i>导航一</template>
             <el-menu-item-group>
               <template slot="title">分组一</template>
@@ -55,10 +52,8 @@
           </template>
         </el-menu>
       </el-aside>
-
       <el-container>
         <el-header class="tgheader" style="text-align: left; font-size: 12px">
-
           <div class="tbar">
             <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
             <el-input @keyup.enter.native="refreshData" placeholder="请输入组织模板名称" v-model="condition" clearable
@@ -69,25 +64,23 @@
             <el-button type="primary" style="margin-left:10px;" @click="addNewTemplateGroup()">导入模板</el-button>
             <!-- <el-button type="danger" :disabled="selection.length==0" @click="deleteList">删除选中组织结构模板({{selection.length}})
         </el-button> -->
-
           </div>
-
         </el-header>
-
         <el-main>
           <div>
-            <el-table ref="tgtTable" style="width: 100%;height:350px;" :data="tgData" tooltip-effect="dark"
-              highlight-current-row row-key="tgt_id" default-expand-all @selection-change="handleSelectionChange"
+            <el-table ref="tgTable" style="width: 100%;height:350px;" :data="tgData" tooltip-effect="dark"
+              highlight-current-row row-key="tg_id" default-expand-all @selection-change="handleSelectionChange"
               @select-all="handleSelectAll" @row-click="handleRowClick">
-              <el-table-column type="selection" width="55" align="center"></el-table-column>
+              <!-- <el-table-column type="selection" width="55" align="center"></el-table-column> -->
               <el-table-column prop="tg_name" label="组织模板名称" align="center" width="120"></el-table-column>
-              <el-table-column prop="tg_node_type" label="节点类型（人/组织）" align="center" width="180"></el-table-column>
+              <el-table-column prop="tg_node_type" label="节点类型" align="center" width="180">
+                <template slot-scope="scope">{{scope.row.tg_node_type | stTypeTrans}}</template>
+              </el-table-column>
               <el-table-column prop="wp_id" label="岗位编号" align="center" width="90"></el-table-column>
               <!-- <el-table-column prop="wp_name" label="岗位名称" align="center" width="150"></el-table-column> -->
               <!-- <el-table-column prop="tgt_id" label="模板类型编号" align="center" width="120"></el-table-column>
               <el-table-column prop="tgt_name" label="模板类型名称" align="center" width="150"></el-table-column>
               <el-table-column prop="tgt_note" label="模板类型说明" align="center" width="150"></el-table-column> -->
-
               <el-table-column label="操作" width="150" prop="handle">
                 <template slot-scope="scope">
                   <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTemplateShow(scope.row)">
@@ -138,28 +131,29 @@
 
           </zj-form>
         </el-dialog>
-          <el-dialog width="500px" :title="addgptText" :close-on-click-modal="false" :visible.sync="addgptVisiable"
-      top="5vh" @closed="refreshForm">
-      <el-form :model="templateGroupTypeModel" label-width="100px" ref="templateGroupTypeForm" :rules="add_rules">
-        <el-form-item label="模板类型编号">
-          <el-input class="formItem" v-model="templateGroupTypeModel.tgt_id" placeholder="系统自动生成" disabled>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="模板类型名称">
-          <el-input class="formItem" v-model="templateGroupTypeModel.tgt_name" placeholder="请填写模板类型名称">
-          </el-input>
-        </el-form-item>
-           <el-form-item label="模板类型说明">
-          <el-input class="formItem" type="textarea" :rows="2" v-model="templateGroupTypeModel.tgt_note" placeholder="模板类型说明">
-          </el-input>
-        </el-form-item>
-        
-        <el-form-item style="text-align:center;margin-right:100px;">
-          <el-button @click="addgptVisiable = false">取&nbsp;&nbsp;消</el-button>
-          <el-button type="primary" @click="onSavePostClick" style="margin-left:30px;">保&nbsp;&nbsp;存</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
+        <el-dialog width="500px" :title="addgptText" :close-on-click-modal="false" :visible.sync="addgptVisiable"
+          top="5vh" @closed="refreshForm">
+          <el-form :model="templateGroupTypeModel" label-width="100px" ref="templateGroupTypeForm" :rules="add_rules">
+            <el-form-item label="模板类型编号">
+              <el-input class="formItem" v-model="templateGroupTypeModel.tgt_id" placeholder="系统自动生成" disabled>
+              </el-input>
+            </el-form-item>
+            <el-form-item label="模板类型名称">
+              <el-input class="formItem" v-model="templateGroupTypeModel.tgt_name" placeholder="请填写模板类型名称">
+              </el-input>
+            </el-form-item>
+            <el-form-item label="模板类型说明">
+              <el-input class="formItem" type="textarea" :rows="2" v-model="templateGroupTypeModel.tgt_note"
+                placeholder="模板类型说明">
+              </el-input>
+            </el-form-item>
+
+            <el-form-item style="text-align:center;margin-right:100px;">
+              <el-button @click="addgptVisiable = false">取&nbsp;&nbsp;消</el-button>
+              <el-button type="primary" @click="onSavePostClick" style="margin-left:30px;">保&nbsp;&nbsp;存</el-button>
+            </el-form-item>
+          </el-form>
+        </el-dialog>
       </el-container>
     </el-container>
   </div>
@@ -186,25 +180,58 @@ export default {
       addgptText: ""
     };
   },
+  filters: {
+    datatrans(value) {
+      if (!value || value == "9999-12-31") return "";
+      //时间戳转化大法
+      let date = new Date(value);
+      let y = date.getFullYear();
+      let MM = date.getMonth() + 1;
+      MM = MM < 10 ? "0" + MM : MM;
+      let d = date.getDate();
+      d = d < 10 ? "0" + d : d;
+      let h = date.getHours();
+      h = h < 10 ? "0" + h : h;
+      let m = date.getMinutes();
+      m = m < 10 ? "0" + m : m;
+      let s = date.getSeconds();
+      s = s < 10 ? "0" + s : s;
+      return y + "-" + MM + "-" + d + " "; /* + h + ':' + m + ':' + s; */
+    },
+    stTypeTrans(value) {
+      switch (value) {
+        case "1":
+          return "人";
+          break;
+        case "2":
+          return "组织";
+          break;
+        default:
+          return "人";
+          break;
+      }
+    }
+  },
   watch: {
     addgpVisiable(val) {
       if (val) {
         this.selectDept();
       }
-    },    
+    },
     addgptVisiable(val) {
       if (val) {
         this.selectDept();
       }
     }
-  
   },
   methods: {
     refreshData() {
+      //this.z_get("api/template_group/treeList", { condition: this.condition }) 等数据库更新
       this.z_get("api/template_group", { condition: this.condition })
         .then(res => {
           //this.deptDataFilter = res.dict.dept_id;
           this.tgData = res.data;
+          //refreshTGTData();
         })
         .catch(res => {});
     },
@@ -304,7 +331,6 @@ export default {
       })
         .then(() => {
           var realSelect = this.arrayChildrenFlatten(list, []);
-
           this.z_delete("api/template_group/list", { data: realSelect })
             //this.z_delete("api/template_group",list)
             .then(res => {
@@ -325,7 +351,6 @@ export default {
         })
         .catch(() => {});
     },
-
     //多维数组扁平化
     arrayChildrenFlatten(array, result) {
       for (var i = 0; i < array.length; i++) {
@@ -339,15 +364,13 @@ export default {
       }
       return result;
     },
-
     //点击行可以切换选中状态
     handleRowClick(row, column) {
       if (column.property != "handle")
         this.$refs.tgTable.toggleRowSelection(row);
     },
-
-//模板类型方法
-  refreshTGTData() {
+    //模板类型方法
+    refreshTGTData() {
       this.z_get("api/template_group_type", { condition: this.condition })
         .then(res => {
           //this.deptDataFilter = res.dict.dept_id;
@@ -355,12 +378,19 @@ export default {
         })
         .catch(res => {});
     },
+    refreshTemGData(index) {
+      this.z_get("api/template_group", { condition: index })
+        .then(res => {
+          this.tgData = res.data;
+        })
+        .catch(res => {});
+    },
     addNewTemplateTypeGroup() {
-        this.addgptText = "新增模板类型";
-        this.templateGroupTypeModel = {
-            tgt_id: 0,
-            tgt_name:"",
-            tgt_note:""
+      this.addgptText = "新增模板类型";
+      this.templateGroupTypeModel = {
+        tgt_id: 0,
+        tgt_name: "",
+        tgt_note: ""
       };
       this.addOrNot = true;
       this.addgptVisiable = true;
@@ -431,7 +461,7 @@ export default {
         this.onDeleteClick(this.selection);
       }
     },
-onDeleteClick(list) {
+    onDeleteClick(list) {
       this.$confirm("是否删除？", "提示", {
         confirmButtonText: "是",
         cancelButtonText: "否",
@@ -472,7 +502,6 @@ onDeleteClick(list) {
 .tgheader {
   line-height: 60px;
 }
-
 .tgaside {
   width: 100px;
 }
