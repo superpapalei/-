@@ -34,7 +34,7 @@
             <!-- <el-table-column prop="st_id" label="任务编号" align="center" width="150"></el-table-column> -->
             <el-table-column prop="st_name" label="任务名称" align="center" width="180"></el-table-column>
             <el-table-column prop="dept_id" label="部门" align="center" width="180">
-              <template slot-scope="scope">{{filterDeptName(scope.row.dept_id)}}</template>
+              <template slot-scope="scope">{{scope.row.dept_id | renderFilter(deptDataFilter)}}</template>
             </el-table-column>
             <el-table-column prop="st_period" label="工期(天)" align="center" width="100"></el-table-column>
             <el-table-column prop="st_type" label="类别" align="center" width="100">
@@ -54,7 +54,7 @@
       </div>
       <div class="bottomLayout" style="min-height:300px;">
         <el-tabs v-model="activeName">
-          <el-tab-pane label="资源需求" name="first">
+          <el-tab-pane label="物料需求" name="first">
             <div v-if="bottomDataShow">
               <div class="tbar">
                 <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="searchItem"></el-button>
@@ -62,10 +62,10 @@
                   v-model="itemCondition" clearable style="width:250px;">
                   <el-button size="small" @click="refreshItemData" slot="append" icon="el-icon-search">搜索</el-button>
                 </el-input>
-                <el-button type="primary" size="small" style="margin-left:10px;" @click="addNewTaskItemShow">新增资源需求
+                <el-button type="primary" size="small" style="margin-left:10px;" @click="addNewTaskItemShow">新增物料需求
                 </el-button>
                 <el-button type="danger" size="small" :disabled="itemSelection.length==0" @click="deleteListItem">
-                  删除选中资源({{itemSelection.length}})
+                  删除选中物料({{itemSelection.length}})
                 </el-button>
               </div>
               <div class="gridTable">
@@ -74,11 +74,11 @@
                   <el-table-column type="selection" width="55" align="center"></el-table-column>
                   <el-table-column type="index" width="40" align="center">
                   </el-table-column>
-                  <el-table-column prop="item_no" label="物料编码" align="center" width="130"></el-table-column>
                   <el-table-column prop="item_name" label="物料名称" align="center" width="200"></el-table-column>
+                  <el-table-column prop="item_no" label="物料编码" align="center" width="130"></el-table-column>
                   <el-table-column prop="sti_quantity" label="数量" align="center" width="90"></el-table-column>
                   <el-table-column prop="item_unit" label="单位" align="center" width="100"></el-table-column>
-                  <el-table-column prop="sti_note" label="备注" align="center"></el-table-column>
+                  <el-table-column prop="sti_note" label="任务备注" align="center"></el-table-column>
                   <el-table-column label="操作" width="140" prop="handle">
                     <template slot-scope="scope">
                       <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editItemShow(scope.row)">
@@ -94,6 +94,42 @@
           </el-tab-pane>
           <el-tab-pane label="资料需求" name="second">
             <div v-if="bottomDataShow">
+              <div class="tbar">
+                <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="searchData"></el-button>
+                <el-input size="small" @keyup.enter.native="refreshDataData" placeholder="请输入物料名称"
+                  v-model="dataCondition" clearable style="width:250px;">
+                  <el-button size="small" @click="refreshDataData" slot="append" icon="el-icon-search">搜索</el-button>
+                </el-input>
+                <el-button type="primary" size="small" style="margin-left:10px;" @click="addNewTaskDataShow">新增资料需求
+                </el-button>
+                <el-button type="danger" size="small" :disabled="dataSelection.length==0" @click="deleteListData">
+                  删除选中资料({{dataSelection.length}})
+                </el-button>
+              </div>
+              <div class="gridTable">
+                <el-table ref="taskItemTable" v-loading="loading3" style="width:100%;" height="250" :data="taskDataData"
+                  tooltip-effect="dark" highlight-current-row border @selection-change="handleSelectionChange3">
+                  <el-table-column type="selection" width="55" align="center"></el-table-column>
+                  <el-table-column type="index" width="40" align="center">
+                  </el-table-column>
+                  <el-table-column prop="std_name" label="资料名称" align="center" width="200"></el-table-column>
+                  <el-table-column prop="ddt_id" label="资料类型" align="center" width="130">
+                    <template slot-scope="scope">{{scope.row.ddt_id | renderFilter(dataTypeFilter)}}</template>
+                  </el-table-column>
+                  <el-table-column prop="std_quantity" label="数量(份)" align="center" width="90"></el-table-column>
+                  <el-table-column prop="std_note" label="资料说明" align="center"></el-table-column>
+                  <el-table-column label="操作" width="140" prop="handle">
+                    <template slot-scope="scope">
+                      <el-button type="primary" icon="el-icon-edit" size="mini" circle
+                        @click="editTaskDataShow(scope.row)">
+                      </el-button>
+                      <el-button type="danger" icon="el-icon-delete" size="mini" circle
+                        @click="deleteOneData(scope.row)">
+                      </el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
             </div>
           </el-tab-pane>
         </el-tabs>
@@ -101,8 +137,8 @@
     </div>
 
     <!-- 新增/修改任务表单 -->
-    <el-dialog v-dialogDrag width="450px" :title="addTaskText" :close-on-click-modal="false"
-      :visible.sync="addTaskVisiable" @closed="refreshForm">
+    <el-dialog v-if="addTaskVisiable" v-dialogDrag width="450px" :title="addTaskText" :close-on-click-modal="false"
+      :visible.sync="addTaskVisiable">
       <zj-form size="small" :newDataFlag='addTaskVisiable' :model="taskModel" label-width="100px" ref="taskForm"
         :rules="add_rules">
         <!-- <el-form-item label="任务编号">
@@ -117,7 +153,7 @@
           <el-select v-model="taskModel.dept_id" ref="select_dept" placeholder="请选择属部门">
             <el-option :label="taskModel.dept_name" :value="taskModel.dept_id" style="height:auto;padding:0;">
               <el-tree :data="deptData" node-key="dept_id" ref="tree" default-expand-all :expand-on-click-node="false"
-                highlight-current>
+                highlight-current :current-node-key="taskModel.dept_id">
                 <div slot-scope="{node, data}" style="width:100%;user-select:none;"
                   @click="handleSelectTreeDblClick(data)">
                   {{data.dept_name}}</div>
@@ -156,7 +192,8 @@
     </el-dialog>
 
     <!-- 新增物料需求 -->
-    <el-dialog width="1000px" title="新增物料需求" :close-on-click-modal="false" :visible.sync="addTaskItemVisible">
+    <el-dialog :width=" taskItemModelList.length? '1000px':'550px'" title="新增物料需求" :close-on-click-modal="false"
+      :visible.sync="addTaskItemVisible">
       <div class="transferDiv">
         <div class="leftTransferItem">
           <div class="tbar">
@@ -167,6 +204,7 @@
             </el-input>
           </div>
           <div>
+            <span style="color:gray;font-size:12px;">*双击选择物料</span>
             <el-table ref="itemListTable" v-loading="loading2" style="width:100%;" height="300" :data="itemListData"
               tooltip-effect="dark" @row-dblclick="handleRowDbClcik" border stripe>
               <el-table-column prop="item_no" label="物料编码" align="center" width="130"></el-table-column>
@@ -179,7 +217,7 @@
             </div>
           </div>
         </div>
-        <div class="rightTransferItem">
+        <div class="rightTransferItem" v-if="taskItemModelList.length">
           <fieldset class="oneItem" v-for="(item,index) in taskItemModelList" :key="index">
             <legend>物料{{index+1}} <el-button type="danger" icon="el-icon-delete" size="mini" circle
                 @click="deleteSelectItem(index)"></el-button>
@@ -208,7 +246,7 @@
             </el-form>
           </fieldset>
         </div>
-        <div class="bottomButton">
+        <div class="bottomButton" v-if="taskItemModelList.length">
           <el-button size="medium" @click="addTaskItemVisible = false">取&nbsp;&nbsp;消</el-button>
           <el-button type="primary" size="medium" @click="onSaveItemListClick" style="margin-left:30px;">保&nbsp;&nbsp;存
           </el-button>
@@ -217,7 +255,7 @@
     </el-dialog>
 
     <!-- 选择/修改物料 -->
-    <el-dialog v-dialogDrag width="450px" :title="addTaskItemText" :close-on-click-modal="false"
+    <el-dialog v-if="selectItemVisible" v-dialogDrag width="450px" :title="addTaskItemText" :close-on-click-modal="false"
       :visible.sync="selectItemVisible">
       <zj-form size="small" :newDataFlag='selectItemVisible' :model="taskItemModel" label-width="100px"
         ref="taskItemForm" :rules="addItem_rules">
@@ -240,6 +278,41 @@
         </el-form-item>
       </zj-form>
     </el-dialog>
+
+    <!-- 新增/编辑资料需求 -->
+    <el-dialog v-if="addTaskDataVisible" v-dialogDrag width="450px" :title="addTaskDataText"
+      :close-on-click-modal="false" :visible.sync="addTaskDataVisible">
+      <zj-form size="small" :newDataFlag='addTaskDataVisible' :model="taskDataModel" label-width="100px"
+        ref="taskDataForm" :rules="addData_rules">
+        <el-form-item label="资料名称" prop="std_name">
+          <el-input class="formItem" v-model="taskDataModel.std_name" placeholder="请填写资料名称">
+          </el-input>
+        </el-form-item>
+        <el-form-item label="资料类型" prop="ddt_id">
+          <el-select v-model="taskDataModel.ddt_id" placeholder="请选择资料类型">
+            <el-option v-for="item in dataTypeFilter" :key="item.value" :label="item.display" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="需求数量" prop="std_quantity">
+          <el-input class="formItem" v-model="taskDataModel.std_quantity" placeholder="请填写需求数量" oninput="value=value.replace(/[^\d.]/g,'')
+                                .replace(/^\./g, '').replace(/\.{2,}/g, '.')
+                                .replace('.', '$#$').replace(/\./g, '')
+                                .replace('$#$', '.')
+                                .slice(0,value.indexOf('.') === -1? value.length: value.indexOf('.') + 3)">
+          </el-input>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input class="formItem" type="textarea" :rows="2" v-model="taskDataModel.std_note" placeholder="备注信息">
+          </el-input>
+        </el-form-item>
+        <el-form-item style="text-align:center;margin-right:100px;">
+          <el-button size="medium" @click="addTaskDataVisible = false">取&nbsp;&nbsp;消</el-button>
+          <el-button type="primary" size="medium" @click="onSaveTaskDataClick" style="margin-left:30px;">保&nbsp;&nbsp;存
+          </el-button>
+        </el-form-item>
+      </zj-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -256,28 +329,33 @@ export default {
       itemListCondition: "",
       dataCondition: "",
       taskData: [], //表格数据
+      taskItemData: [], //物料
+      itemListData: [], //物料
+      taskDataData: [], //资料
+      dataTypeFilter: [],
       deptDataFilter: [], //部门渲染数据
       deptData: [], //部门数据
       selection: [], //选中行数据
       itemSelection: [],
-      taskItemData: [], //资源
-      itemListData: [],
-      taskDataData: [], //资料
+      dataSelection: [],
       currentRow: {},
       addTaskVisiable: false,
       addTaskItemVisible: false,
+      addTaskDataVisible: false,
       selectItemVisible: false,
       bottomDataShow: false,
       taskModel: {},
-      taskModelCompare: {},
       taskItemModel: {},
       taskItemModelList: [],
+      taskDataModel: {},
       addOrNot: true, //是否新增
       addTaskText: "",
       addTaskItemText: "",
+      addTaskDataText: "",
       activeName: "first",
       loading: false,
       loading2: false,
+      loading3: false,
       stType_options: [
         {
           value: "task",
@@ -298,6 +376,17 @@ export default {
       addItem_rules: {
         item_name: [{ required: true, message: "请选择物料", trigger: "blur" }],
         sti_quantity: [
+          { required: true, message: "请填写数量", trigger: "blur" }
+        ]
+      },
+      addData_rules: {
+        std_name: [
+          { required: true, message: "请填写资料名称", trigger: "blur" }
+        ],
+        ddt_id: [
+          { required: true, message: "请选择资料类型", trigger: "change" }
+        ],
+        std_quantity: [
           { required: true, message: "请填写数量", trigger: "blur" }
         ]
       }
@@ -377,6 +466,7 @@ export default {
         { loading: false }
       )
         .then(res => {
+          this.dataTypeFilter = res.dict.ddt_id;
           this.taskDataData = res.data;
         })
         .catch(res => {});
@@ -400,10 +490,6 @@ export default {
           this.total = res.total;
         })
         .catch(res => {});
-    },
-    //重置表单
-    refreshForm() {
-      this.$refs.taskForm.resetFields();
     },
     refreshBottom() {
       this.itemCondition = "";
@@ -432,6 +518,9 @@ export default {
     },
     handleSelectionChange2(val) {
       this.itemSelection = val;
+    },
+    handleSelectionChange3(val) {
+      this.dataSelection = val;
     },
     //全选选中子节点
     handleSelectAll(selection) {
@@ -539,11 +628,10 @@ export default {
     //显示编辑任务
     editTaskShow(row) {
       this.taskModel = JSON.parse(JSON.stringify(row));
-      this.taskModelCompare = JSON.parse(JSON.stringify(row));
-      this.taskModel.dept_name = this.filterDeptName(this.taskModel.dept_id);
-      if (this.$refs.tree) {
-        this.$refs.tree.setCurrentKey(this.taskModel.dept_id); //赋值选中节点，不能用current-node-key，那样选中节点就不会变
-      }
+      this.taskModel.dept_name = this.renderFilter(
+        this.taskModel.dept_id,
+        this.deptDataFilter
+      );
       this.addTaskText = "编辑节点";
       this.addOrNot = false;
       this.addTaskVisiable = true;
@@ -632,31 +720,38 @@ export default {
     },
     //保存新增物料需求
     onSaveItemListClick() {
-      for (var i = 0; i < this.taskItemModelList.length; i++) {
-        if (!this.taskItemModelList[i].sti_quantity) {
-          this.$alert("物料" + (i + 1) + "数量未填写", "提示", {
-            confirmButtonText: "确定",
-            type: "warning"
-          });
-          return;
+      if (this.taskItemModelList.length > 0) {
+        for (var i = 0; i < this.taskItemModelList.length; i++) {
+          if (!this.taskItemModelList[i].sti_quantity) {
+            this.$alert("物料" + (i + 1) + "数量未填写", "提示", {
+              confirmButtonText: "确定",
+              type: "warning"
+            });
+            return;
+          }
         }
-      }
-      this.z_post("api/standard_task_item/list", this.taskItemModelList)
-        .then(res => {
-          this.$message({
-            message: "新增成功!",
-            type: "success",
-            duration: 1000
+        this.z_post("api/standard_task_item/list", this.taskItemModelList)
+          .then(res => {
+            this.$message({
+              message: "新增成功!",
+              type: "success",
+              duration: 1000
+            });
+            this.addTaskItemVisible = false;
+            this.refreshItemData();
+          })
+          .catch(res => {
+            this.$alert("新增失败!", "提示", {
+              confirmButtonText: "确定",
+              type: "error"
+            });
           });
-          this.addTaskItemVisible = false;
-          this.refreshItemData();
-        })
-        .catch(res => {
-          this.$alert("新增失败!", "提示", {
-            confirmButtonText: "确定",
-            type: "error"
-          });
+      } else {
+        this.$alert("为选中任何物料!", "提示", {
+          confirmButtonText: "确定",
+          type: "warning"
         });
+      }
     },
     //显示编辑物料需求
     editItemShow(row) {
@@ -679,7 +774,7 @@ export default {
     },
     //确认删除物料需求
     onDeleteItemClick(list) {
-      this.$confirm("是否删除资源？", "提示", {
+      this.$confirm("是否删除物料？", "提示", {
         confirmButtonText: "是",
         cancelButtonText: "否",
         type: "warning"
@@ -703,6 +798,112 @@ export default {
         })
         .catch(() => {});
     },
+    //显示新增资料需求
+    addNewTaskDataShow() {
+      this.taskDataModel = {
+        std_id: 0,
+        st_id: this.currentRow.st_id,
+        ddt_id: "",
+        std_name: "",
+        std_note: "",
+        std_quantity: ""
+      };
+      this.addTaskDataText = "新增资料需求";
+      this.addOrNot = true;
+      this.addTaskDataVisible = true;
+    },
+    //新增/编辑资料需求
+    onSaveTaskDataClick() {
+      this.$refs.taskDataForm.validate(valid => {
+        if (valid) {
+          if (this.addOrNot) {
+            this.z_post("api/standard_task_data", this.taskDataModel)
+              .then(res => {
+                this.$message({
+                  message: "新增成功!",
+                  type: "success",
+                  duration: 1000
+                });
+                this.refreshDataData();
+                this.addTaskDataVisible = false;
+              })
+              .catch(res => {
+                this.$alert("新增失败!", "提示", {
+                  confirmButtonText: "确定",
+                  type: "error"
+                });
+              });
+          } else {
+            this.taskDataModel.UpdateColumns = this.$refs.taskDataForm.UpdateColumns;
+            if (this.taskDataModel.UpdateColumns) {
+              this.z_put("api/standard_task_data", this.taskDataModel)
+                .then(res => {
+                  this.$message({
+                    message: "编辑成功!",
+                    type: "success",
+                    duration: 1000
+                  });
+                  this.refreshDataData();
+                  this.addTaskDataVisible = false;
+                })
+                .catch(res => {
+                  this.$alert("编辑失败!", "提示", {
+                    confirmButtonText: "确定",
+                    type: "error"
+                  });
+                });
+            } else {
+              this.addTaskDataVisible = false;
+            }
+          }
+        }
+      });
+    },
+    //显示编辑资料
+    editTaskDataShow(row) {
+      this.taskDataModel = JSON.parse(JSON.stringify(row));
+      this.addTaskDataText = "编辑资料需求";
+      this.addOrNot = false;
+      this.addTaskDataVisible = true;
+    },
+    //删除单个资料需求
+    deleteOneData(row) {
+      var list = [];
+      list.push(row);
+      this.onDeleteDataClick(list);
+    },
+    //删除多个资料需求
+    deleteListData() {
+      if (this.dataSelection.length) {
+        this.onDeleteDataClick(this.dataSelection);
+      }
+    },
+    //确认删除资料需求
+    onDeleteDataClick(list) {
+      this.$confirm("是否删除资料？", "提示", {
+        confirmButtonText: "是",
+        cancelButtonText: "否",
+        type: "warning"
+      })
+        .then(() => {
+          this.z_delete("api/standard_task_data/list", { data: list })
+            .then(res => {
+              this.$message({
+                message: "删除成功!",
+                type: "success",
+                duration: 1000
+              });
+              this.refreshDataData();
+            })
+            .catch(res => {
+              this.$alert("删除失败!", "提示", {
+                confirmButtonText: "确定",
+                type: "error"
+              });
+            });
+        })
+        .catch(() => {});
+    },
     //刷新部门数据
     selectDept() {
       this.z_get("api/dept/tree", { condition: "" }, { loading: false })
@@ -713,15 +914,6 @@ export default {
           }
         })
         .catch(res => {});
-    },
-    //渲染部门名字
-    filterDeptName(id) {
-      var name = id;
-      var dept = this.deptDataFilter.filter(item => item.value == id);
-      if (dept.length) {
-        name = dept[0].display;
-      }
-      return name;
     },
     //双击选择部门
     handleSelectTreeDblClick(data) {
