@@ -28,7 +28,7 @@
               <el-menu-item-group>
                 <el-menu-item index="test" route="/test">测试</el-menu-item>
                 <el-menu-item index="ScheduleTest" route="/ScheduleTest">计划测试</el-menu-item>
-                <el-menu-item index="taskList" route="/schedule-task/taskList">排班任务测试</el-menu-item>
+                
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="2">
@@ -52,6 +52,27 @@
                 <el-menu-item index="item" route="/item">物料信息</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
+              <el-submenu index="4">
+              <template slot="title">任务管理</template>
+              <el-menu-item-group>
+              <el-menu-item index="task" route="/task">任务编辑</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+               <el-submenu index="5">
+              <template slot="title">排班管理</template>
+              
+               <el-menu-item index="scheduling_note_type" route="/scheduling_note_type">任务异常标记类型</el-menu-item>     
+               <el-menu-item index="shift" route="/shift">排班班次</el-menu-item>
+                   <el-menu-item index="shift_dept" route="/shift_dept">排班部门</el-menu-item>
+                       <el-menu-item index="shift_emp" route="/shift_emp">排班人员</el-menu-item>
+                           <el-menu-item index="shif_task" route="/shif_task">排班任务</el-menu-item> 
+                         <!-- <el-menu-item index="day_shift" route="/day_shift">排班班次</el-menu-item>  -->
+                 <el-menu-item index="task_scheduling_result" route="/task_scheduling_result">排班操作</el-menu-item>
+              <el-menu-item-group>
+             
+              </el-menu-item-group>
+            </el-submenu>
+             
             <!-- 权限树加载 -->
             <!-- <menuTree :menuTreeItem="menuTreeList" /> -->
           </el-menu>

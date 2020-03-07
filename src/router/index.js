@@ -20,7 +20,16 @@ import item from '@/components/project-preparation/item'
 import template_group_waiting from '@/components/project-preparation/template_group_waiting'
 
 
-import taskList from '@/components/schedule-task/taskList'
+import task from '@/components/schedule-task/task'
+
+import day_shift from '@/components/schedule-shift/day_shift'
+import shift_group from '@/components/schedule-shift/shift_group'
+import shift from '@/components/schedule-shift/shift'
+import scheduling_note_type from '@/components/schedule-task/scheduling_note_type'
+import task_scheduling_result from '@/components/schedule/task_scheduling_result'
+import shift_dept from '@/components/schedule/dept'
+import shift_emp from '@/components/schedule/emp'
+import shift_task from '@/components/schedule/shift_task'
 
 Vue.use(Router)
 
@@ -81,9 +90,49 @@ const router = new Router({
           component: work_post,
         },
         {
-          path: '/schedule-task/taskList',
-          name: 'taskList',
-          component: taskList,
+          path: '/task',
+          name: 'task',
+          component: task,
+        },
+         {
+          path: '/task_scheduling_result',
+          name: 'task_scheduling_result',
+          component: task_scheduling_result,
+        },
+        {
+          path: '/shift_dept',
+          name: 'shift_dept',
+          component: shift_dept,
+        },
+        {
+          path: '/shift_emp',
+          name: 'shift_emp',
+          component: shift_emp,
+        },
+        {
+          path: '/shift_task',
+          name: 'shift_task',
+          component: shift_task,
+        },
+         {
+          path: '/shift_group',
+          name: 'shift_group',
+          component: shift_group,
+        },
+         {
+          path: '/day_shift',
+          name: 'day_shift',
+          component: day_shift,
+        },
+        {
+          path: '/shift',
+          name: 'shift',
+          component: shift,
+        },
+         {
+          path: '/scheduling_note_type',
+          name: 'scheduling_note_type',
+          component: scheduling_note_type,
         },
         {
           path: '/template_group',
