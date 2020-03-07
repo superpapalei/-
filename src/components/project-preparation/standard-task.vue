@@ -255,8 +255,8 @@
     </el-dialog>
 
     <!-- 选择/修改物料 -->
-    <el-dialog v-if="selectItemVisible" v-dialogDrag width="450px" :title="addTaskItemText" :close-on-click-modal="false"
-      :visible.sync="selectItemVisible">
+    <el-dialog v-if="selectItemVisible" v-dialogDrag width="450px" :title="addTaskItemText"
+      :close-on-click-modal="false" :visible.sync="selectItemVisible">
       <zj-form size="small" :newDataFlag='selectItemVisible' :model="taskItemModel" label-width="100px"
         ref="taskItemForm" :rules="addItem_rules">
         <el-form-item label="需求数量" prop="sti_quantity">
@@ -462,7 +462,7 @@ export default {
       this.taskDataData = [];
       this.z_get(
         "api/standard_task_data",
-        { condition: this.dataCondition },
+        { st_id: this.currentRow.st_id, condition: this.dataCondition },
         { loading: false }
       )
         .then(res => {
