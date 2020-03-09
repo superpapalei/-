@@ -226,12 +226,37 @@ export default {
         document.getElementById("asideControll").innerHTML = "&#xe65f;";
       }
     },
+    getComponent(path) {
+      return resolve => {
+        require.ensure([], require => {
+          resolve(require("@/components/" + path));
+        });
+      };
+    },
     //获得菜单数组并传入store
     getMenuTree() {
       this.$store.commit("navTabs/emptyMenuTreeList");
       this.z_get("api/Home/userMenuTree").then(res => {
         if (res.data.length > 0) {
           this.setMenuTreeList(res.data);
+          var main = this.$router.options.routes.filter(
+            item => item.name == "main"
+          )[0];
+          for (var i = 0; i < this.menuTreeListFlatten.length; i++) {
+            if (
+              this.menuTreeListFlatten[i].menu_link &&
+              this.menuTreeListFlatten[i].menu_file
+            ) {
+              var menu_link = this.menuTreeListFlatten[i].menu_link;
+              var menu_file = this.menuTreeListFlatten[i].menu_file;
+              main.children.push({
+                path: "/" + menu_link,
+                name: menu_link,
+                component: this.getComponent(menu_file)
+              });
+            }
+          }
+          this.$router.addRoutes([main]);
           //加载角标
           this.getIconAll();
         } else {

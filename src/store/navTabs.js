@@ -4,6 +4,7 @@ const state = {
     menuTreeListFlatten: [],
     menuTreeList: [],
     breadCrumbList: [],//导航
+    hasAddRouter:false,
 }
 
 const mutations = {
@@ -41,6 +42,9 @@ const mutations = {
     },
     emptyBreadCrumb(state) {
         state.breadCrumbList = [];
+    },
+    dynamicRouter(){
+
     }
 };
 /*

@@ -56,131 +56,131 @@ const router = new Router({
       name: 'main',
       component: Main,
       children: [
-        {
-          path: '/test',
-          name: 'test',
-          component: Test,
-        },
-        {
-          path: '/emp',
-          name: 'emp',
-          component: emp,
-        },
-        {
-          path: '/cust',
-          name: 'cust',
-          component: cust,
-        },
-        {
-          path: '/dept',
-          name: 'dept',
-          component: dept,
-        },
-        {
-          path: '/ScheduleTest',
-          name: 'ScheduleTest',
-          component: ScheduleTest,
-        },
-        {
-          path: '/standardTask',
-          name: 'standardTask',
-          component: standardTask,
-        },
+        // {
+        //   path: '/test',
+        //   name: 'test',
+        //   component: Test,
+        // },
+        // {
+        //   path: '/emp',
+        //   name: 'emp',
+        //   component: emp,
+        // },
+        // {
+        //   path: '/cust',
+        //   name: 'cust',
+        //   component: cust,
+        // },
+        // {
+        //   path: '/dept',
+        //   name: 'dept',
+        //   component: dept,
+        // },
+        // {
+        //   path: '/ScheduleTest',
+        //   name: 'ScheduleTest',
+        //   component: ScheduleTest,
+        // },
+        // {
+        //   path: '/standardTask',
+        //   name: 'standardTask',
+        //   component: standardTask,
+        // },
 
-        {
-          path: '/work_post',
-          name: 'work_post',
-          component: work_post,
-        },
-        {
-          path: '/task',
-          name: 'task',
-          component: task,
-        },
-        {
-          path: '/task_scheduling_result',
-          name: 'task_scheduling_result',
-          component: task_scheduling_result,
-        },
-        {
-          path: '/shift_dept',
-          name: 'shift_dept',
-          component: shift_dept,
-        },
-        {
-          path: '/shift_emp',
-          name: 'shift_emp',
-          component: shift_emp,
-        },
-        {
-          path: '/shift_task',
-          name: 'shift_task',
-          component: shift_task,
-        },
-        {
-          path: '/shift_group',
-          name: 'shift_group',
-          component: shift_group,
-        },
-        {
-          path: '/day_shift',
-          name: 'day_shift',
-          component: day_shift,
-        },
-        {
-          path: '/shift',
-          name: 'shift',
-          component: shift,
-        },
-        {
-          path: '/scheduling_note_type',
-          name: 'scheduling_note_type',
-          component: scheduling_note_type,
-        },
-        {
-          path: '/template_group_waiting',
-          name: 'template_group_waiting',
-          component: template_group_waiting,
-        },
-        {
-          path: '/template_group_type',
-          name: 'template_group_type',
-          component: template_group_type,
-        },
-        {
-          path: '/project_classification',
-          name: 'project_classification',
-          component: project_classification,
-        },
-        {
-          path: '/item',
-          name: 'item',
-          component: item,
-        },
-        {
-          path: '/item_type',
-          name: 'item_type',
-          component: item_type},
-          {
-          path: '/deptEmp',
-          name: 'deptEmp',
-          component: deptEmp,
-        },
-        {
-          path: '/deptShift',
-          name: 'deptShift',
-          component: deptShift,
-        },
-        {
-          path: '/projectTemplate',
-          name: 'projectTemplate',
-          component: projectTemplate,
-        },
-        {
-          path: '/codeTable',
-          name: 'codeTable',
-          component: codeTable,
-        }
+        // {
+        //   path: '/work_post',
+        //   name: 'work_post',
+        //   component: work_post,
+        // },
+        // {
+        //   path: '/task',
+        //   name: 'task',
+        //   component: task,
+        // },
+        // {
+        //   path: '/task_scheduling_result',
+        //   name: 'task_scheduling_result',
+        //   component: task_scheduling_result,
+        // },
+        // {
+        //   path: '/shift_dept',
+        //   name: 'shift_dept',
+        //   component: shift_dept,
+        // },
+        // {
+        //   path: '/shift_emp',
+        //   name: 'shift_emp',
+        //   component: shift_emp,
+        // },
+        // {
+        //   path: '/shift_task',
+        //   name: 'shift_task',
+        //   component: shift_task,
+        // },
+        // {
+        //   path: '/shift_group',
+        //   name: 'shift_group',
+        //   component: shift_group,
+        // },
+        // {
+        //   path: '/day_shift',
+        //   name: 'day_shift',
+        //   component: day_shift,
+        // },
+        // {
+        //   path: '/shift',
+        //   name: 'shift',
+        //   component: shift,
+        // },
+        // {
+        //   path: '/scheduling_note_type',
+        //   name: 'scheduling_note_type',
+        //   component: scheduling_note_type,
+        // },
+        // {
+        //   path: '/template_group_waiting',
+        //   name: 'template_group_waiting',
+        //   component: template_group_waiting,
+        // },
+        // {
+        //   path: '/template_group_type',
+        //   name: 'template_group_type',
+        //   component: template_group_type,
+        // },
+        // {
+        //   path: '/project_classification',
+        //   name: 'project_classification',
+        //   component: project_classification,
+        // },
+        // {
+        //   path: '/item',
+        //   name: 'item',
+        //   component: item,
+        // },
+        // {
+        //   path: '/item_type',
+        //   name: 'item_type',
+        //   component: item_type},
+        //   {
+        //   path: '/deptEmp',
+        //   name: 'deptEmp',
+        //   component: deptEmp,
+        // },
+        // {
+        //   path: '/deptShift',
+        //   name: 'deptShift',
+        //   component: deptShift,
+        // },
+        // {
+        //   path: '/projectTemplate',
+        //   name: 'projectTemplate',
+        //   component: projectTemplate,
+        // },
+        // {
+        //   path: '/codeTable',
+        //   name: 'codeTable',
+        //   component: codeTable,
+        // }
       ]
     }
   ]
@@ -197,8 +197,7 @@ router.beforeEach((to, from, next) => {
   //   next('/login')
   // } else {
   if (from.path == '/') {
-    store.commit('navTabs/emptyBreadCrumb');//到主页面后清空导航
-    if (to.name == 'login' || to.name == 'main') {
+    if ((to.name == 'login' && !to.redirectedFrom) || to.name == 'main') {
       next()
     }
     else {
