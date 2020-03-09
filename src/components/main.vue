@@ -9,14 +9,14 @@
       </div>
     </el-dialog>
     <el-container class="page">
-      <el-header style="height:50px;">
+      <el-header style="height:50px;box-shadow: 0 0 4px 0 rgba(0,0,0,0.04);">
         <div class="aside-header">
           <div class="aside-logo"></div>
           <span style="margin:0 10px;">知匠项目管控系统</span>
           <i class="el-icon-s-home icon-color aside-home" @click="refreshPage"></i>
         </div>
         <div class="menu-contain">
-          <el-menu mode="horizontal" :default-active="url" @select="addBreadCrumb" style="height:50px;" router>
+          <el-menu mode="horizontal" :default-active="url" @select="addBreadCrumb" text-color="#333" active-text-color="#409EFF" style="height:50px;" router>
             <!-- 单独的测试页面单独写，不经过权限加载 -->
             <el-submenu index="1">
               <template slot="title">测试</template>
@@ -438,7 +438,8 @@ export default {
 .breadCrumb {
   width: 100%;
   padding: 5px 15px;
-  border: 1px solid #ebeef5;
+  /* border: 1px solid #ebeef5; */
+  background-color: #f8f8f8;
   user-select: none;
   box-sizing: border-box;
 }
