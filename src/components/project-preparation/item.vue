@@ -1,32 +1,7 @@
 <template>
-  <div style="items">
-    <el-container class="containAll">
-
-      <el-aside width="200px" class="item-aside">
-        <div style="border-bottom: 1px solid #eee; padding-bottom:15px">
-          <span style="color:black; margin-left:15px;">物料分类</span>
-          <!-- <l style="color:blue; margin-left: 12px;  display: block;  font-size: 20px">物料分类</l> -->
-          <el-button type="primary" size="mini" icon="el-icon-circle-plus-outline " circle style="margin-left:30px;"
-            @click="addNewItemTypeShow">
-          </el-button>
-          <el-button type="primary" size="mini" icon="el-icon-remove-outline" circle @click.native="collapseAll"
-            divided>
-          </el-button>
-        </div>
+  <div style="item-items">
         <div>
-          <el-tree class="itemTypeTree" :data="itemTypeData" node-key="it_id" ref="tree" default-expand-all="false"
-            expand-on-click-node="false" highlight-current>
-            <div slot-scope="{node, data}" style="width:100%;user-select:none;" @click="handleSelectTreeDblClick(data)">
-              {{data.it_name}}</div>
-          </el-tree>
-
-        </div>
-        <div></div>
-      </el-aside>
-
-      <el-main class="item-main">
-        <div>
-          <div style="border-bottom: 0.5px solid grey; padding-bottom:10px">
+          <div style="">
             <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
             <el-input size="small" @keyup.enter.native="refreshData" placeholder="请输入物料名称" v-model="condition" clearable
               style="width:250px;">
@@ -147,8 +122,7 @@
 
         </div>
 
-      </el-main>
-    </el-container>
+
   </div>
 </template>
     
@@ -320,7 +294,7 @@ export default {
       // if (this.$refs.tree) {
       //   this.$refs.tree.setCurrentKey(this.itemModel.item_id); //赋值选中节点，不能用current-node-key，那样选中节点就不会变
       // }
-      this.addTaskText = "编辑节点";
+      this.addItemText = "编辑物料";
       this.addOrNot = false;
       this.addItemVisiable = true;
     },

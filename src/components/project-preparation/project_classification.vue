@@ -1,49 +1,52 @@
 <template>
   <div class="project_classification">
-    <div class="topLayout">
-      <div class="tbar">
-        <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
-        <el-input @keyup.enter.native="refreshData" placeholder="请输出项目分类编号或者名称" v-model="condition"
-          style="width:300px;">
-          <el-button @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
-        </el-input>
-        <el-button type="primary" style="margin-left:10px;" @click="addNewTaskShow('root')">新增项目类型</el-button>
-        <!-- <el-button type="primary" :disabled="selection.length!=1" @click="addNewTaskShow('children')">新增子节点</el-button> -->
-        <el-button type="danger" :disabled="selection.length==0" @click="deleteList">删除选中节点({{selection.length}})
-        </el-button>
-        <!-- <el-dropdown style="margin-left:10px;">
-          <el-button>
-            操作<i class="el-icon-arrow-down el-icon--right"></i>
+    <div class="containALL">
+      <div class="topLayout">
+        <div class="tbar">
+          <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
+          <el-input @keyup.enter.native="refreshData" placeholder="请输出项目分类编号或者名称" v-model="condition"
+            style="width:320px;">
+            <el-button @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
+          </el-input>
+          <el-button type="primary" size="small" style="margin-left:10px;" @click="addNewTaskShow('root')">新增项目类型</el-button>
+
+          <el-button type="primary" size="small" :disabled="selection.length!=1" @click="addNewTaskShow('children')">新增子节点</el-button>
+          <el-button type="danger" size="small" :disabled="selection.length==0" @click="deleteList">删除选中节点({{selection.length}})
           </el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="expandAll">展开所有节点</el-dropdown-item>
-            <el-dropdown-item @click.native="collapseAll" divided>折叠所有节点</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown> -->
-      </div>
-      <div class="topContent">
-        <el-table ref="proclassTable" style="width: 100%;height:350px;" :data="ProclassData" tooltip-effect="dark"
-          highlight-current-row row-key="pc_no" default-expand-all @selection-change="handleSelectionChange"
-          @select-all="handleSelectAll" @row-click="handleRowClick">
-          <el-table-column type="selection" width="55" align="center"></el-table-column>
-          <el-table-column prop="pc_no" label="项目类型编号" align="center" width="150"></el-table-column>
-          <el-table-column prop="pc_name" label="项目类型名称" align="center" width="150"></el-table-column>
-          <el-table-column prop="pc_note" label="说明" align="center" width="480"></el-table-column>
-          <el-table-column label="操作" width="150" prop="handle">
-            <template slot-scope="scope">
-              <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTaskShow(scope.row)">
-              </el-button>
-              <el-button type="danger" icon="el-icon-delete" size="mini" circle @click="deleteOne(scope.row)">
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+          <el-dropdown style="margin-left:10px;">
+            <el-button size="small">
+              操作<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native="expandAll">展开所有节点</el-dropdown-item>
+              <el-dropdown-item @click.native="collapseAll" divided>折叠所有节点</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+        <div class="gridTable">
+          <el-table ref="proclassTable" height="400" style="width: 100%" :data="ProclassData" tooltip-effect="dark"
+            highlight-current-row row-key="pc_no" default-expand-all @selection-change="handleSelectionChange"
+            @select-all="handleSelectAll" @row-click="handleRowClick">
+            <el-table-column type="selection" width="55" align="center"></el-table-column>
+            <el-table-column prop="pc_no" label="项目类型编号" align="center" width="150"></el-table-column>
+            <el-table-column prop="pc_name" label="项目类型名称" align="center" width="150"></el-table-column>
+            <el-table-column prop="pc_note" label="说明" align="center" width="480"></el-table-column>
+            <el-table-column label="操作" width="150" prop="handle">
+              <template slot-scope="scope">
+                <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTaskShow(scope.row)">
+                </el-button>
+                <el-button type="danger" icon="el-icon-delete" size="mini" circle @click="deleteOne(scope.row)">
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+
       </div>
     </div>
-
     <el-dialog width="500px" :title="addTaskText" :close-on-click-modal="false" :visible.sync="addTaskVisiable"
       top="5vh" @closed="refreshForm">
-      <el-form :model="taskModel" label-width="100px" ref="taskForm">
+      <el-form :model="taskModel" label-width="120px" ref="taskForm" :rules="add_rules">
 
         <!-- <el-form-item label="项目类型编号" prop="pc_no">
           <el-input class="formItem" v-model="taskModel.pc_no" placeholder="项目类型名称">
@@ -81,7 +84,11 @@ export default {
       addTaskVisiable: false,
       taskModel: {},
       addOrNot: true, //是否新增
-      addTaskText: ""
+      addTaskText: "",
+
+      add_rules: {
+        pc_name: [{ required: true, message: "前填写项目类型名称", trigger: "blur" }]        
+      },
     };
   },
   mounted() {
@@ -95,8 +102,10 @@ export default {
     }
   },
   methods: {
-    refreshData() {
-      this.z_get("api/project_classification", { condition: this.condition })
+    refreshData() {      
+      this.z_get("api/project_classification/treeList", {
+        condition: this.condition
+      })
         .then(res => {
           this.ProclassData = res.data;
         })
@@ -113,48 +122,23 @@ export default {
     },
     //表格树选中改变
     handleSelectionChange(val) {
-      this.selection = val;
+      this.selection = val;      
     },
-    //全选选中子节点
-    handleSelectAll(selection) {
-      var val = this.taskData;
-      var select = false;
-      for (var i = 0; i < selection.length; i++) {
-        if (selection[i].st_id == val[0].st_id) {
-          select = true;
-          break;
-        }
-      }
-      for (var i = 0; i < val.length; i++) {
-        if (val[i].children && val[i].children.length) {
-          this.selectChildren(val[i].children, select);
-        }
-      }
-    },
-    //选中子节点
-    selectChildren(val, select) {
-      for (var i = 0; i < val.length; i++) {
-        if (select && this.selection.indexOf(val[i]) == -1) {
-          this.$refs.taskTable.toggleRowSelection(val[i]);
-        } else if (!select && this.selection.indexOf(val[i] > -1)) {
-          this.$refs.taskTable.toggleRowSelection(val[i]);
-        }
-        if (val[i].children && val[i].children.length) {
-          this.selectChildren(val[i].children, select);
-        }
-      }
-    },
+   
     addNewTaskShow(type) {
-      // var pro_pc_no = "";
-      // if (type == "root") {
-      //   pc_no = "";
-      //   this.addTaskText = "新增根节点";
-      // } else if (type == "children") {
-      //   pro_pc_no = this.selection[0].pc_no;
-      //   this.addTaskText = "新增[" + pro_pc_no + "]的子节点";
-      // }
+      var titleName = "";
+      var pc_pno = null;
+      if (type == "root") {
+        titleName = "";
+        this.addTaskText = "新增根节点";
+      } else if (type == "children") {
+        pc_pno = this.selection[0].pc_no;
+        titleName = this.selection[0].pc_name;
+        this.addTaskText = "新增[" + titleName + "]的子节点";
+      }
       this.taskModel = {
-        pc_no: "",
+        pc_no: 1,
+        pc_pno: pc_pno,
         pc_name: "",
         pc_note: ""
       };
@@ -303,19 +287,50 @@ export default {
           }
         }
       }
-    }
+    },
+      //全选选中子节点
+    handleSelectAll(selection) {
+      var val = this.ProclassData;
+      var select = false;
+      for (var i = 0; i < selection.length; i++) {
+        if (selection[i].pc_no == val[0].pc_no) {
+          select = true;
+          break;
+        }
+      }
+      for (var i = 0; i < val.length; i++) {
+        if (val[i].children && val[i].children.length) {
+          this.selectChildren(val[i].children, select);
+        }
+      }
+    },
+    //选中子节点
+    selectChildren(val, select) {
+      for (var i = 0; i < val.length; i++) {
+        if (select && this.selection.indexOf(val[i]) == -1) {
+          this.$refs.proclassTable.toggleRowSelection(val[i]);
+        } else if (!select && this.selection.indexOf(val[i] > -1)) {
+          this.$refs.proclassTable.toggleRowSelection(val[i]);
+        }
+        if (val[i].children && val[i].children.length) {
+          this.selectChildren(val[i].children, select);
+        }
+      }
+    },
+
   }
 };
 </script>
 
+
 <style scoped>
-.standard-task {
-  width: 100%;
-}
-.tbar {
-  margin-bottom: 10px;
+.project_classification {
+  width: 1100px;
 }
 .formItem {
   width: 300px;
+  /* margin-left: 55px; */
 }
+
+
 </style>
