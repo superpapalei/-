@@ -1,49 +1,43 @@
 <template>
-  <div class="dept">
+  <div class="deptShift">
     <div class="containAll">
-      <div class="tbar">
-        <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search()"></el-button>
-        <el-input size="small" @keyup.enter.native="refreshData" placeholder="请输入部门名称" v-model="condition"
-          style="width:300px;">
-          <el-button @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
-        </el-input>
-        <el-button size="small" type="primary" style="margin-left:10px;" @click="addNewNode('root')">新增根节点</el-button>
-        <el-button size="small" type="primary" :disabled="selection.length!=1" @click="addNewNode('children')">新增子节点
-        </el-button>
-        <el-button size="small" type="danger" :disabled="selection.length==0" @click="deleteList">
-          删除选中节点({{selection.length}})
-        </el-button>
-        <el-dropdown style="margin-left:10px;">
-          <el-button size="small">
-            操作<i class="el-icon-arrow-down el-icon--right"></i>
-          </el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="expandAll">展开所有节点</el-dropdown-item>
-            <el-dropdown-item @click.native="collapseAll" divided>折叠所有节点</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div>
-      <div class="topContent" style="height:480px;">
-        <el-table ref="deptTable" style="width: 100%" height="100%" :data="tableData" tooltip-effect="dark"
-          highlight-current-row row-key="dept_id" default-expand-all @selection-change="handleSelectionChange"
-          @select-all="handleSelectAll" @row-click="handleRowClick">
-          <el-table-column type="selection" width="55" align="center"></el-table-column>
-          <el-table-column prop="dept_name" label="部门名称" align="center" width="220"></el-table-column>
-          <el-table-column prop="dept_type_id" label="类型" align="center" width="150">
-            <!-- 是否写死，还是动态查数据  -->
-            <template slot-scope="scope">{{scope.row.dept_type_id | deptTypeTrans}}</template>
-          </el-table-column>
-          <el-table-column label="说明" prop="dept_note" align="center"></el-table-column>
-          <el-table-column label="操作" width="150" prop="handle">
-            <template slot-scope="scope">
-              <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editDeptShow(scope.row)">
+        <div class="leftContent">
+          <div>
+          <div class="tbar">
+            <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search()"></el-button>
+            <el-input size="small" @keyup.enter.native="refreshData" placeholder="请输入部门名称" v-model="condition"
+              style="width:180px;">
+              <el-button @click="refreshData" slot="append" icon="el-icon-search"></el-button>
+            </el-input>
+            <el-dropdown style="margin-left:10px;">
+              <el-button size="small">
+                操作<i class="el-icon-arrow-down el-icon--right"></i>
               </el-button>
-              <el-button type="danger" icon="el-icon-delete" size="mini" circle @click="deleteOne(scope.row)">
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item @click.native="expandAll">展开所有节点</el-dropdown-item>
+                <el-dropdown-item @click.native="collapseAll" divided>折叠所有节点</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+          <div class="topContent" style="height:432px">
+            <el-table ref="deptTable" style="width: 100%" height="100%" :data="tableData" tooltip-effect="dark"
+              highlight-current-row row-key="dept_id" default-expand-all @row-dblclick="handleRowDbClick">
+              <el-table-column prop="dept_name" label="部门名称" style="width:95%" align="left"></el-table-column>
+            </el-table>
+          </div>
+          </div>
+        </div>
+        <div class="rightContent">
+          <div>
+            <div>
+              <el-tabs style="display:inline-block;width:100%;" v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="部门班次" name="deptShift">
+                  <child1 v-if="isChildUpdate1" :deptName="deptNameSelect" :deptId="deptIdSelect"></child1>
+                </el-tab-pane>
+              </el-tabs>
+            </div>
+          </div>
+        </div>
     </div>
     <el-dialog width="500px" :title="addDeptText" :close-on-click-modal="false" :visible.sync="addDeptVisiable"
       top="5vh" @closed="refreshForm">
@@ -82,8 +76,12 @@
 </template>
 
 <script>
+import deptShiftChild from "@/components/hr/deptShiftChild";
 export default {
-  name: "dept",
+  name: "deptShift",
+  components: {
+    child1: deptShiftChild,
+  },
   data() {
     return {
       condition: "",
@@ -94,6 +92,10 @@ export default {
       deptModel: {},
       addOrNot: true, //是否新增
       addDeptText: "",
+      activeName: "deptShift",
+      deptIdSelect: 0, //传入tab的部门id，注意类型
+      deptNameSelect: "  ", //传入tab的部门名称
+      isChildUpdate1: true, //保证tab不会同时渲染所有tab，且每次点击某tab都会重新渲染该tab
       deptType_options: [
         {
           value: 1,
@@ -160,38 +162,16 @@ export default {
       this.condition = "";
       this.refreshData();
     },
-    //表格树选中改变
-    handleSelectionChange(val) {
-      this.selection = val;
-    },
-    //全选选中子节点
-    handleSelectAll(selection) {
-      var val = this.tableData;
-      var select = false;
-      for (var i = 0; i < selection.length; i++) {
-        if (selection[i].st_id == val[0].st_id) {
-          select = true;
+    //标签页切换
+    handleClick(tab) {
+      var tabName = tab.name;
+      switch (tabName) {
+        case "emp_dept":
+          (this.isChildUpdate1 = true),
+            (this.isChildUpdate2 = this.isChildUpdate3 = this.isChildUpdate4 = false); //这样写可以？
           break;
-        }
       }
-      for (var i = 0; i < val.length; i++) {
-        if (val[i].children && val[i].children.length) {
-          this.selectChildren(val[i].children, select);
-        }
-      }
-    },
-    //选中子节点
-    selectChildren(val, select) {
-      for (var i = 0; i < val.length; i++) {
-        if (select && this.selection.indexOf(val[i]) == -1) {
-          this.$refs.deptTable.toggleRowSelection(val[i]);
-        } else if (!select && this.selection.indexOf(val[i] > -1)) {
-          this.$refs.deptTable.toggleRowSelection(val[i]);
-        }
-        if (val[i].children && val[i].children.length) {
-          this.selectChildren(val[i].children, select);
-        }
-      }
+      // this.refresh();
     },
     addNewNode(type) {
       var dept_pid = ""; //创建根节点时，若pid为空，前端后台不匹配；若pid为0，因为pid和id外键关联，后台无法插入
@@ -295,7 +275,7 @@ export default {
               this.refreshData();
             })
             .catch(res => {
-              this.$alert("删除失败" , "提示", {
+              this.$alert("删除失败", "提示", {
                 confirmButtonText: "确定",
                 type: "warning"
               });
@@ -313,10 +293,9 @@ export default {
       }
       return name;
     },
-    //点击行可以切换选中状态   
-    handleRowClick(row, column) {
-      if (column.property != "handle")
-        this.$refs.deptTable.toggleRowSelection(row);
+    handleRowDbClick(row, column) {
+      this.deptIdSelect = row.dept_id;
+      this.deptNameSelect = row.dept_name;
     },
     expandAll() {
       var icon = this.$el.getElementsByClassName("el-table__expand-icon");
@@ -354,10 +333,20 @@ export default {
 </script>
 
 <style scoped>
-.dept {
-  width: 1100px;
+.deptShift {
+  width: 1200px;
 }
 .formItem {
   width: 300px;
+}
+.leftContent {
+  width: 40%;
+  position: absolute;
+  display: flex;
+  display: -webkit-flex;
+}
+.rightContent {
+  float: right;
+  width: 70%;
 }
 </style>

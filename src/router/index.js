@@ -10,8 +10,10 @@ import ScheduleControl from '@/components/control/ScheduleControl'
 
 import emp from '@/components/hr/emp'
 import dept from '@/components/hr/dept'
+import deptEmp from '@/components/hr/deptEmp'
 import cust from '@/components/hr/cust'
 import standardTask from '@/components/project-preparation/standard-task'
+import projectTemplate from '@/components/project-preparation/project-template'
 import project_classification from '@/components/project-preparation/project_classification'
 import work_post from '@/components/project-preparation/work_post'
 import item from '@/components/project-preparation/item'
@@ -29,6 +31,7 @@ import task_scheduling_result from '@/components/schedule/task_scheduling_result
 import shift_dept from '@/components/schedule/dept'
 import shift_emp from '@/components/schedule/emp'
 import shift_task from '@/components/schedule/shift_task'
+import deptShift from '@/components/hr/deptShift'
 
 Vue.use(Router)
 
@@ -82,7 +85,7 @@ const router = new Router({
           name: 'standardTask',
           component: standardTask,
         },
-     
+
         {
           path: '/work_post',
           name: 'work_post',
@@ -93,7 +96,7 @@ const router = new Router({
           name: 'task',
           component: task,
         },
-         {
+        {
           path: '/task_scheduling_result',
           name: 'task_scheduling_result',
           component: task_scheduling_result,
@@ -113,12 +116,12 @@ const router = new Router({
           name: 'shift_task',
           component: shift_task,
         },
-         {
+        {
           path: '/shift_group',
           name: 'shift_group',
           component: shift_group,
         },
-         {
+        {
           path: '/day_shift',
           name: 'day_shift',
           component: day_shift,
@@ -128,7 +131,7 @@ const router = new Router({
           name: 'shift',
           component: shift,
         },
-         {
+        {
           path: '/scheduling_note_type',
           name: 'scheduling_note_type',
           component: scheduling_note_type,
@@ -136,12 +139,12 @@ const router = new Router({
         {
           path: '/template_group_waiting',
           name: 'template_group_waiting',
-          component:template_group_waiting,
+          component: template_group_waiting,
         },
         {
           path: '/template_group_type',
           name: 'template_group_type',
-          component:template_group_type,
+          component: template_group_type,
         },
         {
           path: '/project_classification',
@@ -157,6 +160,19 @@ const router = new Router({
           path: '/item_type',
           name: 'item_type',
           component: item_type,
+          path: '/deptEmp',
+          name: 'deptEmp',
+          component: deptEmp,
+        },
+        {
+          path: '/deptShift',
+          name: 'deptShift',
+          component: deptShift,
+        },
+        {
+          path: '/projectTemplate',
+          name: 'projectTemplate',
+          component: projectTemplate,
         }
       ]
     }
@@ -173,19 +189,19 @@ router.beforeEach((to, from, next) => {
   // if (!Cookies.get('cid') && !Cookies.get('customerType') && to.name != 'login') {//判断用户信息，不合法返回登陆界面
   //   next('/login')
   // } else {
-    if (from.path == '/') {
-      store.commit('navTabs/emptyBreadCrumb');//到主页面后清空导航
-      if (to.name == 'login' || to.name == 'main') {
-        next()
-      }
-      else {
-        next('/main');
-      }
+  if (from.path == '/') {
+    store.commit('navTabs/emptyBreadCrumb');//到主页面后清空导航
+    if (to.name == 'login' || to.name == 'main') {
+      next()
     }
-    else {//不是刷新
-      next();
-      history.pushState(null, null, location.href);//禁止后退，搭配APP.VUE里面的mounted
+    else {
+      next('/main');
     }
+  }
+  else {//不是刷新
+    next();
+    history.pushState(null, null, location.href);//禁止后退，搭配APP.VUE里面的mounted
+  }
   // }
 })
 

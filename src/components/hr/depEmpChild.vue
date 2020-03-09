@@ -16,10 +16,10 @@
             批量删除({{selection.length}})
           </el-button>
           <el-dropdown style="margin-left:10px;">
-            <el-button size="small">
+            <el-button size="small" :disabled="selection.length==0">
               批量修改({{selection.length}})<i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
-            <el-dropdown-menu slot="dropdown">
+            <el-dropdown-menu slot="dropdown" >
               <el-dropdown-item @click.native="editList(1)" divided>设置为需被排班</el-dropdown-item>
               <el-dropdown-item @click.native="editList(4)" divided>取消设置需被排班</el-dropdown-item>
               <el-dropdown-item @click.native="editList(2)" divided>设置为负责人</el-dropdown-item>
@@ -31,7 +31,7 @@
         </div>
         <div style="width:100%;height:370px;">
           <el-table ref="deptEmpTable" style="width: 100%" height="100%" :data="tableData" tooltip-effect="dark"
-            highlight-current-row border @selection-change="handleSelectionChange" @select-all="handleSelectAll">
+            highlight-current-row border @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center"></el-table-column>
             <el-table-column type="index" width="70" align="center" label="序号">
             </el-table-column>
@@ -65,7 +65,7 @@
       </div>
     </el-card>
     <el-dialog width="400px" :title="addDeptEmpText" :close-on-click-modal="false" :visible.sync="addDeptEmpVisiable"
-      top="5vh" @closed="refreshForm" :append-to-body="true">
+      top="25vh" @closed="refreshForm" :append-to-body="true">
       <el-form :model="dept_empModel" label-width="100px" ref="deptEmpForm" :rules="add_rules">
         <el-form-item label="人员" prop="emp_id">
           <el-select v-model="dept_empModel.emp_id" ref="select_emp" placeholder="请选择人员">
@@ -96,7 +96,7 @@ import print from "print-js";
 import Axios from "axios";
 import Cookies from "js-cookie";
 export default {
-  name: "child1",
+  name: "depEmpChild",
   props: ["deptName", "deptId"],
   data() {
     return {
@@ -223,7 +223,7 @@ export default {
     //编辑数据
     editShow(row) {
       this.dept_empModel = JSON.parse(JSON.stringify(row));
-      this.addDeptEmpText = "编辑节点";
+      this.addDeptEmpText = "编辑部门人员";
       this.addOrNot = false;
       this.addDeptEmpVisiable = true;
     },
@@ -234,43 +234,10 @@ export default {
     handleSelectionChange(val) {
       this.selection = val;
     },
-    //全选选中节点
-    handleSelectAll(selection) {
-      // var val=this.tableData;
-      // for (var i = 0; i < this.tableData.length; i++) {
-      // //  this.$refs.deptEmpTable.toggleRowSelection(val[i]);
-      // }
-    },
     //批量修改
     editList(mark) {
-      var list = [];
-      var model = {
-        c_id: 1, //现在先写死，到时候通过缓存给该变量赋值
-        dept_id: this.deptId,
-        is_main_dept: false,
-        is_manager: false,
-        de_isscheduling: "",
-        de_isauthority: "",
-        emp_id: 1,
-        create_date: "",
-        update_date: "",
-        create_user: "",
-        update_user: ""
-      };
       if (this.selection.length) {
-        for (var i = 0; i < this.selection.length; i++) {
-          model.emp_id = this.selection[i].emp_id;
-          model.de_isscheduling = this.selection[i].de_isscheduling;
-          model.de_isauthority = this.selection[i].de_isauthority;
-          model.is_manager = this.selection[i].is_manager;
-          model.is_main_dept = this.selection[i].is_main_dept;
-          model.create_date = this.selection[i].create_date;
-          model.update_date = this.selection[i].update_date;
-          model.create_user = this.selection[i].create_user;
-          model.update_user = this.selection[i].update_user;
-          list.push(model);
-        }
-        this.onEditClick(list, mark);
+        this.onEditClick(this.selection, mark);
       }
     },
     onEditClick(list, mark) {
@@ -312,7 +279,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.z_put("api/dept/dept_emp_list", { data: list })
+          this.z_put("api/dept/dept_emp_list", list)
             .then(res => {
               this.$message({
                 message: "修改成功",
@@ -327,52 +294,6 @@ export default {
                 type: "warning"
               });
               console.log(res);
-            });
-        })
-        .catch(() => {});
-    },
-    //将员工设置为需要被排班
-    eidtDeptEmp(mark) {
-      var list = [];
-      for (var i = 0; i < this.selection.length; i++) {
-        list.push(this.selection[i].emp_id);
-      }
-      var text = "";
-      if (mark == 1) {
-        text = "需被排班";
-      } else if (mark == 2) {
-        text = "负责人";
-      } else if (mark == 3) {
-        text = "主部门";
-      }
-      this.$confirm("是否确定将选中项设置为" + text, "提示", {
-        confirmButtonText: "是",
-        cancelButtonText: "否",
-        type: "warning"
-      })
-        .then(() => {
-          this.z_put(
-            "api/dept/dept_emp_list",
-            {
-              empIds: list,
-              deptId: this.deptId,
-              type: mark
-            },
-            { loading: false }
-          )
-            .then(res => {
-              this.$message({
-                message: "设置成功!",
-                type: "success",
-                duration: 1000
-              });
-              this.refreshData();
-            })
-            .catch(res => {
-              this.$alert("设置失败!", "提示", {
-                confirmButtonText: "确定",
-                type: "error"
-              });
             });
         })
         .catch(() => {});

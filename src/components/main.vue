@@ -1,11 +1,6 @@
 <template>
   <div class="center">
-    <el-dialog
-      title="日历"
-      :visible.sync="calen_visible"
-      :close-on-click-modal="false"
-      width="580px"
-    >
+    <el-dialog title="日历" :visible.sync="calen_visible" :close-on-click-modal="false" width="580px">
       <div slot="title" class="header-title">
         <span class="el-icon-date"> 日历</span>
       </div>
@@ -28,13 +23,14 @@
               <el-menu-item-group>
                 <el-menu-item index="test" route="/test">测试</el-menu-item>
                 <el-menu-item index="ScheduleTest" route="/ScheduleTest">计划测试</el-menu-item>
-                
+
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="2">
               <template slot="title">项目准备</template>
               <el-menu-item-group>
                 <el-menu-item index="standardTask" route="/standardTask">标准任务</el-menu-item>
+                <el-menu-item index="projectTemplate" route="/projectTemplate">项目模板</el-menu-item>
                 <el-menu-item index="work_post" route="/work_post">岗位</el-menu-item>
                 <el-menu-item index="template_group_type" route="/template_group_type">模板分类</el-menu-item>
                 <el-menu-item index="template_group_waiting" route="/template_group_waiting">项目组织模板(待整合)</el-menu-item>
@@ -46,33 +42,35 @@
                 <el-menu-item @click.native="openCalendar">日历</el-menu-item>
                 <el-menu-item index="dept" route="/dept">部门</el-menu-item>
                 <el-menu-item index="emp" route="/emp">人员</el-menu-item>
+                <el-menu-item index="deptEmp" route="/deptEmp">部门人员</el-menu-item>
+                <el-menu-item index="deptShift" route="/deptShift">部门班次</el-menu-item>
                 <el-menu-item index="cust" route="/cust">客户</el-menu-item>
                 <el-menu-item index="project_classification" route="/project_classification">项目分类</el-menu-item>
                 <el-menu-item index="item" route="/item">物料</el-menu-item>
                 <el-menu-item index="item_type" route="/item_type">物料分类</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-              <el-submenu index="4">
+            <el-submenu index="4">
               <template slot="title">任务管理</template>
               <el-menu-item-group>
-              <el-menu-item index="task" route="/task">任务编辑</el-menu-item>
+                <el-menu-item index="task" route="/task">任务编辑</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-               <el-submenu index="5">
+            <el-submenu index="5">
               <template slot="title">排班管理</template>
-              
-               <el-menu-item index="scheduling_note_type" route="/scheduling_note_type">任务异常标记类型</el-menu-item>     
-               <el-menu-item index="shift" route="/shift">排班班次</el-menu-item>
-                   <el-menu-item index="shift_dept" route="/shift_dept">排班部门</el-menu-item>
-                       <el-menu-item index="shift_emp" route="/shift_emp">排班人员</el-menu-item>
-                           <el-menu-item index="shif_task" route="/shif_task">排班任务</el-menu-item> 
-                         <!-- <el-menu-item index="day_shift" route="/day_shift">排班班次</el-menu-item>  -->
-                 <el-menu-item index="task_scheduling_result" route="/task_scheduling_result">排班操作</el-menu-item>
+
+              <el-menu-item index="scheduling_note_type" route="/scheduling_note_type">任务异常标记类型</el-menu-item>
+              <el-menu-item index="shift" route="/shift">排班班次</el-menu-item>
+              <el-menu-item index="shift_dept" route="/shift_dept">排班部门</el-menu-item>
+              <el-menu-item index="shift_emp" route="/shift_emp">排班人员</el-menu-item>
+              <el-menu-item index="shif_task" route="/shif_task">排班任务</el-menu-item>
+              <!-- <el-menu-item index="day_shift" route="/day_shift">排班班次</el-menu-item>  -->
+              <el-menu-item index="task_scheduling_result" route="/task_scheduling_result">排班操作</el-menu-item>
               <el-menu-item-group>
-             
+
               </el-menu-item-group>
             </el-submenu>
-             
+
             <!-- 权限树加载 -->
             <!-- <menuTree :menuTreeItem="menuTreeList" /> -->
           </el-menu>
@@ -131,7 +129,7 @@
         </div>
       </el-header>
       <el-main class="backTop">
-        <el-card class="mainContentCard">
+        <el-card class="mainContentCard" shadow="never">
           <div class="mainContent">
             <keep-alive>
               <router-view class="commonStyle" v-if="$route.meta.keepAlive === true" />
@@ -530,11 +528,13 @@ export default {
 .el-menu--horizontal > .el-submenu .el-submenu__title {
   height: 50px !important;
   line-height: 50px !important;
+  padding: 0 15px !important;
 }
 .el-menu--horizontal > div > .el-menu-item,
 .el-menu--horizontal > div > .el-submenu .el-submenu__title {
   height: 50px !important;
   line-height: 50px !important;
+  padding: 0 15px !important;
 }
 .el-menu--horizontal > div > .el-submenu {
   float: left !important;
