@@ -1,10 +1,5 @@
-import Vuex from 'vuex'
-import store from '.';
-//默认主页
-// const Home = resolve => require(['../views/Home'], resolve)
-
 const state = {
-    activeTabName: 'main',  //当前页面(去参)
+    activeTabName: 'main',  //当前页面
     //导航数组，等权限控制做好通过后台读取
     menuTreeListFlatten: [],
     menuTreeList: [],
@@ -13,11 +8,10 @@ const state = {
 
 const mutations = {
     /*
-    *传入一个标签的name
-    *使选中的标签页高亮，和name对应
+    *传入一个标签的index
     */
-    setActiveTabName(state, name) {
-        state.activeTabName = name;
+    setActiveTabName(state, index) {
+        state.activeTabName = index;
     },
     /*
     *设置菜单树
@@ -44,15 +38,14 @@ const mutations = {
             menu_name: '首页'
         });
         state.activeTabName = index;
-        state.activeTabName = index;
     },
     emptyBreadCrumb(state) {
         state.breadCrumbList = [];
     }
 };
 /*
-    *多维数组数组扁平化
-    */
+*多维数组数组扁平化
+*/
 function arrayChildrenFlatten(array, result) {
     for (var i = 0; i < array.length; i++) {
         var item = array[i];
@@ -67,6 +60,7 @@ function findFatherIndex(index, array) {
     //根据index找到节点
     var mapTab = state.menuTreeListFlatten.filter(item => item.menu_link == index);
     if (mapTab.length > 0) {
+        mapTab = mapTab[0];
         array.splice(0, 0, {
             menu_id: mapTab.menu_id,
             menu_pid: mapTab.menu_pid,
@@ -76,7 +70,8 @@ function findFatherIndex(index, array) {
         if (mapTab.menu_pid > 0) {
             var mapTabF = state.menuTreeListFlatten.filter(item => item.menu_id == mapTab.menu_pid);
             if (mapTabF.length) {
-                findFatherIndex(mapTabF[0].menu_link, array);
+                mapTabF = mapTabF[0];
+                findFatherIndex(mapTabF.menu_link, array);
             }
         }
     } else {

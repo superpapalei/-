@@ -72,9 +72,9 @@
       </el-header>
       <el-header style="height:30px;" v-if="breadCrumbList.length">
         <div class="breadCrumb">
-          <template v-for="(item, index) in breadCrumbList"><a v-if="index == 0" :key="index"
-              @click="refreshPage">&nbsp;{{ item.menu_name }}>&nbsp;</a><span :key="index"
-              v-else>&nbsp;{{ item.menu_name }}>&nbsp;</span></template>
+          <template v-for="(item, index) in breadCrumbList">
+            <a v-if="index == 0" :key="index" @click="refreshPage">&nbsp;{{ item.menu_name }}>&nbsp;</a>
+            <span :key="index" v-else>&nbsp;{{ item.menu_name }}>&nbsp;</span></template>
         </div>
       </el-header>
       <el-main class="backTop">
@@ -257,9 +257,9 @@ export default {
     }
   },
   mounted() {
-    this.setActiveTabName('main');
+    this.setActiveTabName("main");
     this.getMenuTree(); //获得菜单权限树,获取角标在后去权限之后
-  },
+  }
 };
 </script>
 
@@ -361,6 +361,9 @@ export default {
 }
 .breadCrumb a:hover {
   color: #409eff !important;
+}
+.breadCrumb span {
+  font-size: 14px;
 }
 .messageBox {
   width: 100%;
