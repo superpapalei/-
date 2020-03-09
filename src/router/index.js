@@ -17,6 +17,7 @@ import projectTemplate from '@/components/project-preparation/project-template'
 import project_classification from '@/components/project-preparation/project_classification'
 import work_post from '@/components/project-preparation/work_post'
 import item from '@/components/project-preparation/item'
+import item_type from '@/components/project-preparation/item_type'
 import template_group_waiting from '@/components/project-preparation/template_group_waiting'
 import template_group_type from '@/components/project-preparation/template_group_type'
 
@@ -156,6 +157,10 @@ const router = new Router({
           component: item,
         },
         {
+          path: '/item_type',
+          name: 'item_type',
+          component: item_type},
+          {
           path: '/deptEmp',
           name: 'deptEmp',
           component: deptEmp,

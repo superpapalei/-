@@ -1,10 +1,10 @@
 <template>
-  <div class="project_classification">
+  <div class="item_type">
     <div class="containALL">
       <div class="topLayout">
         <div class="tbar">
           <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
-          <el-input @keyup.enter.native="refreshData" placeholder="请输出项目分类名称" v-model="condition"
+          <el-input @keyup.enter.native="refreshData" placeholder="请输出物料类型名称" v-model="condition"
             style="width:320px;">
             <el-button @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
           </el-input>
@@ -24,13 +24,13 @@
           </el-dropdown>
         </div>
         <div class="gridTable">
-          <el-table ref="proclassTable"  style="width: 100%" :data="ProclassData" tooltip-effect="dark"
-            highlight-current-row row-key="pc_no" default-expand-all @selection-change="handleSelectionChange"
+          <el-table ref="itemTypeTable"  style="width: 100%" :data="itemTypeData" tooltip-effect="dark"
+            highlight-current-row row-key="it_id" default-expand-all @selection-change="handleSelectionChange"
             @select-all="handleSelectAll" @row-click="handleRowClick">
             <el-table-column type="selection" width="55" align="center"></el-table-column>
-            <el-table-column prop="pc_no" label="项目类型编号" align="center" width="150"></el-table-column>
-            <el-table-column prop="pc_name" label="项目类型名称" align="center" width="150"></el-table-column>
-            <el-table-column prop="pc_note" label="说明" align="center" width="480"></el-table-column>
+            <el-table-column prop="it_id" label="物料类型编号" align="center" width="150"></el-table-column>
+            <el-table-column prop="it_name" label="物料类型名称" align="center" width="150"></el-table-column>
+            <el-table-column prop="it_code" label="it_code" align="center" width="480"></el-table-column>
             <el-table-column label="操作" width="150" prop="handle">
               <template slot-scope="scope">
                 <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTaskShow(scope.row)">
@@ -46,20 +46,20 @@
     </div>
     <el-dialog width="500px" :title="addTaskText" :close-on-click-modal="false" :visible.sync="addTaskVisiable"
       top="5vh" @closed="refreshForm">
-      <el-form :model="taskModel" label-width="120px" ref="taskForm" :rules="add_rules">
+      <el-form :model="itemTypeModel" label-width="120px" ref="taskForm" :rules="add_rules">
 
-        <!-- <el-form-item label="项目类型编号" prop="pc_no">
-          <el-input class="formItem" v-model="taskModel.pc_no" placeholder="项目类型名称">
+        <!-- <el-form-item label="项目类型编号" prop="it_id">
+          <el-input class="formItem" v-model="itemTypeModel.it_id" placeholder="项目类型名称">
           </el-input>
         </el-form-item> -->
 
-        <el-form-item label="项目类型名称" prop="pc_name">
-          <el-input class="formItem" v-model="taskModel.pc_name" placeholder="项目类型名称">
+        <el-form-item label="物料类型名称" prop="it_name">
+          <el-input class="formItem" v-model="itemTypeModel.it_name" placeholder="物料类型名称">
           </el-input>
         </el-form-item>
 
-        <el-form-item label="备注">
-          <el-input class="formItem" type="textarea" :rows="4" v-model="taskModel.pc_note" placeholder="备注信息">
+        <el-form-item label="it_code">
+          <el-input class="formItem"  v-model="itemTypeModel.it_code" placeholder="it_code">
           </el-input>
         </el-form-item>
 
@@ -75,19 +75,19 @@
 
 <script>
 export default {
-  name: "project_classification",
+  name: "item_type",
   data() {
     return {
       condition: "",
-      ProclassData: [], //表格数据
+      itemTypeData: [], //表格数据
       selection: [],
       addTaskVisiable: false,
-      taskModel: {},
+      itemTypeModel: {},
       addOrNot: true, //是否新增
       addTaskText: "",
 
       add_rules: {
-        pc_name: [{ required: true, message: "请填写项目类型名称", trigger: "blur" }]        
+        it_name: [{ required: true, message: "请填写物料类型名称", trigger: "blur" }]        
       },
     };
   },
@@ -103,11 +103,11 @@ export default {
   },
   methods: {
     refreshData() {      
-      this.z_get("api/project_classification/treeList", {
+      this.z_get("api/item_type/treeList", {
         condition: this.condition
       })
         .then(res => {
-          this.ProclassData = res.data;
+          this.itemTypeData = res.data;
         })
         .catch(res => {});
     },
@@ -127,20 +127,20 @@ export default {
    
     addNewTaskShow(type) {
       var titleName = "";
-      var pc_pno = null;
+      var it_pid = null;
       if (type == "root") {
         titleName = "";
         this.addTaskText = "新增根节点";
       } else if (type == "children") {
-        pc_pno = this.selection[0].pc_no;
-        titleName = this.selection[0].pc_name;
+        it_pid = this.selection[0].it_id;
+        titleName = this.selection[0].it_name;
         this.addTaskText = "新增[" + titleName + "]的子节点";
       }
-      this.taskModel = {
-        pc_no: 1,
-        pc_pno: pc_pno,
-        pc_name: "",
-        pc_note: ""
+      this.itemTypeModel = {
+        it_id: 1,
+        it_pid: it_pid,
+        it_name: "",
+        it_code: ""
       };
       this.addOrNot = true;
       this.addTaskVisiable = true;
@@ -149,7 +149,7 @@ export default {
       this.$refs.taskForm.validate(valid => {
         if (valid) {
           if (this.addOrNot) {
-            this.z_post("api/project_classification", this.taskModel)
+            this.z_post("api/item_type", this.itemTypeModel)
               .then(res => {
                 this.$message({
                   message: "新增成功",
@@ -167,7 +167,7 @@ export default {
                 console.log(res);
               });
           } else {
-            this.z_put("api/project_classification", this.taskModel)
+            this.z_put("api/item_type", this.itemTypeModel)
               .then(res => {
                 this.$message({
                   message: "编辑成功",
@@ -192,7 +192,7 @@ export default {
     },
     //编辑数据
     editTaskShow(row) {
-      this.taskModel = JSON.parse(JSON.stringify(row));
+      this.itemTypeModel = JSON.parse(JSON.stringify(row));
       this.addTaskText = "编辑节点";
       this.addOrNot = false;
       this.addTaskVisiable = true;
@@ -217,7 +217,7 @@ export default {
       })
         .then(() => {
           //var realSelect = this.arrayChildrenFlatten(list, []);
-          this.z_delete("api/project_classification/list", { data: list })
+          this.z_delete("api/item_type/list", { data: list })
             .then(res => {
               this.$message({
                 message: "删除成功",
@@ -251,8 +251,8 @@ export default {
       return result;
     },
     handleSelectTreeDblClick(data) {
-      this.taskModel.dept_id = data.dept_id;
-      this.taskModel.dept_name = data.dept_name;
+      this.itemTypeModel.dept_id = data.dept_id;
+      this.itemTypeModel.dept_name = data.dept_name;
       this.$refs.select_dept.blur();
     },
     //点击行可以切换选中状态
@@ -290,10 +290,10 @@ export default {
     },
       //全选选中子节点
     handleSelectAll(selection) {
-      var val = this.ProclassData;
+      var val = this.itemTypeData;
       var select = false;
       for (var i = 0; i < selection.length; i++) {
-        if (selection[i].pc_no == val[0].pc_no) {
+        if (selection[i].it_id == val[0].it_id) {
           select = true;
           break;
         }
@@ -308,9 +308,9 @@ export default {
     selectChildren(val, select) {
       for (var i = 0; i < val.length; i++) {
         if (select && this.selection.indexOf(val[i]) == -1) {
-          this.$refs.proclassTable.toggleRowSelection(val[i]);
+          this.$refs.itemTypeTable.toggleRowSelection(val[i]);
         } else if (!select && this.selection.indexOf(val[i] > -1)) {
-          this.$refs.proclassTable.toggleRowSelection(val[i]);
+          this.$refs.itemTypeTable.toggleRowSelection(val[i]);
         }
         if (val[i].children && val[i].children.length) {
           this.selectChildren(val[i].children, select);
@@ -324,7 +324,7 @@ export default {
 
 
 <style scoped>
-.project_classification {
+.item_type {
   width: 1100px;
 }
 .formItem {
