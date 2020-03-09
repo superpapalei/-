@@ -159,7 +159,8 @@ const router = new Router({
         {
           path: '/item_type',
           name: 'item_type',
-          component: item_type,
+          component: item_type},
+          {
           path: '/deptEmp',
           name: 'deptEmp',
           component: deptEmp,
