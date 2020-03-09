@@ -1,20 +1,23 @@
 <template>
   <div class="template_group_waiting">
-    <el-container style="width:100%;">
-      <el-aside width="20%" class="tgaside">
-        <div>
-          <el-h1>模板分类</el-h1>
-          <el-button icon="el-icon-refresh" style="margin-left:10px;" title="刷新" size="mini" circle
+    <el-container  style="height: 600px;">
+      <el-aside class="tgaside" width="220px" style="padding-right:10px;">
+       <el-card style="height:100%;box-sizing:border-box;" shadow="never">
+        <div slot="header">
+          <el-row>
+          <span>模板分类</span>
+          <el-button icon="el-icon-refresh"  title="刷新" size="mini" circle 
             @click="refreshTGTData"></el-button>
-          <el-button type="mini" @click="addNewTemplateTypeGroup()">+</el-button>
-          <el-button type="mini" :disabled="selection.length==0" @click="deleteOne(scope.row)">—</el-button>
+          <el-button type="primary" size="mini" icon="el-icon-folder-add" circle @click="addNewTemplateTypeGroup()"></el-button>
+          <el-button type="danger" disabled size="mini" icon="el-icon-delete" circle @click="deleteOne(scope.row)"></el-button>
+          </el-row>
         </div>
         <el-menu>
-          <el-menu-item el-icon-link @click="refreshData()"><i class="el-icon-link"></i>全部分类</el-menu-item>
+          <el-menu-item el-icon-link @click="refreshData()"><img style="width:16px;" src="../../assets/img/tag.png" />全部分类</el-menu-item>
           <template v-for="(item, key) in tgtData">
             <el-menu-item :key="key" :index="item.tgt_id" @click="refreshTemGData(item.tgt_id)">
               <template slot="title">
-                <i class="el-icon-link"></i>
+                <img style="width:16px;" src="../../assets/img/tag.png" />
                 <span>{{ item.tgt_name }}</span>
               </template>
             </el-menu-item>
@@ -51,8 +54,9 @@
        -->
           </template>
         </el-menu>
+       </el-card>
       </el-aside>
-      <el-container>
+      <el-container >
         <el-header class="tgheader" style="text-align: left; font-size: 12px">
           <div class="tbar">
             <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
@@ -66,22 +70,22 @@
         </el-button> -->
           </div>
         </el-header>
-        <el-main>
+        <el-main style="border-left:10px solid #eee;padding:0 0 0 10px;">
           <div>
-            <el-table ref="tgTable" style="width: 100%;height:350px;" :data="tgData" tooltip-effect="dark"
+            <el-table ref="tgTable" v-loading="loading" style="width:100%;" height="540"  :data="tgData" tooltip-effect="dark"
               highlight-current-row row-key="tg_id" default-expand-all @selection-change="handleSelectionChange"
               @select-all="handleSelectAll" @row-click="handleRowClick">
               <!-- <el-table-column type="selection" width="55" align="center"></el-table-column> -->
-              <el-table-column prop="tg_name" label="组织模板名称" align="center" width="120"></el-table-column>
+              <el-table-column prop="tg_name" label="组织节点名称" align="center" width="180"></el-table-column>
               <el-table-column prop="tg_node_type" label="节点类型" align="center" width="180">
                 <template slot-scope="scope">{{scope.row.tg_node_type | stTypeTrans}}</template>
               </el-table-column>
-              <el-table-column prop="wp_id" label="岗位编号" align="center" width="90"></el-table-column>
+              <el-table-column prop="wp_id" label="岗位编号" align="center" width="200"></el-table-column>
               <!-- <el-table-column prop="wp_name" label="岗位名称" align="center" width="150"></el-table-column> -->
               <!-- <el-table-column prop="tgt_id" label="模板类型编号" align="center" width="120"></el-table-column>
               <el-table-column prop="tgt_name" label="模板类型名称" align="center" width="150"></el-table-column>
               <el-table-column prop="tgt_note" label="模板类型说明" align="center" width="150"></el-table-column> -->
-              <el-table-column label="操作" width="150" prop="handle">
+              <el-table-column label="操作"  prop="handle">
                 <template slot-scope="scope">
                   <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTemplateShow(scope.row)">
                   </el-button>
@@ -155,6 +159,7 @@
           </el-form>
         </el-dialog>
       </el-container>
+ 
     </el-container>
   </div>
 </template>
@@ -497,13 +502,14 @@ export default {
 
 <style scoped>
 .template_group_waiting {
-  width: 100%;
+  width: 1100px;
 }
+
 .tgheader {
   line-height: 60px;
 }
 .tgaside {
-  width: 100px;
+  width: 80px;
 }
 .tbar {
   margin-bottom: 10px;
