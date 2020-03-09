@@ -16,62 +16,12 @@
           <i class="el-icon-s-home icon-color aside-home" @click="refreshPage"></i>
         </div>
         <div class="menu-contain">
-          <el-menu mode="horizontal" :default-active="url" @select="addBreadCrumb" text-color="#333" active-text-color="#409EFF" style="height:50px;" router>
-            <!-- 单独的测试页面单独写，不经过权限加载 -->
-            <el-submenu index="1">
-              <template slot="title">测试</template>
-              <el-menu-item-group>
-                <el-menu-item index="test" route="/test">测试</el-menu-item>
-                <el-menu-item index="ScheduleTest" route="/ScheduleTest">计划测试</el-menu-item>
-
-              </el-menu-item-group>
-            </el-submenu>
-            <el-submenu index="2">
-              <template slot="title">项目准备</template>
-              <el-menu-item-group>
-                <el-menu-item index="standardTask" route="/standardTask">标准任务</el-menu-item>
-                <el-menu-item index="projectTemplate" route="/projectTemplate">项目模板</el-menu-item>
-                <el-menu-item index="work_post" route="/work_post">岗位</el-menu-item>
-                <el-menu-item index="template_group_type" route="/template_group_type">模板分类</el-menu-item>
-                <el-menu-item index="template_group_waiting" route="/template_group_waiting">项目组织模板(待整合)</el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
-            <el-submenu index="3">
-              <template slot="title">基础数据</template>
-              <el-menu-item-group>
-                <el-menu-item @click.native="openCalendar">日历</el-menu-item>
-                <el-menu-item index="dept" route="/dept">部门</el-menu-item>
-                <el-menu-item index="emp" route="/emp">人员</el-menu-item>
-                <el-menu-item index="deptEmp" route="/deptEmp">部门人员</el-menu-item>
-                <el-menu-item index="deptShift" route="/deptShift">部门班次</el-menu-item>
-                <el-menu-item index="cust" route="/cust">客户</el-menu-item>
-                <el-menu-item index="project_classification" route="/project_classification">项目分类</el-menu-item>
-                <el-menu-item index="item" route="/item">物料信息</el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
-            <el-submenu index="4">
-              <template slot="title">任务管理</template>
-              <el-menu-item-group>
-                <el-menu-item index="task" route="/task">任务编辑</el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
-            <el-submenu index="5">
-              <template slot="title">排班管理</template>
-
-              <el-menu-item index="scheduling_note_type" route="/scheduling_note_type">任务异常标记类型</el-menu-item>
-              <el-menu-item index="shift" route="/shift">排班班次</el-menu-item>
-              <el-menu-item index="shift_dept" route="/shift_dept">排班部门</el-menu-item>
-              <el-menu-item index="shift_emp" route="/shift_emp">排班人员</el-menu-item>
-              <el-menu-item index="shif_task" route="/shif_task">排班任务</el-menu-item>
-              <!-- <el-menu-item index="day_shift" route="/day_shift">排班班次</el-menu-item>  -->
-              <el-menu-item index="task_scheduling_result" route="/task_scheduling_result">排班操作</el-menu-item>
-              <el-menu-item-group>
-
-              </el-menu-item-group>
-            </el-submenu>
-
+          <el-menu mode="horizontal" :default-active="url" @select="addBreadCrumb" text-color="#333"
+            active-text-color="#409EFF" style="height:50px;" router>
+            <!-- 单独的测试页面自己单独写，不经过权限加载(请勿上传) -->
+            
             <!-- 权限树加载 -->
-            <!-- <menuTree :menuTreeItem="menuTreeList" /> -->
+            <menuTree :menuTreeItem="menuTreeList" />
           </el-menu>
         </div>
         <ul class="right-aside-head">
@@ -286,24 +236,12 @@ export default {
         document.getElementById("asideControll").innerHTML = "&#xe65f;";
       }
     },
-    //获得菜单数组并传入store ,await不能阻塞主线程，这里可能没起作用
-    async getMenuTree() {
+    //获得菜单数组并传入store
+    getMenuTree() {
       this.$store.commit("navTabs/emptyMenuTreeList");
-      await this.z_get({
-        userid: JSON.parse(Cookies.get("userInfo")).userId
-      }).then(res => {
-        if (res.data.children.length > 0) {
-          this.setMenuTreeList(res.data.children);
-          //只有一个菜单，默认加载
-          if (res.data.children.length == 1) {
-            if (
-              res.data.children[0].menu_type == "menu" &&
-              (!res.data.children[0].children ||
-                res.data.children[0].children.length == 0)
-            ) {
-              this.addTab(res.data.children[0].menu_link);
-            }
-          }
+      this.z_get("api/Home/userMenuTree").then(res => {
+        if (res.data.length > 0) {
+          this.setMenuTreeList(res.data);
           //加载角标
           this.getIconAll();
         } else {
@@ -344,7 +282,7 @@ export default {
   mounted() {},
   beforeCreate() {},
   created() {
-    //this.getMenuTree(); //获得菜单权限树,获取角标在后去权限之后
+    this.getMenuTree(); //获得菜单权限树,获取角标在后去权限之后
     this.getPath();
     this.addTab("main");
   }
@@ -523,7 +461,7 @@ export default {
   padding: 5px 15px;
   background-color: #eee;
 }
-/* 水平样式 */
+/* 水平菜单样式 */
 .el-menu--horizontal > .el-menu-item,
 .el-menu--horizontal > .el-submenu .el-submenu__title {
   height: 50px !important;
@@ -539,7 +477,6 @@ export default {
 .el-menu--horizontal > div > .el-submenu {
   float: left !important;
 }
-/* 一级菜单的样式 */
 .el-menu--horizontal > div > .el-menu-item {
   float: left !important;
   margin: 0 !important;
@@ -558,9 +495,13 @@ export default {
 .el-menu--horizontal > div > .el-menu .el-menu-item:hover {
   background: #f5f7fa !important;
 }
+.el-menu--horizontal > div > .el-submenu .el-submenu__title {
+  border-bottom: 2px solid transparent !important;
+  color: #333 !important;
+}
 .el-menu--horizontal > div > .el-submenu.is-active .el-submenu__title {
   border-bottom: 2px solid #409eff !important;
-  color: #303133 !important;
+  color: #409eff !important;
 }
 /* 解决下拉三角图标 */
 .el-menu--horizontal > div > .el-submenu .el-submenu__icon-arrow {
@@ -569,13 +510,7 @@ export default {
   margin-left: 8px !important;
   margin-top: -3px !important;
 }
-/* 解决无下拉菜单时 不对齐问题 */
-.el-menu--horizontal > div > .el-submenu .el-submenu__title {
-  height: 60px !important;
-  line-height: 60px !important;
-  border-bottom: 2px solid transparent !important;
-  color: #909399 !important;
-}
+/* 滚动条样式 */
 .el-scrollbar .el-scrollbar__wrap {
   overflow-x: hidden !important;
 }
