@@ -32,6 +32,7 @@ import shift_dept from '@/components/schedule/dept'
 import shift_emp from '@/components/schedule/emp'
 import shift_task from '@/components/schedule/shift_task'
 import deptShift from '@/components/hr/deptShift'
+import codeTable from '@/components/codeTable/codeTable'
 
 Vue.use(Router)
 
@@ -174,6 +175,11 @@ const router = new Router({
           path: '/projectTemplate',
           name: 'projectTemplate',
           component: projectTemplate,
+        },
+        {
+          path: '/codeTable',
+          name: 'codeTable',
+          component: codeTable,
         }
       ]
     }
