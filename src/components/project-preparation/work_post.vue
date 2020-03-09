@@ -17,7 +17,7 @@
           highlight-current-row row-key="wp_id" default-expand-all @selection-change="handleSelectionChange"
           @select-all="handleSelectAll" @row-click="handleRowClick">
           <!-- <el-table-column type="selection" width="55" align="center"></el-table-column> -->
-          <el-table-column prop="" label=" " align="center" width="20" ></el-table-column>
+          
           <el-table-column prop="wp_id" label="序号" align="left" width="130" sortable></el-table-column>
           <el-table-column prop="wp_name" label="岗位名称" align="left" width="190" sortable></el-table-column>
           <el-table-column prop="wp_type" label="岗位类型" align="left" width="190" sortable>
