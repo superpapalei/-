@@ -3,25 +3,29 @@
     <div class="topLayout">
       <div class="tbar">
         <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
-        <el-input @keyup.enter.native="refreshData" placeholder="请输入岗位名称" v-model="condition" clearable style="width:300px;">
-          <el-button @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
+        <el-input size="small" @keyup.enter.native="refreshData" placeholder="请输入岗位名称" v-model="condition" clearable
+          style="width:250px;">
+          <el-button size="small" @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
         </el-input>
-        <el-button type="primary" style="margin-left:10px;" @click="addNewWorkPost()">新增岗位</el-button>
+        <el-button type="primary" size="small" style="margin-left:10px;" @click="addNewWorkPost()">新增岗位</el-button>
         <!-- <el-button type="danger" :disabled="selection.length==0" @click="deleteList">删除选中岗位({{selection.length}}) -->
         <!-- </el-button> -->
-       
+
       </div>
-      <div class="topContent">
-        <el-table ref="tgtTable" style="width: 100%;height:350px;" :data="wpData" tooltip-effect="dark"
+      <div class="gridTable">
+        <el-table ref="tgtTable" style="width: 100%;" height="450px" :data="wpData" tooltip-effect="dark"
           highlight-current-row row-key="wp_id" default-expand-all @selection-change="handleSelectionChange"
           @select-all="handleSelectAll" @row-click="handleRowClick">
           <!-- <el-table-column type="selection" width="55" align="center"></el-table-column> -->
-          <el-table-column prop="wp_id" label="序号" align="center" width="60"></el-table-column>
-          <el-table-column prop="wp_name" label="岗位名称" align="center" width="150"></el-table-column>
-          <el-table-column prop="wp_type" label="岗位类型" align="center" width="150"></el-table-column>
-          <el-table-column prop="wp_note" label="岗位说明" align="center" width="180"></el-table-column>
-          
-          <el-table-column label="操作" width="150" prop="handle" center>
+          <el-table-column prop="" label=" " align="center" width="20" ></el-table-column>
+          <el-table-column prop="wp_id" label="序号" align="left" width="130" sortable></el-table-column>
+          <el-table-column prop="wp_name" label="岗位名称" align="left" width="190" sortable></el-table-column>
+          <el-table-column prop="wp_type" label="岗位类型" align="left" width="190" sortable>
+            <template slot-scope="scope">{{scope.row.wp_type | stTypeTrans}}</template>
+          </el-table-column>
+          <el-table-column prop="wp_note" label="岗位说明" align="left" show-overflow-tooltip></el-table-column>
+
+          <el-table-column label="操作" width="160" prop="handle">
             <template slot-scope="scope">
               <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editWorkPostShow(scope.row)">
               </el-button>
@@ -32,32 +36,35 @@
         </el-table>
       </div>
     </div>
-    <el-dialog width="500px" :title="addwpText" :close-on-click-modal="false" :visible.sync="addwpVisiable"
-      top="5vh" @closed="refreshForm">
-      <el-form :model="workPostModel" label-width="100px" ref="workPostForm" :rules="add_rules">
-        <el-form-item label="序号">
+    <el-dialog v-if="addwpVisiable" v-dialogDrag width="450px" :title="addwpText" :close-on-click-modal="false"
+      :visible.sync="addwpVisiable">
+      <zj-form :model="workPostModel" label-width="100px" ref="workPostForm" :rules="add_rules" size="small"
+        :newDataFlag='addwpVisiable'>
+        <!-- <el-form-item label="序号">
           <el-input class="formItem" v-model="workPostModel.wp_id" placeholder="系统自动生成" disabled>
           </el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="岗位名称">
           <el-input class="formItem" v-model="workPostModel.wp_name" placeholder="请填写岗位名称">
           </el-input>
         </el-form-item>
-         <el-form-item label="岗位类型" prop="wp_type">
-          <el-input class="formItem" v-model="workPostModel.wp_type" placeholder="请填写岗位类型">
-          </el-input>
+        <el-form-item label="岗位类型" prop="wp_type">
+          <el-select v-model="workPostModel.wp_type" filterable placeholder="请选择任务类型">
+            <el-option v-for="item in stType_options" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+          <!-- <el-input class="formItem" v-model="workPostModel.wp_type" placeholder="请填写岗位类型"></el-input> -->
         </el-form-item>
         <el-form-item label="岗位说明">
           <el-input class="formItem" type="textarea" :rows="2" v-model="workPostModel.wp_note" placeholder="说明信息">
           </el-input>
         </el-form-item>
-       
-        
+
         <el-form-item style="text-align:center;margin-right:100px;">
           <el-button @click="addwpVisiable = false">取&nbsp;&nbsp;消</el-button>
           <el-button type="primary" @click="onSaveWorkPostClick" style="margin-left:30px;">保&nbsp;&nbsp;存</el-button>
         </el-form-item>
-      </el-form>
+      </zj-form>
     </el-dialog>
   </div>
 </template>
@@ -75,17 +82,21 @@ export default {
       addwpVisiable: false,
       workPostModel: {},
       addOrNot: true, //是否新增
-      addwpText: ""
-      // stType_options: [
-      //   {
-      //     value: "task",
-      //     label: "任务"
-      //   },
-      //   {
-      //     value: "work",
-      //     label: "节点"
-      //   }
-      // ],
+      addwpText: "",
+      stType_options: [
+        {
+          value: "function",
+          label: "职能"
+        },
+        {
+          value: "project",
+          label: "项目"
+        },
+        {
+          value: "temporary",
+          label: "临时"
+        }
+      ]
       // add_rules: {
       //   dept_id: [{ required: true, message: "请选择部门", trigger: "change" }],
       //   st_name: [
@@ -95,35 +106,41 @@ export default {
       // }
     };
   },
-//   filters: {
-//     datatrans(value) {
-//       if (!value || value == "9999-12-31") return "";
-//       //时间戳转化大法
-//       let date = new Date(value);
-//       let y = date.getFullYear();
-//       let MM = date.getMonth() + 1;
-//       MM = MM < 10 ? "0" + MM : MM;
-//       let d = date.getDate();
-//       d = d < 10 ? "0" + d : d;
-//       let h = date.getHours();
-//       h = h < 10 ? "0" + h : h;
-//       let m = date.getMinutes();
-//       m = m < 10 ? "0" + m : m;
-//       let s = date.getSeconds();
-//       s = s < 10 ? "0" + s : s;
-//       return y + "-" + MM + "-" + d + " "; /* + h + ':' + m + ':' + s; */
-//     },
-//     stTypeTrans(value) {
-//       switch (value) {
-//         case "task":
-//           return "任务";
-//           break;
-//         case "work":
-//           return "节点";
-//           break;
-//       }
-//     }
-//   },
+  filters: {
+    datatrans(value) {
+      if (!value || value == "9999-12-31") return "";
+      //时间戳转化大法
+      let date = new Date(value);
+      let y = date.getFullYear();
+      let MM = date.getMonth() + 1;
+      MM = MM < 10 ? "0" + MM : MM;
+      let d = date.getDate();
+      d = d < 10 ? "0" + d : d;
+      let h = date.getHours();
+      h = h < 10 ? "0" + h : h;
+      let m = date.getMinutes();
+      m = m < 10 ? "0" + m : m;
+      let s = date.getSeconds();
+      s = s < 10 ? "0" + s : s;
+      return y + "-" + MM + "-" + d + " "; /* + h + ':' + m + ':' + s; */
+    },
+    stTypeTrans(value) {
+      switch (value) {
+        case "function":
+          return "职能";
+          break;
+        case "project":
+          return "项目";
+          break;
+        case "temporary":
+          return "临时";
+          break;
+        default:
+          return "临时";
+          break;
+      }
+    }
+  },
   watch: {
     addwpVisiable(val) {
       if (val) {
@@ -144,8 +161,6 @@ export default {
     //     })
     //     .catch(res => {});
     // },
-
-
 
     refreshData() {
       this.z_get("api/work_post", { condition: this.condition })
@@ -201,19 +216,17 @@ export default {
     //   }
     // },
 
-  
     addNewWorkPost() {
-        this.addwpText = "新增岗位";
-        this.workPostModel = {
-            wp_id: 0,
-            wp_name:"",
-            wp_note:"",
-            wp_type:""
+      this.addwpText = "新增岗位";
+      this.workPostModel = {
+        wp_id: 0,
+        wp_name: "",
+        wp_note: "",
+        wp_type: ""
       };
       this.addOrNot = true;
       this.addwpVisiable = true;
     },
-
 
     onSaveWorkPostClick() {
       this.$refs.workPostForm.validate(valid => {
@@ -281,7 +294,7 @@ export default {
         this.onDeleteClick(this.selection);
       }
     },
-onDeleteClick(list) {
+    onDeleteClick(list) {
       this.$confirm("是否删除？", "提示", {
         confirmButtonText: "是",
         cancelButtonText: "否",
@@ -315,9 +328,9 @@ onDeleteClick(list) {
     //     type: "warning"
     //   })
     //     .then(() => {
-          
+
     //       var realSelect = this.arrayChildrenFlatten(list, []);
-          
+
     //       this.z_delete("api/work_post/list", { data: realSelect })
     //      //this.z_delete("api/work_post",list)
     //         .then(res => {
@@ -379,7 +392,7 @@ onDeleteClick(list) {
     handleRowClick(row, column) {
       if (column.property != "handle")
         this.$refs.tgtTable.toggleRowSelection(row);
-    },
+    }
     // expandAll() {
     //   var icon = this.$el.getElementsByClassName("el-table__expand-icon");
     //   if (icon && icon.length) {
@@ -417,11 +430,9 @@ onDeleteClick(list) {
 
 <style scoped>
 .work_post {
-  width: 100%;
+  width: 1100px;
 }
-.tbar {
-  margin-bottom: 10px;
-}
+
 .formItem {
   width: 300px;
 }
