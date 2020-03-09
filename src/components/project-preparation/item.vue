@@ -1,127 +1,89 @@
 <template>
   <div style="item-items">
-        <div>
-          <div style="">
-            <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
-            <el-input size="small" @keyup.enter.native="refreshData" placeholder="请输入物料名称" v-model="condition" clearable
-              style="width:250px;">
-              <el-button size="small" @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
-            </el-input>
-            <el-button type="primary" size="small" style="margin-left:10px;" @click="addNewItemShow">新增
-            </el-button>
-            <el-button type="primary" size="small">导入
-            </el-button>
-            <span style="color:black; margin-left:310px; ">selectionIT</span>
-          </div>
-          <div class="gridTable">
-            <el-table ref="itemTable" style="width: 100%;" height="600px" :data="itemData" tooltip-effect="dark"
-              highlight-current-row row-key="item_no" default-expand-all @selection-change="handleSelectionChange"
-              @select-all="handleSelectAll" @row-click="handleRowClick">
-              <el-table-column type="selection" width="40" align="center"></el-table-column>
-              <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-              <el-table-column prop="item_no" label="物料编码" width="120" align="center"></el-table-column>
-              <el-table-column prop="item_name" label="物料名称" align="center" width="120"></el-table-column>
-              <el-table-column prop="item_unit" label="单位" align="center" width="120"></el-table-column>
-              <el-table-column prop="auxiliary_unit" label="辅助单位" align="center" width="120"></el-table-column>
-              <el-table-column prop="item_specification" label="规格" align="center" width="120"></el-table-column>
-              <el-table-column prop="item_brand" label="品牌" align="center" width="120"></el-table-column>
-              <el-table-column prop="item_weight" label="重量" align="center" width="100"></el-table-column>
-              <el-table-column fixed="right" label="操作" width="140" prop="handle" align="center">
-                <template slot-scope="scope">
-                  <el-button type="info" icon="el-icon-more" size="mini" circle @click="editTaskShow(scope.row)">
-                  </el-button>
-                  <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTaskShow(scope.row)">
-                  </el-button>
-                  <el-button type="danger" icon="el-icon-delete" size="mini" circle @click="deleteOne(scope.row)">
-                  </el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div>
+    <div class="containALL">
+      <div class="topLayout">
 
-          <!-- 新增物料 -->
-          <el-dialog v-dialogDrag width="450px" :title="addItemText" :close-on-click-modal="false"
-            :visible.sync="addItemVisiable" @closed="refreshForm">
-            <zj-form size="small" :newDataFlag='addItemVisiable' :model="itemModel" label-width="100px" ref="itemForm"
-              :rules="add_rules">
-              <el-form-item label="物料名称" prop="item_name">
-                <el-input class="formItem" v-model="itemModel.item_name" placeholder="请填写任务名称">
-                </el-input>
-              </el-form-item>
-
-              <el-form-item label="单位" prop="item_unit">
-                <el-input class="formItem" v-model="itemModel.item_unit" placeholder="请填写单位">
-                </el-input>
-              </el-form-item>
-              <el-form-item label="辅助单位" prop="auxiliary_unit">
-                <el-input class="formItem" v-model="itemModel.auxiliary_unit" placeholder="请填写辅助单位">
-                </el-input>
-              </el-form-item>
-              <el-form-item label="规格" prop="item_specification">
-                <el-input class="formItem" v-model="itemModel.item_specification" placeholder="请填写规格">
-                </el-input>
-              </el-form-item>
-              <el-form-item label="品牌" prop="item_brand">
-                <el-input class="formItem" v-model="itemModel.item_brand" placeholder="请填写品牌">
-                </el-input>
-              </el-form-item>
-              <el-form-item label="重量" prop="item_weight">
-                <el-input class="formItem" v-model="itemModel.item_weight" placeholder="请填写重量">
-                </el-input>
-              </el-form-item>
-
-              <el-form-item style="text-align:center;margin-right:100px;">
-                <el-button size="medium" @click="addItemVisiable = false">取&nbsp;&nbsp;消</el-button>
-                <el-button type="primary" size="medium" @click="onSaveTaskClick" style="margin-left:30px;">
-                  保&nbsp;&nbsp;存
+        <div class="tbar">
+          <el-button icon="el-icon-refresh" title="刷新" size="mini" circle @click="search"></el-button>
+          <el-input size="small" @keyup.enter.native="refreshData" placeholder="请输入物料名称" v-model="condition" clearable
+            style="width:250px;">
+            <el-button size="small" @click="refreshData" slot="append" icon="el-icon-search">搜索</el-button>
+          </el-input>
+          <el-button type="primary" size="small" style="margin-left:10px;" @click="addNewItemShow">新增
+          </el-button>
+          <el-button type="primary" size="small">导入
+          </el-button>
+          <el-button type="danger" size="small" :disabled="selection.length==0" @click="deleteList">删除选中节点({{selection.length}})
+          </el-button>
+        </div>
+        <div class="gridTable">
+          <el-table ref="itemTable" style="width: 100%;" height="600px" :data="itemData" tooltip-effect="dark"
+            highlight-current-row row-key="item_no" default-expand-all @selection-change="handleSelectionChange"
+            @select-all="handleSelectAll" @row-click="handleRowClick">
+            <el-table-column type="selection" width="40" align="center"></el-table-column>
+            <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
+            <el-table-column prop="item_no" label="物料编码" width="120" align="center"></el-table-column>
+            <el-table-column prop="item_name" label="物料名称" align="center" width="120"></el-table-column>
+            <el-table-column prop="item_unit" label="单位" align="center" width="120"></el-table-column>
+            <el-table-column prop="auxiliary_unit" label="辅助单位" align="center" width="120"></el-table-column>
+            <el-table-column prop="item_specification" label="规格" align="center" width="120"></el-table-column>
+            <el-table-column prop="item_brand" label="品牌" align="center" width="120"></el-table-column>
+            <el-table-column prop="item_weight" label="重量" align="center" width="100"></el-table-column>
+            <el-table-column fixed="right" label="操作" width="140" prop="handle" align="center">
+              <template slot-scope="scope">
+                <el-button type="info" icon="el-icon-more" size="mini" circle @click="editTaskShow(scope.row)">
                 </el-button>
-              </el-form-item>
-            </zj-form>
-          </el-dialog>
-
-          <!-- 新增物料分类 -->
-          <el-dialog v-dialogDrag width="450px" :title="addItemTypeText" :close-on-click-modal="false"
-            :visible.sync="addItemTypeVisiable" @closed="refreshForm">
-            <zj-form size="small" :newDataFlag='addItemTypeVisiable' :model="itemTypeModel" label-width="100px"
-              ref="itemTypeForm" :rules="add_rules">
-
-              <el-form-item label="物料类型名称" prop="it_name">
-                <el-input class="formItem" v-model="itemTypeModel.it_name" placeholder="请填写任务名称">
-                </el-input>
-              </el-form-item>
-
-              <!-- <el-form-item label="上级物料" prop="it_pid">
-                <el-select v-model="itemTypeModel.item_pid" placeholder="请选择上级物料">
-                  <el-option :label="itemTypeModel.it_pname" :value="itemTypeModel.it_pid"
-                    style="height:auto;padding:0;">
-                  </el-option>
-                </el-select>
-              </el-form-item> -->
-
-              <el-form-item label="上级物料类型" prop="it_pname">
-                <el-select v-model="itemTypeModel.it_pname" ref="select_item" placeholder="请选择属部门">
-                  <el-option :label="itemTypeModel.it_pname" :value="itemTypeModel.it_id" style="height:auto;padding:0;">
-                    <el-tree :data="itemTypeData" node-key="it_id" ref="tree" default-expand-all
-                      :expand-on-click-node="false" highlight-current :current-node-key="itemTypeModel.it_id">
-                      <div slot-scope="{node, data}" style="width:100%;user-select:none;"
-                        @click="handleSelectTreeDblClick(data)">
-                        {{data.it_name}}</div>
-                    </el-tree>
-                  </el-option>
-                </el-select>
-              </el-form-item>
-
-              <el-form-item style="text-align:center;margin-right:100px;">
-                <el-button size="medium" @click="addItemTypeVisiable = false">取&nbsp;&nbsp;消</el-button>
-                <el-button type="primary" size="medium" @click="onSaveITClick" style="margin-left:30px;">
-                  保&nbsp;&nbsp;存
+                <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTaskShow(scope.row)">
                 </el-button>
-              </el-form-item>
-            </zj-form>
-          </el-dialog>
-
+                <el-button type="danger" icon="el-icon-delete" size="mini" circle @click="deleteOne(scope.row)">
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
         </div>
 
+      </div>
+
+      <!-- 新增物料 -->
+      <el-dialog v-dialogDrag width="450px" :title="addItemText" :close-on-click-modal="false"
+        :visible.sync="addItemVisiable" @closed="refreshForm">
+        <zj-form size="small" :newDataFlag='addItemVisiable' :model="itemModel" label-width="100px" ref="itemForm"
+          :rules="add_rules">
+          <el-form-item label="物料名称" prop="item_name">
+            <el-input class="formItem" v-model="itemModel.item_name" placeholder="请填写任务名称">
+            </el-input>
+          </el-form-item>
+
+          <el-form-item label="单位" prop="item_unit">
+            <el-input class="formItem" v-model="itemModel.item_unit" placeholder="请填写单位">
+            </el-input>
+          </el-form-item>
+          <el-form-item label="辅助单位" prop="auxiliary_unit">
+            <el-input class="formItem" v-model="itemModel.auxiliary_unit" placeholder="请填写辅助单位">
+            </el-input>
+          </el-form-item>
+          <el-form-item label="规格" prop="item_specification">
+            <el-input class="formItem" v-model="itemModel.item_specification" placeholder="请填写规格">
+            </el-input>
+          </el-form-item>
+          <el-form-item label="品牌" prop="item_brand">
+            <el-input class="formItem" v-model="itemModel.item_brand" placeholder="请填写品牌">
+            </el-input>
+          </el-form-item>
+          <el-form-item label="重量" prop="item_weight">
+            <el-input class="formItem" v-model="itemModel.item_weight" placeholder="请填写重量">
+            </el-input>
+          </el-form-item>
+
+          <el-form-item style="text-align:center;margin-right:100px;">
+            <el-button size="medium" @click="addItemVisiable = false">取&nbsp;&nbsp;消</el-button>
+            <el-button type="primary" size="medium" @click="onSaveTaskClick" style="margin-left:30px;">
+              保&nbsp;&nbsp;存
+            </el-button>
+          </el-form-item>
+        </zj-form>
+      </el-dialog>
+    </div>
 
   </div>
 </template>
@@ -136,30 +98,37 @@ export default {
       currentPage: 1,
       total: 0,
       condition: "",
-      ITcondition: "",
-      selectionIT: "",
+      
 
       itemCondition: "",
       itemListCondition: "",
       dataCondition: "",
       itemData: [], //物料数据
-      itemTypeData: [], //物料类型数据
+      
       itemModel: {},
-      itemTypeModel: {},
+      
 
       itemDataFilter: [],
 
       selection: [], //选中行数据
 
       addItemVisiable: false,
-      addItemTypeVisiable: false,
-
+      
       addOrNot: true, //是否新增
-      addItemTypeOrNot: true,
+      
       addItemText: "",
       addTaskItemText: "",
-      addItemTypeText: "",
-      activeName: "first"
+      
+      activeName: "first",
+
+      add_rules: {
+        item_name: [
+          { required: true, message: "请填写物料名称", trigger: "blur" }
+        ],
+        item_brand: [
+          { required: true, message: "请填写物料品牌", trigger: "blur" }
+        ]
+      }
     };
   },
 
@@ -181,22 +150,11 @@ export default {
         .catch(res => {});
     },
 
-    refreshITData() {
-      this.itemTypeData = [];
-      this.z_get("api/item_type/treeList", { ITcondition: this.ITcondition })
-        .then(res => {
-          this.itemTypeData = res.data;
-        })
-        .catch(res => {});
-    },
-
     //重置表单
 
     search() {
       this.condition = "";
-      this.ITcondition = "";
       this.refreshData();
-      this.refreshITData();
     },
 
     //当前选中的节点
@@ -299,19 +257,6 @@ export default {
       this.addItemVisiable = true;
     },
 
-    addNewItemTypeShow() {
-      this.addItemText = "新增物料类型";
-      this.itemTypeModel = {
-        it_id: 0,
-        it_pid: "",
-        it_name: "",
-        it_pname:""        
-      };
-      //this.itemTypeModel.it_pname = this.filterITName(this.itemTypeModel.it_pid);
-      this.addItemTypeOrNot = true;
-      this.addItemTypeVisiable = true;
-    },
-
     //筛选物料名称
     filterITName(id) {
       var name = id;
@@ -322,54 +267,7 @@ export default {
       return name;
     },
 
-    onSaveITClick() {
-      this.$refs.itemTypeForm.validate(valid => {
-        if (valid) {
-          if (this.addOrNot) {
-            this.z_post("api/item_type", this.itemTypeModel)
-              .then(res => {
-                this.$message({
-                  message: "新增成功!",
-                  type: "success",
-                  duration: 1000
-                });
-                this.refreshITData();
-                this.addItemTypeVisiable = false;
-              })
-              .catch(res => {
-                this.$alert("新增失败!", "提示", {
-                  confirmButtonText: "确定",
-                  type: "error"
-                });
-              });
-          } else {
-            this.itemTypeModel.UpdateColumns = this.$refs.itemTypeForm.UpdateColumns;
-            if (this.itemTypeModel.UpdateColumns) {
-              this.z_put("api/item_type", this.itemTypeModel)
-                .then(res => {
-                  this.$message({
-                    message: "编辑成功!",
-                    type: "success",
-                    duration: 1000
-                  });
-                  this.refreshITData();
-                  this.addItemTypeVisiable = false;
-                })
-                .catch(res => {
-                  this.$alert("编辑失败!", "提示", {
-                    confirmButtonText: "确定",
-                    type: "error"
-                  });
-                });
-            } else {
-              this.addItemTypeVisiable = false;
-            }
-          }
-        } else {
-          return false;
-        }
-      });
-    },
+   
 
     //删除一个任务
     deleteOne(row) {
@@ -409,48 +307,11 @@ export default {
         })
         .catch(() => {});
     },
-    //双击选择部门
-    handleSelectTreeDblClick(data) {
-      this.itemTypeModel.it_pid = data.it_id;
-      this.itemTypeModel.it_pname = data.name;
-
-      
-      this.$refs.select_item.blur();
-    },
-    //展开所有节点
-    expandAll() {
-      var icon = this.$el.getElementsByClassName("itemTypeTree");
-      if (icon && icon.length) {
-        for (var i = 0; i < icon.length; i++) {
-          var classList = [];
-          for (var j = 0; j < icon[i].classList.length; j++) {
-            classList.push(icon[i].classList[j]);
-          }
-          if (classList.indexOf("itemTypeTree--expanded") == -1) {
-            icon[i].click();
-          }
-        }
-      }
-    },
-    //折叠所有节点
-    collapseAll() {
-      var icon = this.$el.getElementsByClassName("itemTypeTree");
-      if (icon && icon.length) {
-        for (var i = 0; i < icon.length; i++) {
-          var classList = [];
-          for (var j = 0; j < icon[i].classList.length; j++) {
-            classList.push(icon[i].classList[j]);
-          }
-          if (classList.indexOf("itemTypeTree--expanded") > -1) {
-            icon[i].click();
-          }
-        }
-      }
-    }
+  
+    
   },
   mounted() {
     this.refreshData();
-    this.refreshITData();
     this.selectitem();
   }
 };

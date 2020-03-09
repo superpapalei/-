@@ -48,7 +48,8 @@
                 <el-menu-item index="emp" route="/emp">人员</el-menu-item>
                 <el-menu-item index="cust" route="/cust">客户</el-menu-item>
                 <el-menu-item index="project_classification" route="/project_classification">项目分类</el-menu-item>
-                <el-menu-item index="item" route="/item">物料信息</el-menu-item>
+                <el-menu-item index="item" route="/item">物料</el-menu-item>
+                <el-menu-item index="item_type" route="/item_type">物料分类</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
               <el-submenu index="4">
