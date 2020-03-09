@@ -30,10 +30,10 @@
         <el-button
           type="primary"
           style="margin-left:10px;"
-          @click="custFormVisible = true"
+          @click="addNewCust" size="small"
           >新建</el-button
         >
-        <el-button type="primary">导入</el-button>
+        <el-button type="primary" size="small">导入</el-button>
       </div>
 
       <el-table :data="tableData" height="680px" border style="width: 100% ">
@@ -78,7 +78,7 @@
             <el-button size="mini" @click="editDeptShow(scope.row)"
               >详情</el-button>
             
-            <el-button size="mini" @click="editDeptShow(scope.row)"
+            <el-button size="mini" @click="editCustShow(scope.row)"
               >编辑</el-button>
             
             <el-button
@@ -93,7 +93,7 @@
     </div>
 
 
-    <el-dialog title="新建客户" :visible.sync="custFormVisible" width="30%" close-on-click-model="false" @closed="refreshForm">
+    <el-dialog :title="addCustText" :visible.sync="custFormVisible" width="30%" close-on-click-model="false" @closed="refreshForm">
   <el-form :model="custModel" :rules="rules" ref="custForm" label-width="120px" label-position="right" style="width:400px">
     <el-form-item label="客户代码" prop="c_code">
       <el-input v-model="custModel.c_code" autocomplete="off"></el-input>
@@ -141,6 +141,7 @@ export default {
       custModel:{},
       custFormVisible: false,
       condition: "", 
+      addCustText: "",
       tableData: [],
       addOrNot: true,
       rules:{//新增客户校验规则
@@ -195,6 +196,13 @@ export default {
         .catch(res => {});
     },
 
+
+  addNewCust() {
+          this.custFormVisible = true;
+          this.addCustText = "新增客户";
+      
+      
+    },
     //重置表单
     refreshForm() {
       this.$refs.custForm.resetFields();
@@ -206,19 +214,16 @@ export default {
     },
 
     //编辑数据
-    editDeptShow(row) {
-      this.deptModel = JSON.parse(JSON.stringify(row));
+    editCustShow(row) {
+      this.custModel = JSON.parse(JSON.stringify(row));
       this.addCustText = "编辑客户信息";
       this.addOrNot = false;
-      this.addDeptVisiable = true;
+      this.custFormVisible = true;
     },
 
     //删除一个
     deleteOne(row) {
-      var list = [];
-      list.push(row);
-      
-      this.z_delete("api/customer", { data: list })
+      this.z_delete("api/customer", { data: row })
             .then(res => {
               this.$message({
                 message: "删除成功",
@@ -311,26 +316,7 @@ export default {
     },  
     
 
-    /* addNewCust(type) {
-      var dept_pid = 1; //创建根节点时，若pid为空，前端后台不匹配；若pid为0，因为pid和id外键关联，后台无法插入
-      if (type == "root") {
-        this.addDeptText = "新增根节点";
-      } else if (type == "children") {
-        dept_pid = this.selection[0].dept_id;
-        this.addDeptText = "新增[" + dept_pid + "]的子节点";
-      }
-      this.form = {
-        c_id: 1, //现在先写死，到时候通过缓存给该变量赋值
-        dept_name: "",
-        dept_pid: dept_pid,
-        dept_type: "",
-        calendar_id: "",
-        shift_type_id: "",
-        dept_pname: ""
-      };
-      this.addOrNot = true;
-      this.addDeptVisible = true;
-    } */
+     
   },
   mounted() {
     this.refreshData();
