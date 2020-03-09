@@ -236,36 +236,43 @@ export default {
     //获得菜单数组并传入store
     getMenuTree() {
       this.$store.commit("navTabs/emptyMenuTreeList");
-      this.z_get("api/Home/userMenuTree").then(res => {
-        if (res.data.length > 0) {
-          this.setMenuTreeList(res.data);
-          var main = this.$router.options.routes.filter(
-            item => item.name == "main"
-          )[0];
-          for (var i = 0; i < this.menuTreeListFlatten.length; i++) {
-            if (
-              this.menuTreeListFlatten[i].menu_link &&
-              this.menuTreeListFlatten[i].menu_file
-            ) {
-              var menu_link = this.menuTreeListFlatten[i].menu_link;
-              var menu_file = this.menuTreeListFlatten[i].menu_file;
-              main.children.push({
-                path: "/" + menu_link,
-                name: menu_link,
-                component: this.getComponent(menu_file)
-              });
+      this.z_get("api/Home/userMenuTree")
+        .then(res => {
+          if (res.data.length > 0) {
+            this.setMenuTreeList(res.data);
+            var main = this.$router.options.routes.filter(
+              item => item.name == "main"
+            )[0];
+            for (var i = 0; i < this.menuTreeListFlatten.length; i++) {
+              if (
+                this.menuTreeListFlatten[i].menu_link &&
+                this.menuTreeListFlatten[i].menu_file
+              ) {
+                var menu_link = this.menuTreeListFlatten[i].menu_link;
+                var menu_file = this.menuTreeListFlatten[i].menu_file;
+                main.children.push({
+                  path: "/" + menu_link,
+                  name: menu_link,
+                  component: this.getComponent(menu_file)
+                });
+              }
             }
+            this.$router.addRoutes([main]);
+            //加载角标
+            this.getIconAll();
+          } else {
+            this.$alert("没有菜单权限，请联系管理员配置", "提示", {
+              confirmButtonText: "确定",
+              type: "warning"
+            });
           }
-          this.$router.addRoutes([main]);
-          //加载角标
-          this.getIconAll();
-        } else {
-          this.$alert("没有菜单权限，请联系管理员配置", "提示", {
+        })
+        .catch(res => {
+          this.$alert("获取菜单失败", "提示", {
             confirmButtonText: "确定",
-            type: "success"
+            type: "error"
           });
-        }
-      });
+        });
     },
     //获取角标在获取权限之后
     getIconAll() {}
