@@ -30,6 +30,7 @@
               <template slot="title">项目准备</template>
               <el-menu-item-group>
                 <el-menu-item index="standardTask" route="/standardTask">标准任务</el-menu-item>
+                <el-menu-item index="projectTemplate" route="/projectTemplate">项目模板</el-menu-item>
                 <el-menu-item index="work_post" route="/work_post">岗位</el-menu-item>
                 <el-menu-item index="template_group_type" route="/template_group_type">模板分类</el-menu-item>
                 <el-menu-item index="template_group_waiting" route="/template_group_waiting">项目组织模板(待整合)</el-menu-item>
@@ -127,7 +128,7 @@
         </div>
       </el-header>
       <el-main class="backTop">
-        <el-card class="mainContentCard">
+        <el-card class="mainContentCard" shadow="never">
           <div class="mainContent">
             <keep-alive>
               <router-view class="commonStyle" v-if="$route.meta.keepAlive === true" />
@@ -526,11 +527,13 @@ export default {
 .el-menu--horizontal > .el-submenu .el-submenu__title {
   height: 50px !important;
   line-height: 50px !important;
+  padding: 0 15px !important;
 }
 .el-menu--horizontal > div > .el-menu-item,
 .el-menu--horizontal > div > .el-submenu .el-submenu__title {
   height: 50px !important;
   line-height: 50px !important;
+  padding: 0 15px !important;
 }
 .el-menu--horizontal > div > .el-submenu {
   float: left !important;

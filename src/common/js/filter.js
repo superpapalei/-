@@ -71,7 +71,7 @@ let toLocale = function (time) {
     let date = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
     return date
 };
-let dateFormat=function(time,format) {
+let dateFormat = function (time, format) {
     if (!isNaN(time)) return "";
     let _time = new Date(time);
     let year = _time.getFullYear();
@@ -81,12 +81,31 @@ let dateFormat=function(time,format) {
     let minute = addZeroIfNeed(_time.getMinutes());
     let second = addZeroIfNeed(_time.getSeconds());
     let date =
-      year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
+        year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
     if (format == "yyyy-MM-dd") {
-      date = year + "-" + month + "-" + day;
+        date = year + "-" + month + "-" + day;
     }
     return date;
-  }
+}
+
+function dateFilter(value) {
+    if (!value || value == "9999-12-31") return "";
+    //时间戳转化大法
+    let date = new Date(value);
+    let y = date.getFullYear();
+    let MM = date.getMonth() + 1;
+    MM = MM < 10 ? "0" + MM : MM;
+    let d = date.getDate();
+    d = d < 10 ? "0" + d : d;
+    let h = date.getHours();
+    h = h < 10 ? "0" + h : h;
+    let m = date.getMinutes();
+    m = m < 10 ? "0" + m : m;
+    let s = date.getSeconds();
+    s = s < 10 ? "0" + s : s;
+    return y + "-" + MM + "-" + d + " "; /* + h + ':' + m + ':' + s; */
+}
+
 /**全局渲染方法*/
 function renderFilter(id, renderData) {
     var name = id;
@@ -105,5 +124,6 @@ export {
     digitUppercase,
     toLocale,
     dateFormat,
+    dateFilter,
     renderFilter
 }
