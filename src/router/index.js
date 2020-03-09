@@ -197,7 +197,7 @@ router.beforeEach((to, from, next) => {
   //   next('/login')
   // } else {
   if (from.path == '/') {
-    if ((to.name == 'login' && !to.redirectedFrom) || to.name == 'main') {
+    if ((to.name == 'login' && to.redirectedFrom && to.redirectedFrom == '/') || to.name == 'main') {
       next()
     }
     else {

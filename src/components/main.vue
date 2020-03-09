@@ -244,16 +244,12 @@ export default {
               item => item.name == "main"
             )[0];
             for (var i = 0; i < this.menuTreeListFlatten.length; i++) {
-              if (
-                this.menuTreeListFlatten[i].menu_link &&
-                this.menuTreeListFlatten[i].menu_file
-              ) {
+              if (this.menuTreeListFlatten[i].menu_link) {
                 var menu_link = this.menuTreeListFlatten[i].menu_link;
-                var menu_file = this.menuTreeListFlatten[i].menu_file;
                 main.children.push({
                   path: "/" + menu_link,
                   name: menu_link,
-                  component: this.getComponent(menu_file)
+                  component: this.getComponent(menu_link)
                 });
               }
             }
