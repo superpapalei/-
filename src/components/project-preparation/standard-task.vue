@@ -476,9 +476,9 @@ export default {
     },
     refreshBottom() {
       this.itemCondition = "";
-      this.taskItemData =[];
+      this.taskItemData = [];
       this.dataCondition = "";
-      this.taskDataData =[];
+      this.taskDataData = [];
     },
     search() {
       this.condition = "";
