@@ -3,18 +3,19 @@
     <el-container class="containAll">
 
       <el-aside width="200px" class="item-aside">
-        <div style="border-bottom: 0.5px solid grey; padding-bottom:15px">
+        <div style="border-bottom: 1px solid #eee; padding-bottom:15px">
           <span style="color:black; margin-left:15px;">物料分类</span>
           <!-- <l style="color:blue; margin-left: 12px;  display: block;  font-size: 20px">物料分类</l> -->
-          <el-button  type="primary" size="mini" icon="el-icon-circle-plus-outline " circle style="margin-left:30px;"
-            @click="expandAll" >
+          <el-button type="primary" size="mini" icon="el-icon-circle-plus-outline " circle style="margin-left:30px;"
+            @click="addNewItemTypeShow">
           </el-button>
-          <el-button type="primary" size="mini" icon="el-icon-remove-outline" circle @click.native="collapseAll" divided >
+          <el-button type="primary" size="mini" icon="el-icon-remove-outline" circle @click.native="collapseAll"
+            divided>
           </el-button>
         </div>
         <div>
-          <el-tree class="itemTypeTree" :data="itemTypeData" node-key="it_id" ref="tree" default-expand-all="false" expand-on-click-node="false"
-            highlight-current>
+          <el-tree class="itemTypeTree" :data="itemTypeData" node-key="it_id" ref="tree" default-expand-all="false"
+            expand-on-click-node="false" highlight-current>
             <div slot-scope="{node, data}" style="width:100%;user-select:none;" @click="handleSelectTreeDblClick(data)">
               {{data.it_name}}</div>
           </el-tree>
@@ -35,10 +36,10 @@
             </el-button>
             <el-button type="primary" size="small">导入
             </el-button>
-            <span style="color:black; margin-left:310px;" title="selectionIT">selectionIT</span>
+            <span style="color:black; margin-left:310px; ">selectionIT</span>
           </div>
           <div class="gridTable">
-            <el-table ref="itemTable" style="width: 100%;" height="250px" :data="itemData" tooltip-effect="dark"
+            <el-table ref="itemTable" style="width: 100%;" height="600px" :data="itemData" tooltip-effect="dark"
               highlight-current-row row-key="item_no" default-expand-all @selection-change="handleSelectionChange"
               @select-all="handleSelectAll" @row-click="handleRowClick">
               <el-table-column type="selection" width="40" align="center"></el-table-column>
@@ -52,7 +53,7 @@
               <el-table-column prop="item_weight" label="重量" align="center" width="100"></el-table-column>
               <el-table-column fixed="right" label="操作" width="140" prop="handle" align="center">
                 <template slot-scope="scope">
-                  <el-button type="info" icon="el-icon-share" size="mini" circle @click="editTaskShow(scope.row)">
+                  <el-button type="info" icon="el-icon-more" size="mini" circle @click="editTaskShow(scope.row)">
                   </el-button>
                   <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTaskShow(scope.row)">
                   </el-button>
@@ -63,9 +64,11 @@
             </el-table>
           </div>
 
-          <el-dialog width="500px" :title="addItemText" :close-on-click-modal="false" :visible.sync="addItemVisiable"
-            top="5vh" @closed="refreshForm">
-            <el-form :model="itemModel" label-width="100px" ref="itemForm" :rules="add_rules">
+          <!-- 新增物料 -->
+          <el-dialog v-dialogDrag width="450px" :title="addItemText" :close-on-click-modal="false"
+            :visible.sync="addItemVisiable" @closed="refreshForm">
+            <zj-form size="small" :newDataFlag='addItemVisiable' :model="itemModel" label-width="100px" ref="itemForm"
+              :rules="add_rules">
               <el-form-item label="物料名称" prop="item_name">
                 <el-input class="formItem" v-model="itemModel.item_name" placeholder="请填写任务名称">
                 </el-input>
@@ -98,7 +101,48 @@
                   保&nbsp;&nbsp;存
                 </el-button>
               </el-form-item>
-            </el-form>
+            </zj-form>
+          </el-dialog>
+
+          <!-- 新增物料分类 -->
+          <el-dialog v-dialogDrag width="450px" :title="addItemTypeText" :close-on-click-modal="false"
+            :visible.sync="addItemTypeVisiable" @closed="refreshForm">
+            <zj-form size="small" :newDataFlag='addItemTypeVisiable' :model="itemTypeModel" label-width="100px"
+              ref="itemTypeForm" :rules="add_rules">
+
+              <el-form-item label="物料类型名称" prop="it_name">
+                <el-input class="formItem" v-model="itemTypeModel.it_name" placeholder="请填写任务名称">
+                </el-input>
+              </el-form-item>
+
+              <!-- <el-form-item label="上级物料" prop="it_pid">
+                <el-select v-model="itemTypeModel.item_pid" placeholder="请选择上级物料">
+                  <el-option :label="itemTypeModel.it_pname" :value="itemTypeModel.it_pid"
+                    style="height:auto;padding:0;">
+                  </el-option>
+                </el-select>
+              </el-form-item> -->
+
+              <el-form-item label="上级物料类型" prop="it_pname">
+                <el-select v-model="itemTypeModel.it_pname" ref="select_item" placeholder="请选择属部门">
+                  <el-option :label="itemTypeModel.it_pname" :value="itemTypeModel.it_id" style="height:auto;padding:0;">
+                    <el-tree :data="itemTypeData" node-key="it_id" ref="tree" default-expand-all
+                      :expand-on-click-node="false" highlight-current :current-node-key="itemTypeModel.it_id">
+                      <div slot-scope="{node, data}" style="width:100%;user-select:none;"
+                        @click="handleSelectTreeDblClick(data)">
+                        {{data.it_name}}</div>
+                    </el-tree>
+                  </el-option>
+                </el-select>
+              </el-form-item>
+
+              <el-form-item style="text-align:center;margin-right:100px;">
+                <el-button size="medium" @click="addItemTypeVisiable = false">取&nbsp;&nbsp;消</el-button>
+                <el-button type="primary" size="medium" @click="onSaveITClick" style="margin-left:30px;">
+                  保&nbsp;&nbsp;存
+                </el-button>
+              </el-form-item>
+            </zj-form>
           </el-dialog>
 
         </div>
@@ -119,22 +163,28 @@ export default {
       total: 0,
       condition: "",
       ITcondition: "",
-      selectionIT:"",
+      selectionIT: "",
 
       itemCondition: "",
       itemListCondition: "",
       dataCondition: "",
       itemData: [], //物料数据
       itemTypeData: [], //物料类型数据
-      itemModel: [],
+      itemModel: {},
+      itemTypeModel: {},
+
+      itemDataFilter: [],
 
       selection: [], //选中行数据
 
       addItemVisiable: false,
+      addItemTypeVisiable: false,
 
       addOrNot: true, //是否新增
+      addItemTypeOrNot: true,
       addItemText: "",
       addTaskItemText: "",
+      addItemTypeText: "",
       activeName: "first"
     };
   },
@@ -142,7 +192,7 @@ export default {
   watch: {
     addItemVisiable(val) {
       if (val) {
-        this.selectDept();
+        this.selectitem();
       }
     }
   },
@@ -200,7 +250,6 @@ export default {
     //显示任务dialog
     addNewItemShow() {
       this.addItemText = "新增物料";
-
       this.itemModel = {
         item_no: "",
         item_name: "",
@@ -213,6 +262,7 @@ export default {
       this.addOrNot = true;
       this.addItemVisiable = true;
     },
+
     //保存新增/编辑任务
     onSaveTaskClick() {
       this.$refs.itemForm.validate(valid => {
@@ -266,14 +316,87 @@ export default {
     editTaskShow(row) {
       this.itemModel = JSON.parse(JSON.stringify(row));
       this.itemModelCompare = JSON.parse(JSON.stringify(row));
-      //this.itemModel.dept_name = this.filterDeptName(this.itemModel.dept_id);
+      //this.itemModel.item_name = this.filteritemName(this.itemModel.item_id);
       // if (this.$refs.tree) {
-      //   this.$refs.tree.setCurrentKey(this.itemModel.dept_id); //赋值选中节点，不能用current-node-key，那样选中节点就不会变
+      //   this.$refs.tree.setCurrentKey(this.itemModel.item_id); //赋值选中节点，不能用current-node-key，那样选中节点就不会变
       // }
       this.addTaskText = "编辑节点";
       this.addOrNot = false;
       this.addItemVisiable = true;
     },
+
+    addNewItemTypeShow() {
+      this.addItemText = "新增物料类型";
+      this.itemTypeModel = {
+        it_id: 0,
+        it_pid: "",
+        it_name: "",
+        it_pname:""        
+      };
+      //this.itemTypeModel.it_pname = this.filterITName(this.itemTypeModel.it_pid);
+      this.addItemTypeOrNot = true;
+      this.addItemTypeVisiable = true;
+    },
+
+    //筛选物料名称
+    filterITName(id) {
+      var name = id;
+      var item = this.itemDataFilter.filter(item => item.value == id);
+      if (item.length) {
+        name = item[0].display;
+      }
+      return name;
+    },
+
+    onSaveITClick() {
+      this.$refs.itemTypeForm.validate(valid => {
+        if (valid) {
+          if (this.addOrNot) {
+            this.z_post("api/item_type", this.itemTypeModel)
+              .then(res => {
+                this.$message({
+                  message: "新增成功!",
+                  type: "success",
+                  duration: 1000
+                });
+                this.refreshITData();
+                this.addItemTypeVisiable = false;
+              })
+              .catch(res => {
+                this.$alert("新增失败!", "提示", {
+                  confirmButtonText: "确定",
+                  type: "error"
+                });
+              });
+          } else {
+            this.itemTypeModel.UpdateColumns = this.$refs.itemTypeForm.UpdateColumns;
+            if (this.itemTypeModel.UpdateColumns) {
+              this.z_put("api/item_type", this.itemTypeModel)
+                .then(res => {
+                  this.$message({
+                    message: "编辑成功!",
+                    type: "success",
+                    duration: 1000
+                  });
+                  this.refreshITData();
+                  this.addItemTypeVisiable = false;
+                })
+                .catch(res => {
+                  this.$alert("编辑失败!", "提示", {
+                    confirmButtonText: "确定",
+                    type: "error"
+                  });
+                });
+            } else {
+              this.addItemTypeVisiable = false;
+            }
+          }
+        } else {
+          return false;
+        }
+      });
+    },
+
     //删除一个任务
     deleteOne(row) {
       var list = [];
@@ -314,10 +437,11 @@ export default {
     },
     //双击选择部门
     handleSelectTreeDblClick(data) {
-      this.selectionIT = "公司";
-      this.taskModel.dept_id = data.dept_id;
-      this.taskModel.dept_name = data.dept_name;
-      this.$refs.select_dept.blur();
+      this.itemTypeModel.it_pid = data.it_id;
+      this.itemTypeModel.it_pname = data.name;
+
+      
+      this.$refs.select_item.blur();
     },
     //展开所有节点
     expandAll() {
@@ -353,14 +477,18 @@ export default {
   mounted() {
     this.refreshData();
     this.refreshITData();
-    this.selectDept();
+    this.selectitem();
   }
 };
 </script>
 
 
 <style scoped>
-.containAll {
+.item-items {
+  width: 1100px;
+}
+
+/* .containAll {
   width: 1100px;
   position: relative;
   left: 50%;
@@ -368,7 +496,7 @@ export default {
 
   box-sizing: border-box;
   background-color: #eeeeee;
-}
+} */
 
 .tbar {
   margin-bottom: 10px;
@@ -386,19 +514,20 @@ export default {
   left: 0px;
   bottom: 0px;
   height: 795px;
-  padding: 10px 5px 20px 5px;
-
+  /* padding: 10px 5px 20px 5px; */
+  padding: 0px;
   align-self: auto;
 }
 
 .item-main {
   background: rgb(255, 255, 255);
   position: relative;
-  padding: 10px 20px;
 
+  padding: 0px 10px;
+  border-left: 10px solid #eee;
   margin-left: 10px;
 
-  height: 795px;
+  height: 1000px;
   align-self: auto;
 }
 </style>
