@@ -16,10 +16,10 @@
           <i class="el-icon-s-home icon-color aside-home" @click="refreshPage"></i>
         </div>
         <div class="menu-contain">
-          <el-menu mode="horizontal" :default-active="url" @select="addBreadCrumb" text-color="#333"
+          <el-menu mode="horizontal" default-active="main" @select="addBreadCrumb" text-color="#333"
             active-text-color="#409EFF" style="height:50px;" router>
             <!-- 单独的测试页面自己单独写，不经过权限加载(请勿上传) -->
-            
+
             <!-- 权限树加载 -->
             <menuTree :menuTreeItem="menuTreeList" />
           </el-menu>
@@ -125,7 +125,6 @@ export default {
   },
   data() {
     return {
-      defaultUrl: "",
       asideStatus: false, //false:菜单栏处于展开状态； true：菜单栏处于收起状态
       asideWidth: "200px",
       calen_visible: false,
@@ -167,12 +166,11 @@ export default {
   },
   methods: {
     ...mapMutations("navTabs", [
-      "addTab",
+      "setActiveTabName",
       "addBreadCrumb",
       "setMenuTreeList",
       "isContainMenu"
     ]),
-    ...mapActions("navTabs", ["closeTab", "closeToTab"]),
     //全屏事件
     screenfull() {
       if (!screenfull.enabled) {
@@ -216,14 +214,6 @@ export default {
       this.calen_visible = false;
       //this.$router.go(0);//刷新页面
     },
-    //点击标签页触发的事件
-    getTab(val) {
-      this.$store.commit("navTabs/setActiveUrlName", val.name);
-    },
-    //获取当前路径,刷新用
-    getPath() {
-      this.defaultUrl = window.location.href.split("#/")[1];
-    },
     changeAside() {
       this.asideStatus = !this.asideStatus;
       if (this.asideStatus == false) {
@@ -262,30 +252,14 @@ export default {
       "menuTreeList",
       "menuTreeListFlatten"
     ]),
-    url() {
-      let index = this.$store.state.navTabs.activeUrlName;
-
-      return index;
-    },
-    activeTabName: {
-      get() {
-        return this.$store.state.navTabs.activeTabName;
-      },
-      set(value) {
-        this.$store.commit("navTabs/setActiveUrlName", value);
-        this.$router.push({
-          path: "/" + this.$store.state.navTabs.activeUrlName
-        });
-      }
+    activeTabName() {
+      return this.$store.state.navTabs.activeTabName;
     }
   },
-  mounted() {},
-  beforeCreate() {},
-  created() {
+  mounted() {
+    this.setActiveTabName('main');
     this.getMenuTree(); //获得菜单权限树,获取角标在后去权限之后
-    this.getPath();
-    this.addTab("main");
-  }
+  },
 };
 </script>
 
