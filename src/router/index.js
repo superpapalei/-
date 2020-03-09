@@ -10,6 +10,7 @@ import ScheduleControl from '@/components/control/ScheduleControl'
 
 import emp from '@/components/hr/emp'
 import dept from '@/components/hr/dept'
+import deptEmp from '@/components/hr/deptEmp'
 import cust from '@/components/hr/cust'
 import standardTask from '@/components/project-preparation/standard-task'
 import project_classification from '@/components/project-preparation/project_classification'
@@ -28,6 +29,7 @@ import task_scheduling_result from '@/components/schedule/task_scheduling_result
 import shift_dept from '@/components/schedule/dept'
 import shift_emp from '@/components/schedule/emp'
 import shift_task from '@/components/schedule/shift_task'
+import deptShift from '@/components/hr/deptShift'
 
 Vue.use(Router)
 
@@ -151,7 +153,17 @@ const router = new Router({
           path: '/item',
           name: 'item',
           component: item,
-        }
+        },
+        {
+          path: '/deptEmp',
+          name: 'deptEmp',
+          component: deptEmp,
+        },
+        {
+          path: '/deptShift',
+          name: 'deptShift',
+          component: deptShift,
+        },
       ]
     }
   ]
