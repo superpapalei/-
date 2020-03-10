@@ -4,7 +4,7 @@ const state = {
     menuTreeListFlatten: [],
     menuTreeList: [],
     breadCrumbList: [],//导航
-    hasAddRouter:false,
+    hasAddRouter: false,
 }
 
 const mutations = {
@@ -31,7 +31,7 @@ const mutations = {
     },
     addBreadCrumb(state, index) {
         state.breadCrumbList = [];
-        state.breadCrumbList = findFatherIndex(index, []);
+        state.breadCrumbList = findFatherIndex(index, 0, []);
         state.breadCrumbList.splice(0, 0, {
             menu_id: 0,
             menu_pid: 0,
@@ -43,7 +43,7 @@ const mutations = {
     emptyBreadCrumb(state) {
         state.breadCrumbList = [];
     },
-    dynamicRouter(){
+    dynamicRouter() {
 
     }
 };
@@ -60,9 +60,10 @@ function arrayChildrenFlatten(array, result) {
     }
     return result;
 }
-function findFatherIndex(index, array) {
+function findFatherIndex(index, id, array) {
     //根据index找到节点
-    var mapTab = state.menuTreeListFlatten.filter(item => item.menu_link == index);
+    var mapTab = index ? state.menuTreeListFlatten.filter(item => item.menu_link == index) 
+                       : state.menuTreeListFlatten.filter(item => item.menu_id == id);
     if (mapTab.length > 0) {
         mapTab = mapTab[0];
         array.splice(0, 0, {
@@ -75,7 +76,7 @@ function findFatherIndex(index, array) {
             var mapTabF = state.menuTreeListFlatten.filter(item => item.menu_id == mapTab.menu_pid);
             if (mapTabF.length) {
                 mapTabF = mapTabF[0];
-                findFatherIndex(mapTabF.menu_link, array);
+                findFatherIndex(mapTabF.menu_link,mapTabF.menu_id, array);
             }
         }
     } else {

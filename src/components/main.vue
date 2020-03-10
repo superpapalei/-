@@ -523,7 +523,7 @@ export default {
   margin-bottom: 0px !important;
 }
 .el-menu-item-group__title {
-  padding: 4px 0 !important;
+  padding: 1px 0 !important;
 }
 .el-card__header {
   padding: 10px !important;
