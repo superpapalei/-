@@ -6,7 +6,7 @@
         <div>
           <el-card>
             <div slot="header">
-              <span>编码分类</span>
+              <span >编码分类</span>
             </div>
             <div>
               <div>
@@ -16,15 +16,15 @@
                 <el-button size="small" style="margin-left:20px" @click="addNewTypeShow">新增</el-button>
               </div>
               <hr>
-              <el-table ref="singleTable" :data="codeTypeData" highlight-current-row row-key="cc_id" @row-click="handleRowClick"
-                style="width: 100%" size="small">
+              <el-table ref="singleTable" :data="codeTypeData" highlight-current-row row-key="ct_id" @row-click="handleRowClick"
+                style="width: 100%" size="medium">
                 <el-table-column label="序号" type="index" width="50" align="center">
                 </el-table-column>
-                <el-table-column property="cc_code" label="编码" align="center" width="60">
+                <el-table-column property="ct_code" label="分类编码" align="center" width="80">
                 </el-table-column>
-                <el-table-column property="ct_note" label="技能等级数字" width="120" align="center">
+                <el-table-column property="ct_name" label="分类名称" width="120" align="center">
                 </el-table-column>
-                <el-table-column property="cc_note" label="说明" align="center" >
+                <el-table-column property="ct_note" label="分类说明" align="center" >
                 </el-table-column>
                 <!-- <el-table-column property="update_date" label="更新日期" align="center" width="90">
                   <template slot-scope="scope1">
@@ -70,12 +70,12 @@
               <hr>
               <div v-if="rightDataShow">
               <el-table ref="singleTable" :data="codeData" highlight-current-row
-                style="width: 100%" size = "small">
+                style="width: 100%" size = "medium">
                 <el-table-column label="序号" type="index" width="50" align="center">
                 </el-table-column>
-                <el-table-column property="cod_cc_id" label="编码ID" align="center" width="100">
+                <el-table-column property="ct_id" label="分类ID" align="center" width="100">
                 </el-table-column>
-                <el-table-column property="cc_code" label="编码" align="center" width="100">
+                <el-table-column property="cc_code" label="编码code" align="center" width="100">
                 </el-table-column>
                 <el-table-column property="cc_name" label="编码名称"  align="center" width="100">
                 </el-table-column>
@@ -118,16 +118,16 @@
       :visible.sync="addTypeVisiable" @closed="refreshForm">
       <zj-form size="small" :newDataFlag='addTypeVisiable' :model="typeModel" label-width="100px" ref="taskForm"
         >
-        <el-form-item label="编码code" prop="cc_code">
-          <el-input class="formItem" v-model="typeModel.cc_code" placeholder="请填写编码">
+        <el-form-item label="分类编码code" prop="ct_code">
+          <el-input class="formItem" v-model="typeModel.ct_code" placeholder="请填写分类编码code">
           </el-input>
         </el-form-item>
-        <el-form-item label="技能等级数字" prop="ct_note">
-          <el-input class="formItem" v-model="typeModel.ct_note" placeholder="请填写技能等级数字">
+        <el-form-item label="分类名称" prop="ct_name">
+          <el-input class="formItem" v-model="typeModel.ct_name" placeholder="请填写分类名称">
           </el-input>
         </el-form-item>
-        <el-form-item label="编码说明" prop="cc_note">
-          <el-input class="formItem" v-model="typeModel.cc_note" placeholder="请填写编码说明">
+        <el-form-item label="分类说明" prop="ct_note">
+          <el-input class="formItem" v-model="typeModel.ct_note" placeholder="请填写分类说明">
           </el-input>
         </el-form-item>
         <el-form-item style="text-align:center;margin-right:100px;">
@@ -143,11 +143,11 @@
       <zj-form size="small" :newDataFlag='addCodeDetailVisible' :model="codeModel" label-width="100px" ref="taskForm"
         >
         <el-form-item label="编码code" prop="cc_code">
-          <el-input class="formItem" v-model="codeModel.cc_code" placeholder="请填写编码">
+          <el-input class="formItem" v-model="codeModel.cc_code" placeholder="请填写编码code">
           </el-input>
         </el-form-item>
         <el-form-item label="编码名称" prop="cc_name">
-          <el-input class="formItem" v-model="codeModel.cc_name" placeholder="请填写编码">
+          <el-input class="formItem" v-model="codeModel.cc_name" placeholder="请填写编码名称">
           </el-input>
         </el-form-item>
         <el-form-item label="编码说明" prop="cc_note">
@@ -248,7 +248,7 @@ export default {
       this.codeData = [];
       this.z_get(
         "api/common_code",
-        { cc_id: this.currentRow.cc_id, condition: this.codeCondition },
+        { ct_id: this.currentRow.ct_id, condition: this.codeCondition },
         { loading: false }
       )
         .then(res => {
@@ -266,10 +266,10 @@ export default {
       var titleName = "";
       var st_pid = null;
       this.typeModel = {
-        cc_id:0,
-        cc_code: "",
+        ct_id:0,
+        ct_code: "",
+        ct_name: "",
         ct_note: "",
-        cc_note: "",
         c_id: 0,
         update_date: "",
         update_user: null,
@@ -318,7 +318,7 @@ export default {
     },
     //确认删除编码类型
     onDeleteClick(list) {
-      this.$confirm("是否删除？节点下的子节点将一并删除！", "提示", {
+      this.$confirm("是否删除?所有编码明细将一并删除", "提示", {
         confirmButtonText: "是",
         cancelButtonText: "否",
         type: "warning"
@@ -401,10 +401,10 @@ export default {
               var date1 = new Date();      
               var data2 = {
                 UpdateColumns:this.$refs.taskForm.UpdateColumns,
-                cc_id:this.typeModel.cc_id,
-                cc_code: this.typeModel.cc_code,
+                ct_id:this.typeModel.ct_id,
+                ct_code: this.typeModel.ct_code,
+                ct_name: this.typeModel.ct_name,
                 ct_note: this.typeModel.ct_note,
-                cc_note: this.typeModel.cc_note,
                 c_id: this.typeModel.c_id,
                 update_date: date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate(),
                 update_user: 123,
@@ -440,13 +440,13 @@ export default {
     addNewCodeShow() {
       this.codeModel = {
         cc_id:0,
-        cod_cc_id:"",
+        ct_id:"",
         cc_code: "",
         cc_name:"",
         cc_note: "",
         c_id: 0,
         update_date: "",
-        update_user: null,
+        update_user: 0,
         create_date: "",
         create_user:0
       };
@@ -462,7 +462,7 @@ export default {
       this.$refs.taskForm.validate(valid => {
         if (valid) {
           if (this.addOrNot) {
-            this.codeModel.cod_cc_id = this.currentRow.cc_id
+            this.codeModel.ct_id = this.currentRow.ct_id
             this.codeModel.c_id = 22;
             var date = new Date();      
             this.codeModel.create_date= date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
@@ -491,7 +491,7 @@ export default {
               var data2 = {
                 UpdateColumns:this.$refs.taskForm.UpdateColumns,
                 cc_id:this.codeModel.cc_id,
-                cod_cc_id : this.currentRow.cc_id,
+                ct_id : this.currentRow.ct_id,
                 cc_code:this.codeModel.cc_code,
                 cc_name:this.codeModel.cc_name,
                 cc_note: this.codeModel.cc_note,
