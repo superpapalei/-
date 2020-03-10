@@ -37,8 +37,11 @@
             tooltip-effect="dark" highlight-current-row border @selection-change="handleSelectionChange"
             @row-click="handleRowClick">
             <el-table-column type="selection" width="55" align="center"></el-table-column>
-            <el-table-column prop="pt_name" label="模板名称" align="center" width="130"></el-table-column>
+            <el-table-column prop="pt_name" label="模板名称" align="center" width="100"></el-table-column>
             <el-table-column prop="pt_note" label="模板说明" align="center"></el-table-column>
+            <el-table-column prop="pc_no" label="所属分类" align="center" width="120">
+              <template slot-scope="scope">{{scope.row.pc_no | renderFilter(classFilter)}}</template>
+            </el-table-column>
             <el-table-column prop="create_user" label="创建人" align="center" width="100"></el-table-column>
             <el-table-column prop="create_date" label="创建时间" align="center" width="100">
               <template slot-scope="scope">
@@ -47,8 +50,14 @@
             </el-table-column>
             <el-table-column label="操作" width="140" prop="handle">
               <template slot-scope="scope">
-                <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTemplateShow(scope.row)">
-                </el-button>
+                <el-tooltip class="item" effect="dark" content="编辑模板信息" placement="top-start">
+                  <el-button type="primary" icon="el-icon-edit" size="mini" circle @click="editTemplateShow(scope.row)">
+                  </el-button>
+                </el-tooltip>
+                <el-tooltip class="item" effect="dark" content="编辑模板详情" placement="top-start">
+                  <el-button type="primary" icon="el-icon-s-grid" size="mini" circle>
+                  </el-button>
+                </el-tooltip>
                 <el-button type="danger" icon="el-icon-delete" size="mini" circle @click="deleteOne(scope.row)">
                 </el-button>
               </template>
@@ -57,6 +66,26 @@
         </div>
       </el-main>
     </el-container>
+
+    <el-dialog v-if="addTemplateVisible" v-dialogDrag width="450px" :title="addTemplateText"
+      :close-on-click-modal="false" :visible.sync="addTemplateVisible">
+      <zj-form size="small" :newDataFlag='addTemplateVisible' :model="templateModel" label-width="100px"
+        ref="templateForm" :rules="add_rules">
+        <el-form-item label="模板名称" prop="pt_name">
+          <el-input class="formItem" v-model="templateModel.pt_name" placeholder="请填写模板名称">
+          </el-input>
+        </el-form-item>
+        <el-form-item label="模板说明">
+          <el-input class="formItem" type="textarea" :rows="2" v-model="templateModel.pt_note" placeholder="模板说明">
+          </el-input>
+        </el-form-item>
+        <el-form-item style="text-align:center;margin-right:100px;">
+          <el-button size="medium" @click="addTemplateVisible = false">取&nbsp;&nbsp;消</el-button>
+          <el-button type="primary" size="medium" @click="onSaveTemplateClick" style="margin-left:30px;">保&nbsp;&nbsp;存
+          </el-button>
+        </el-form-item>
+      </zj-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -67,9 +96,19 @@ export default {
       condition: "",
       classData: [],
       projectTemplateData: [],
+      classFilter: [],
       selectClass: {},
       selection: [],
-      loading: false
+      loading: false,
+      addTemplateVisible: false,
+      addTemplateText: "",
+      templateModel: {},
+      add_rules: {
+        pt_name: [
+          { required: true, message: "请填写模板名称", trigger: "blur" }
+        ]
+      },
+      addOrNot: true
     };
   },
   methods: {
@@ -84,6 +123,7 @@ export default {
         )
           .then(res => {
             this.loading = false;
+            this.classFilter = res.dict.pc_no;
             this.projectTemplateData = res.data;
           })
           .catch(res => {});
@@ -119,10 +159,87 @@ export default {
       if (column.property != "handle")
         this.$refs.templateTable.toggleRowSelection(row);
     },
-    addNewTemplateShow() {},
-    editTemplateShow(row) {},
-    deleteOne(row) {},
-    deleteList() {}
+    addNewTemplateShow() {
+      this.templateModel = {
+        pc_no: this.selectClass.pc_no,
+        pt_name: "",
+        pt_note: ""
+      };
+      this.addTemplateText = "新增[" + this.selectClass.pc_name + "]的模板";
+      this.addOrNot = true;
+      this.addTemplateVisible = true;
+    },
+    editTemplateShow(row) {
+      this.templateModel = JSON.parse(JSON.stringify(row));
+      this.addTemplateText = "修改模板";
+      this.addOrNot = false;
+      this.addTemplateVisible = true;
+    },
+    onSaveTemplateClick() {
+      this.$refs.templateForm.validate(valid => {
+        if (valid) {
+          if (this.addOrNot) {
+            this.z_post("api/project_template", this.templateModel)
+              .then(res => {
+                this.$message({
+                  message: "新增成功!",
+                  type: "success",
+                  duration: 1000
+                });
+                this.refreshTemplateData();
+                this.addTemplateVisible = false;
+              })
+              .catch(res => {
+                this.$alert("新增失败!", "提示", {
+                  confirmButtonText: "确定",
+                  type: "error"
+                });
+              });
+          } else {
+            this.templateModel.UpdateColumns = this.$refs.templateForm.UpdateColumns;
+            if (this.templateModel.UpdateColumns) {
+              this.z_put("api/project_template", this.templateModel)
+                .then(res => {
+                  this.$message({
+                    message: "编辑成功!",
+                    type: "success",
+                    duration: 1000
+                  });
+                  this.refreshTemplateData();
+                  this.addTemplateVisible = false;
+                })
+                .catch(res => {
+                  this.$alert("编辑失败!", "提示", {
+                    confirmButtonText: "确定",
+                    type: "error"
+                  });
+                });
+            } else {
+              this.addTemplateVisible = false;
+            }
+          }
+        }
+      });
+    },
+    deleteOne(row) {
+      var list = [];
+      list.push(row);
+      this.onDeleteClick(list);
+    },
+    deleteList() {
+      if (this.selection.length) {
+        this.onDeleteClick(this.selection);
+      }
+    },
+    onDeleteClick(list) {
+      this.$confirm("是否删除？删除模板将同时删除详情！", "提示", {
+        confirmButtonText: "是",
+        cancelButtonText: "否",
+        type: "warning"
+      })
+        .then(() => {})
+        .catch(() => {});
+    }
   },
   mounted() {
     this.refreshClass();
@@ -133,6 +250,9 @@ export default {
 <style scoped>
 .project-template {
   width: 1100px;
+}
+.formItem {
+  width: 300px;
 }
 </style>
 <style>
