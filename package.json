@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "af-table-column": "^1.0.3",
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "element-ui": "^2.5.4",
     "js-cookie": "^2.2.0",
     "print-js": "^1.0.61",
