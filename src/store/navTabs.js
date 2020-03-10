@@ -3,7 +3,10 @@ const state = {
     //导航数组，等权限控制做好通过后台读取
     menuTreeListFlatten: [],
     menuTreeList: [],
-    breadCrumbList: [],//导航
+    breadCrumbList: {
+        breadCrumbList: [],
+        selectArray: []
+    },//导航
     hasAddRouter: false,
 }
 
@@ -30,21 +33,25 @@ const mutations = {
         return (state.menuTreeListFlatten.filter(item => item.menu_link == menu_link).length > 0);
     },
     addBreadCrumb(state, index) {
-        state.breadCrumbList = [];
-        state.breadCrumbList = findFatherIndex(index, 0, []);
-        state.breadCrumbList.splice(0, 0, {
-            menu_id: 0,
-            menu_pid: 0,
-            menu_link: 'main',
-            menu_name: '首页'
-        });
+        state.breadCrumbList.breadCrumbList = [];
+        state.breadCrumbList.selectArray = [];
+        var mapTab = state.menuTreeListFlatten.filter(item => item.menu_link == index);
+        if (mapTab.length > 0) {
+            mapTab = mapTab[0];
+            state.breadCrumbList.breadCrumbList = findFatherIndex(mapTab, []);
+            state.breadCrumbList.selectArray = state.menuTreeListFlatten.filter(item => item.menu_pid == mapTab.menu_pid);//找到同级节点
+            state.breadCrumbList.breadCrumbList.splice(0, 0, {
+                menu_id: 0,
+                menu_pid: 0,
+                menu_link: 'main',
+                menu_name: '首页'
+            });
+        }
         state.activeTabName = index;
     },
     emptyBreadCrumb(state) {
-        state.breadCrumbList = [];
-    },
-    dynamicRouter() {
-
+        state.breadCrumbList.breadCrumbList = [];
+        state.breadCrumbList.selectArray = [];
     }
 };
 /*
@@ -60,32 +67,19 @@ function arrayChildrenFlatten(array, result) {
     }
     return result;
 }
-function findFatherIndex(index, id, array) {
-    //根据index找到节点
-    var mapTab = index ? state.menuTreeListFlatten.filter(item => item.menu_link == index) 
-                       : state.menuTreeListFlatten.filter(item => item.menu_id == id);
-    if (mapTab.length > 0) {
-        mapTab = mapTab[0];
-        array.splice(0, 0, {
-            menu_id: mapTab.menu_id,
-            menu_pid: mapTab.menu_pid,
-            menu_link: mapTab.menu_link,
-            menu_name: mapTab.menu_name
-        })
-        if (mapTab.menu_pid > 0) {
-            var mapTabF = state.menuTreeListFlatten.filter(item => item.menu_id == mapTab.menu_pid);
-            if (mapTabF.length) {
-                mapTabF = mapTabF[0];
-                findFatherIndex(mapTabF.menu_link,mapTabF.menu_id, array);
-            }
+function findFatherIndex(mapTab, array) {
+    array.splice(0, 0, {
+        menu_id: mapTab.menu_id,
+        menu_pid: mapTab.menu_pid,
+        menu_link: mapTab.menu_link,
+        menu_name: mapTab.menu_name
+    })
+    if (mapTab.menu_pid > 0) {
+        var mapTabF = state.menuTreeListFlatten.filter(item => item.menu_id == mapTab.menu_pid);
+        if (mapTabF.length) {
+            mapTabF = mapTabF[0];
+            findFatherIndex(mapTabF, array);
         }
-    } else {
-        array.push(
-            {
-                menu_link: index,
-                menu_name: ''
-            }
-        )
     }
     return array;
 }

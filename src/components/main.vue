@@ -16,7 +16,7 @@
           <i class="el-icon-s-home icon-color aside-home" @click="refreshPage"></i>
         </div>
         <div class="menu-contain">
-          <el-menu mode="horizontal" default-active="main" @select="addBreadCrumb" text-color="#333"
+          <el-menu mode="horizontal" :default-active="activeTabName" @select="addBreadCrumb" text-color="#333"
             active-text-color="#409EFF" style="height:50px;" router>
             <!-- 单独的测试页面自己单独写，不经过权限加载(请勿上传) -->
 
@@ -70,11 +70,19 @@
           </li>
         </ul>
       </el-header>
-      <el-header style="height:30px;" v-if="breadCrumbList.length">
+      <el-header style="height:30px;" v-if="breadCrumbList.breadCrumbList.length">
         <div class="breadCrumb">
-          <template v-for="(item, index) in breadCrumbList">
-            <a v-if="index == 0" :key="index" @click="refreshPage">&nbsp;{{ item.menu_name }}>&nbsp;</a>
-            <span :key="index" v-else>&nbsp;{{ item.menu_name }}>&nbsp;</span></template>
+          <template v-for="(item, index) in breadCrumbList.breadCrumbList">
+            <a v-if="index == 0" :key="index" @click="refreshPage">&nbsp;{{ item.menu_name }}&nbsp;>&nbsp;</a>
+            <span v-else-if="index == breadCrumbList.breadCrumbList.length - 1" :key="index">&nbsp;
+              <el-select v-model="item.menu_link" size="mini" style="width:110px;" @change="changRouter">
+                <el-option v-for="array in breadCrumbList.selectArray" :key="array.menu_link" :label="array.menu_name"
+                  :value="array.menu_link">
+                </el-option>
+              </el-select>
+            </span>
+            <span v-else :key="index">&nbsp;{{ item.menu_name }}&nbsp;>&nbsp;</span>
+          </template>
         </div>
       </el-header>
       <el-main class="backTop">
@@ -164,6 +172,7 @@ export default {
       return text;
     }
   },
+  watch: {},
   methods: {
     ...mapMutations("navTabs", [
       "setActiveTabName",
@@ -199,12 +208,19 @@ export default {
       });
       //this.$router.go(0);//刷新页面
     },
+    //判断文字是否超长，超长显示省略号
     isReduce(text) {
       var canvas = document.createElement("canvas");
       var context = canvas.getContext("2d");
       context.font = "14px Microsoft YaHei";
       var dimension = context.measureText(text);
       return dimension.width > 290;
+    },
+    changRouter(value) {
+      this.$router.push({
+        path: "/" + value
+      });
+      this.addBreadCrumb(value);
     },
     openCalendar() {
       this.calen_visible = true;
@@ -376,8 +392,7 @@ export default {
 }
 .breadCrumb {
   width: 100%;
-  padding: 5px 15px;
-  /* border: 1px solid #ebeef5; */
+  padding: 2px 15px;
   background-color: #f8f8f8;
   user-select: none;
   box-sizing: border-box;
